@@ -16,12 +16,24 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    Exceptions/exception.cpp \
+    UI/uihandler.cpp \
+    audio/audiohandler.cpp \
+    audio/buffer.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    utils/log.cpp \
+    utils/timehandler.cpp
 
 HEADERS += \
-    AudioFile.h \
-    mainwindow.h
+    Exceptions/exception.h \
+    UI/uihandler.h \
+    audio/AudioFile.h \
+    audio/audiohandler.h \
+    audio/buffer.h \
+    mainwindow.h \
+    utils/log.h \
+    utils/timehandler.h
 
 FORMS += \
     mainwindow.ui
@@ -31,8 +43,9 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+INCLUDEPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
+DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
 
-unix:!macx: LIBS += -L$$PWD/../../../../../../usr/lib/x86_64-linux-gnu/ -ljack
+unix: LIBS += -L$$PWD/../../../../../home/antiloope/Programs/Qt/5.14.2/gcc_64/lib/ -lQt5Core
 
-INCLUDEPATH += $$PWD/../../../../../../usr/lib/x86_64-linux-gnu
-DEPENDPATH += $$PWD/../../../../../../usr/lib/x86_64-linux-gnu
+unix: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -ljack
