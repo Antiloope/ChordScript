@@ -1,6 +1,6 @@
 #include <QApplication>
 #include "UI/uihandler.h"
-#include "audio/audiohandler.h"
+#include "audio/audioserveradapter.h"
 #include "utils/log.h"
 
 using namespace CS;
@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     Log::getInstance().write("Program started",Log::info_t);
 
     uiHandler ui;
-    AudioHandler *audio = AudioHandler::getInstance();
+    AudioServerAdapter* audio = AudioServerAdapter::getInstance();
 
     ui.init();
     audio->init();

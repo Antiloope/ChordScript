@@ -6,10 +6,10 @@
 
 namespace CS {
 
-#define BUFFER_RIGHT 0
-#define BUFFER_LEFT 1
+constexpr unsigned short BUFFER_RIGHT = 0;
+constexpr unsigned short BUFFER_LEFT = 1;
 
-#define NOW 0
+constexpr unsigned short NOW = 0;
 
 typedef AudioFile<float>::AudioBuffer AudioBuffer;
 
@@ -18,7 +18,7 @@ class Buffer
 public:
     Buffer();
     Buffer(AudioBuffer);
-    ~Buffer();
+    virtual ~Buffer();
 
     std::vector<float>& operator[](int a);
 protected:
@@ -68,6 +68,5 @@ public:
 };
 
 }
-
 
 #endif // BUFFER_H

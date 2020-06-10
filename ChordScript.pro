@@ -16,22 +16,32 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    Exceptions/exception.cpp \
     UI/uihandler.cpp \
-    audio/audiohandler.cpp \
+    audio/audioserveradapter.cpp \
     audio/buffer.cpp \
+    interpteter/interpreter.cpp \
     main.cpp \
     mainwindow.cpp \
+    scheduler/scheduler.cpp \
+    syntax/expression.cpp \
+    syntax/lexer.cpp \
+    syntax/syntaxanalyzer.cpp \
+    utils/Exceptions/exception.cpp \
     utils/log.cpp \
     utils/timehandler.cpp
 
 HEADERS += \
-    Exceptions/exception.h \
     UI/uihandler.h \
     audio/AudioFile.h \
-    audio/audiohandler.h \
+    audio/audioserveradapter.h \
     audio/buffer.h \
+    interpteter/interpreter.h \
     mainwindow.h \
+    scheduler/scheduler.h \
+    syntax/expression.h \
+    syntax/lexer.h \
+    syntax/syntaxanalyzer.h \
+    utils/Exceptions/exception.h \
     utils/log.h \
     utils/timehandler.h
 
