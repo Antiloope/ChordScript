@@ -28,7 +28,8 @@ SyntaxException::SyntaxException( const string& message , size_t ref ) :
 
 SyntaxException::SyntaxException( const char * message , size_t ref ) :
     Exception(message), _characterRefference(ref) {}
-
+SyntaxException::SyntaxException( const SyntaxException& e ) :
+    Exception(e),_characterRefference(e.getCharacterRefference()) {}
 SyntaxException::~SyntaxException() {}
 
 const char* SyntaxException::what() const throw() {

@@ -10,12 +10,14 @@ Interpreter::Interpreter()
 
 }
 
-void Interpreter::interpret(const string sourceCode){
+void Interpreter::interpret(const string sourceCode)
+{
     Lexer lexer;
     queue<Expression*> expressionsQueue;
     try {
         expressionsQueue = lexer.tokenize(sourceCode);
     } catch (const SyntaxException& e) {
+        throw SyntaxException(e);
     } catch (const exception& e) {
     }
     return;

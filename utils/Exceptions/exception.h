@@ -30,6 +30,7 @@ public:
     explicit SyntaxException( const char* message );
     explicit SyntaxException( const string& message , size_t ref);
     explicit SyntaxException( const char* message , size_t ref);
+    SyntaxException ( const SyntaxException& e );
     virtual ~SyntaxException();
 
     virtual const char* what() const throw ();

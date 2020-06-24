@@ -1,6 +1,6 @@
 #ifndef BUFFER_H
 #define BUFFER_H
-#include <jack/jack.h>
+
 #include "AudioFile.h"
 #include "utils/timehandler.h"
 

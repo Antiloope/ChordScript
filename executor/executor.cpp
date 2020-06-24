@@ -5,9 +5,6 @@
 #include <cstring>
 #include <jack/jack.h>
 #include <thread>
-#include <atomic>
-
-#include <math.h>// TODO: REMOVE
 
 using namespace CS;
 

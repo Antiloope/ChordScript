@@ -1,5 +1,4 @@
 #include "buffer.h"
-#include <cstring>
 
 using namespace CS;
 
