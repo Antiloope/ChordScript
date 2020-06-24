@@ -4,8 +4,6 @@
 
 #include <stack>
 
-using namespace std;
-
 const char cEqual               = '=';
 const char cSubstraction        = '-';
 const char cAddition            = '+';
@@ -34,9 +32,10 @@ const string sReturnStatement   = "return";
 const string sTrueStatement     = "true";
 const string sFalseStatement    = "false";
 
-namespace CS {
+using namespace std;
+using namespace CS;
 
-queue<Expression*> tokenize(string sourceCode){
+queue<Expression*> Lexer::tokenize(string sourceCode){
     queue<Expression*> tokens;
 
     // To check correct number and order of parenthesis, brackets, and braces
@@ -155,7 +154,7 @@ queue<Expression*> tokenize(string sourceCode){
                         (sourceCode[i] >= 'A' && sourceCode[i] <= 'Z') ||
                         (sourceCode[i] >= 'a' && sourceCode[i] <= 'z') ||
                         (sourceCode[i] == '_') ||
-                        (sourceCode[i] > '0' && sourceCode[i] < '9')
+                        (sourceCode[i] >= '0' && sourceCode[i] <= '9')
                         ){
                         tmp.push_back(sourceCode[i]);
                         i++;
@@ -169,19 +168,19 @@ queue<Expression*> tokenize(string sourceCode){
                     else if (tmp == sFalseStatement) tokens.push(new BooleanValueExpression(false));
                     else tokens.push(new NameExpression(tmp));
                 }
-                else if (sourceCode[i] > '0' && sourceCode[i] < '9'){
+                else if (sourceCode[i] >= '0' && sourceCode[i] <= '9'){
                     bool isInteger = false;
                     double tmp = sourceCode[i] - '0';
                     i++;
-                    while(sourceCode[i] > '0' && sourceCode[i] < '9'){
+                    while(sourceCode[i] >= '0' && sourceCode[i] <= '9'){
                         tmp = tmp*10 + (sourceCode[i] - '0');
                         i++;
                     }
                     if(sourceCode[i] == '.'){
                         i++;
-                        if(sourceCode[i] > '0' && sourceCode[i] < '9'){
+                        if(sourceCode[i] >= '0' && sourceCode[i] <= '9'){
                             size_t cont=1;
-                            while(sourceCode[i] > '0' && sourceCode[i] < '9'){
+                            while(sourceCode[i] >= '0' && sourceCode[i] <= '9'){
                                 cont*=10;
                                 tmp += (double)(sourceCode[i] - '0') / cont;
                                 i++;
@@ -221,6 +220,4 @@ queue<Expression*> tokenize(string sourceCode){
         throw SyntaxException("Expected '}'",i);
     else
         throw SyntaxException("Expected ']'",i);
-}
-
 }

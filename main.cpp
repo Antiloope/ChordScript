@@ -1,7 +1,9 @@
 #include <QApplication>
-#include "UI/uihandler.h"
-#include "audio/audioserveradapter.h"
+#include "UI/uimanager.h"
+#include "executor/executor.h"
 #include "utils/log.h"
+
+#include "interpteter/interpreter.h"
 
 using namespace CS;
 
@@ -11,8 +13,18 @@ int main(int argc, char *argv[])
 
     Log::getInstance().write("Program started",Log::info_t);
 
-    uiHandler ui;
-    AudioServerAdapter* audio = AudioServerAdapter::getInstance();
+    Interpreter interpreter;
+
+    string testCode = "group myGroup = [a,b,snare,kick];";
+    testCode.push_back(0x0A);
+    testCode += "myGroup.bpm(110);";
+    testCode.push_back(0x0A);
+    testCode += "myGroup.reverb(hall);";
+
+    interpreter.interpret(testCode);
+
+    uiManager ui;
+    Executor* audio = Executor::getInstance();
 
     ui.init();
     audio->init();

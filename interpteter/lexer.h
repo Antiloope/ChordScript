@@ -8,7 +8,12 @@ using namespace std;
 
 namespace CS {
 
-queue<Expression*> tokenize(string sourceCode);
+class Lexer
+{
+public:
+    Lexer(){};
+    queue<Expression*> tokenize(string sourceCode);
+};
 
 }
 

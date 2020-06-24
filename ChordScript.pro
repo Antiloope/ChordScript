@@ -16,37 +16,33 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    UI/uihandler.cpp \
-    audio/audioserveradapter.cpp \
-    audio/buffer.cpp \
+    UI/maininterface.cpp \
+    UI/uimanager.cpp \
+    executor/buffer.cpp \
+    executor/executor.cpp \
+    interpteter/expression.cpp \
     interpteter/interpreter.cpp \
+    interpteter/lexer.cpp \
     main.cpp \
-    mainwindow.cpp \
-    scheduler/scheduler.cpp \
-    syntax/expression.cpp \
-    syntax/lexer.cpp \
-    syntax/syntaxanalyzer.cpp \
     utils/Exceptions/exception.cpp \
     utils/log.cpp \
     utils/timehandler.cpp
 
 HEADERS += \
-    UI/uihandler.h \
-    audio/AudioFile.h \
-    audio/audioserveradapter.h \
-    audio/buffer.h \
+    UI/maininterface.h \
+    UI/uimanager.h \
+    executor/AudioFile.h \
+    executor/buffer.h \
+    executor/executor.h \
+    interpteter/expression.h \
     interpteter/interpreter.h \
-    mainwindow.h \
-    scheduler/scheduler.h \
-    syntax/expression.h \
-    syntax/lexer.h \
-    syntax/syntaxanalyzer.h \
+    interpteter/lexer.h \
     utils/Exceptions/exception.h \
     utils/log.h \
     utils/timehandler.h
 
 FORMS += \
-    mainwindow.ui
+    UI/mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

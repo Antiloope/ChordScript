@@ -1,4 +1,4 @@
-#include "audioserveradapter.h"
+#include "executor.h"
 #include "utils/timehandler.h"
 #include "utils/Exceptions/exception.h"
 #include "utils/log.h"
@@ -29,10 +29,10 @@ unsigned short currentBuffer = 0;
 thread t;
 atomic_flag lockBuffer = ATOMIC_FLAG_INIT;
 
-AudioServerAdapter* AudioServerAdapter::_instance = nullptr;
+Executor* Executor::_instance = nullptr;
 
-AudioServerAdapter* AudioServerAdapter::getInstance(){
-    if ( !_instance ) _instance = new AudioServerAdapter();
+Executor* Executor::getInstance(){
+    if ( !_instance ) _instance = new Executor();
     return _instance;
 }
 
@@ -87,9 +87,7 @@ void loadBuffer(list<Sound*>* soundsList){
         while (lockBuffer.test_and_set()) {}
         unsigned short nextBuffer;
 
-        //Separate process in two steps.
-        // One to create a buffer
-        // And another to set this buffer to current outputBuffer
+        // Switch buffer
         currentBuffer == 0 ? nextBuffer = 1 : nextBuffer = 0;
         outputBuffer[nextBuffer].reset();
 
@@ -113,11 +111,11 @@ void loadBuffer(list<Sound*>* soundsList){
 void processShutdown(void* arg){
 }
 
-AudioServerAdapter::AudioServerAdapter() {
+Executor::Executor() {
 
 }
 
-AudioServerAdapter::~AudioServerAdapter() {
+Executor::~Executor() {
     while(Sound* tmp = _soundsList.back()){
         _soundsList.pop_back();
         delete tmp;
@@ -125,7 +123,7 @@ AudioServerAdapter::~AudioServerAdapter() {
     jack_client_close(jackClient);
 }
 
-void AudioServerAdapter::init() {
+void Executor::init() {
     outputBuffer[0].setSize(outputBufferSize);
     outputBuffer[1].setSize(outputBufferSize);
 
