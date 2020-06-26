@@ -4,6 +4,9 @@
 
 #include <stack>
 
+using namespace std;
+using namespace CS;
+
 const char cEqual               = '=';
 const char cSubstraction        = '-';
 const char cAddition            = '+';
@@ -31,92 +34,89 @@ const string sBreakStatement    = "break";
 const string sReturnStatement   = "return";
 const string sTrueStatement     = "true";
 const string sFalseStatement    = "false";
+const string sNullValue         = "null";
 
-using namespace std;
-using namespace CS;
-
-queue<Expression*> Lexer::tokenize(string sourceCode){
-    queue<Expression*> tokens;
+list<Expression*> Lexer::tokenize(string sourceCode){
+    list<Expression*> tokens;
 
     // To check correct number and order of parenthesis, brackets, and braces
     stack<char> containersStack;
 
     size_t i = 0;
     while ( i < sourceCode.length() ){
-
         switch(sourceCode[i]){
             case cEqual:
-                tokens.push(new EqualExpression());
+                tokens.push_back(new EqualExpression(i));
                 i++;
                 break;
             case cEndOfExpression:
-                tokens.push(new EOEExpression());
+                tokens.push_back(new EOEExpression(i));
                 i++;
                 break;
             case cSubstraction:
-                tokens.push(new SubstractionExpression());
+                tokens.push_back(new SubstractionExpression(i));
                 i++;
                 break;
             case cAddition:
-                tokens.push(new AdditionExpression());
+                tokens.push_back(new AdditionExpression(i));
                 i++;
                 break;
             case cMultiplication:
-                tokens.push(new MultiplicationExpression());
+                tokens.push_back(new MultiplicationExpression(i));
                 i++;
                 break;
             case cDivition:
-                tokens.push(new DivitionExpression());
+                tokens.push_back(new DivitionExpression(i));
                 i++;
                 break;
             case cNegation:
-                tokens.push(new NegationExpression());
+                tokens.push_back(new NegationExpression(i));
                 i++;
                 break;
             case cOr:
-                tokens.push(new OrExpression());
+                tokens.push_back(new OrExpression(i));
                 i++;
                 break;
             case cAnd:
-                tokens.push(new AndExpression());
+                tokens.push_back(new AndExpression(i));
                 i++;
                 break;
             case cMemberAccess:
-                tokens.push(new MemberAccessExpression());
+                tokens.push_back(new MemberAccessExpression(i));
                 i++;
                 break;
             case cSeparator:
-                tokens.push(new SeparatorExpression());
+                tokens.push_back(new SeparatorExpression(i));
                 i++;
                 break;
             case cOpenParenthesis:
                 containersStack.push('(');
-                tokens.push(new OpenParenthesisExpression());
+                tokens.push_back(new OpenParenthesisExpression(i));
                 i++;
                 break;
             case cCloseParenthesis:
                 containersStack.top() == '(' ? containersStack.pop() : throw SyntaxException("Closing a wrong parenthesis", i);
-                tokens.push(new CloseParenthesisExpression());
+                tokens.push_back(new CloseParenthesisExpression(i));
                 i++;
                 break;
             case cOpenBracket:
                 containersStack.push('[');
-                tokens.push(new OpenBracketExpression());
+                tokens.push_back(new OpenBracketExpression(i));
                 i++;
                 break;
             case cCloseBracket:
                 containersStack.top() == '[' ? containersStack.pop() : throw SyntaxException("Closing a wrong bracket", i);
-                tokens.push(new CloseBracketExpression());
+                tokens.push_back(new CloseBracketExpression(i));
                 i++;
                 break;
             case cOpenBrace:
                 containersStack.push('{');
-                tokens.push(new OpenBraceExpression());
+                tokens.push_back(new OpenBraceExpression(i));
                 i++;
                 break;
             case cCloseBrace:
                 containersStack.top() == '{' ? containersStack.pop() : throw SyntaxException("Closing a wrong brace", i);
-                tokens.push(new CloseBraceExpression());
+                tokens.push_back(new CloseBraceExpression(i));
                 i++;
                 break;
             case cEndOfLine:
@@ -132,6 +132,7 @@ queue<Expression*> Lexer::tokenize(string sourceCode){
                 break;
             case cStringDelimitator: {
                 string tmp = "";
+                size_t codeRef = i;
                 i++;
                 while( sourceCode[i] != cStringDelimitator ){
                     if ( i >= sourceCode.length() ) throw SyntaxException("String delimitator never closed",i);
@@ -139,7 +140,7 @@ queue<Expression*> Lexer::tokenize(string sourceCode){
                     i++;
                 }
                 i++;
-                tokens.push(new StringExpression(tmp));
+                tokens.push_back(new StringExpression(codeRef,tmp));
                 }
                 break;
             default:{
@@ -148,6 +149,7 @@ queue<Expression*> Lexer::tokenize(string sourceCode){
                     (sourceCode[i] == '_')
                     ){
                     string tmp = "";
+                    size_t codeRef = i;
                     tmp.push_back(sourceCode[i]);
                     i++;
                     while(
@@ -160,16 +162,18 @@ queue<Expression*> Lexer::tokenize(string sourceCode){
                         i++;
                     }
                     // Check for reseved keywords
-                    if (tmp == sForStatement) tokens.push(new ForExpression());
-                    else if (tmp == sIfStatement) tokens.push(new IfExpression());
-                    else if (tmp == sBreakStatement) tokens.push(new BreakExpression());
-                    else if (tmp == sReturnStatement) tokens.push(new ReturnExpression());
-                    else if (tmp == sTrueStatement) tokens.push(new BooleanValueExpression(true));
-                    else if (tmp == sFalseStatement) tokens.push(new BooleanValueExpression(false));
-                    else tokens.push(new NameExpression(tmp));
+                    if (tmp == sForStatement) tokens.push_back(new ForExpression(codeRef));
+                    else if (tmp == sIfStatement) tokens.push_back(new IfExpression(codeRef));
+                    else if (tmp == sBreakStatement) tokens.push_back(new BreakExpression(codeRef));
+                    else if (tmp == sReturnStatement) tokens.push_back(new ReturnExpression(codeRef));
+                    else if (tmp == sTrueStatement) tokens.push_back(new BooleanValueExpression(codeRef,true));
+                    else if (tmp == sFalseStatement) tokens.push_back(new BooleanValueExpression(codeRef,false));
+                    else if (tmp == sNullValue) tokens.push_back(new NullValueExpression(codeRef));
+                    else tokens.push_back(new NameExpression(codeRef,tmp));
                 }
                 else if (sourceCode[i] >= '0' && sourceCode[i] <= '9'){
                     bool isInteger = false;
+                    size_t codeRef = i;
                     double tmp = sourceCode[i] - '0';
                     i++;
                     while(sourceCode[i] >= '0' && sourceCode[i] <= '9'){
@@ -201,9 +205,9 @@ queue<Expression*> Lexer::tokenize(string sourceCode){
                     }
 
                     if(isInteger){
-                        tokens.push(new IntegerNumberExpression((int)tmp));
+                        tokens.push_back(new IntegerNumberExpression(codeRef,(int)tmp));
                     }else{
-                        tokens.push(new RealNumberExpression(tmp));
+                        tokens.push_back(new RealNumberExpression(codeRef,tmp));
                     }
                 }else{
                     throw SyntaxException("Unrecognized character",i);

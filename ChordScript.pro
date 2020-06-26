@@ -20,6 +20,7 @@ SOURCES += \
     UI/uimanager.cpp \
     executor/buffer.cpp \
     executor/executor.cpp \
+    interpteter/context.cpp \
     interpteter/expression.cpp \
     interpteter/interpreter.cpp \
     interpteter/lexer.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     executor/AudioFile.h \
     executor/buffer.h \
     executor/executor.h \
+    interpteter/context.h \
     interpteter/expression.h \
     interpteter/interpreter.h \
     interpteter/lexer.h \

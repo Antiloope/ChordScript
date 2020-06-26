@@ -21,7 +21,12 @@ int main(int argc, char *argv[])
     testCode.push_back(0x0A);
     testCode += "myGroup.reverb(hall);";
 
-    interpreter.interpret(testCode);
+    try {
+        interpreter.interpret(testCode);
+    } catch (exception& e) {
+        Log::getInstance().write(e.what(),Log::info_t);
+    }
+
 
     uiManager ui;
     Executor* audio = Executor::getInstance();

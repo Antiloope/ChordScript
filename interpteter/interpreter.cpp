@@ -13,12 +13,24 @@ Interpreter::Interpreter()
 void Interpreter::interpret(const string sourceCode)
 {
     Lexer lexer;
-    queue<Expression*> expressionsQueue;
+    list<Expression*> expressionsQueue;
     try {
         expressionsQueue = lexer.tokenize(sourceCode);
     } catch (const SyntaxException& e) {
-        throw SyntaxException(e);
+        throw e;
     } catch (const exception& e) {
+        throw e;
     }
+
+    try {
+        Expression *tmp = new Expression(0);
+        tmp->interpret(&expressionsQueue);
+        delete tmp;
+    } catch (const SyntaxException& e) {
+        throw e;
+    } catch (const exception& e) {
+        throw e;
+    }
+
     return;
 }

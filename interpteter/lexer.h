@@ -1,7 +1,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#include <queue>
+#include <list>
 #include "expression.h"
 
 using namespace std;
@@ -12,7 +12,7 @@ class Lexer
 {
 public:
     Lexer(){};
-    queue<Expression*> tokenize(string sourceCode);
+    list<Expression*> tokenize(string sourceCode);
 };
 
 }

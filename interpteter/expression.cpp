@@ -1,139 +1,297 @@
 #include "expression.h"
 #include "utils/Exceptions/exception.h"
+#include "context.h"
 
 using namespace CS;
 
-bool isEOE(Expression* a){
-    return typeid (*a).hash_code() == typeid (EOEExpression).hash_code();
+bool EOEExpression::isEOE(list<Expression*>::iterator it){
+    Expression *tmp = *it;
+    return typeid (*tmp).hash_code() == typeid (EOEExpression).hash_code();
 }
 
-bool isASSIGNATION(Expression* a){
-    return typeid (*a).hash_code() == typeid (NameExpression).hash_code();
+bool AssignationExpression::isAssignation(list<Expression*>::iterator it){
+    Expression *tmp = *it;
+    if( typeid (*tmp).hash_code() == typeid (NameExpression).hash_code() &&
+        Context::getInstance()->isDataType( ((NameExpression*)tmp)->_name ))
+    {
+        tmp = *(++it);
+        if( typeid (*tmp).hash_code() == typeid (NameExpression).hash_code() &&
+            !Context::getInstance()->nameExist( ((NameExpression*)tmp)->_name ))
+        {
+            tmp = *(++it);
+            if( typeid (*tmp).hash_code() == typeid (EqualExpression).hash_code() )
+            {
+                tmp = *(++it);
+                if ( ValueExpression::isValue(it) )
+                {
+                    return true;
+                }
+            }
+        }
+    }
+    else
+    {
+        if( typeid (*tmp).hash_code() == typeid (NameExpression).hash_code() &&
+            !Context::getInstance()->nameExist( ((NameExpression*)tmp)->_name ))
+        {
+            tmp = *(++it);
+            if( typeid (*tmp).hash_code() == typeid (EqualExpression).hash_code() )
+            {
+                tmp = *(++it);
+                if ( ValueExpression::isValue(it) )
+                {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+bool ValueExpression::isValue(list<Expression*>::iterator it)
+{
+    Expression *tmp = *it;
+    if (typeid (*tmp).hash_code() == typeid (NameExpression).hash_code() &&
+        Context::getInstance()->nameExist(((NameExpression*)tmp)->_name ))
+    {
+        return true;
+    }
+    if (typeid (*tmp).hash_code() == typeid (StringExpression).hash_code())
+    {
+        return true;
+    }
+    if (ExecutionExpression::isExecution(it))
+    {
+        return true;
+    }
+    if (typeid (*tmp).hash_code() == typeid (NullValueExpression).hash_code())
+    {
+        return true;
+    }
+    if (BooleanOperationExpression::isBooleanOperation(it))
+    {
+        return true;
+    }
+    if (MathOperationExpression::isMathOperation(it))
+    {
+        return true;
+    }
+    if (typeid (*tmp).hash_code() == typeid (OpenParenthesisExpression).hash_code())
+    {
+        tmp = *(++it);
+        if (ArrayExpression::isArray(it))
+        {
+            tmp = *(++it);
+            if (typeid (*tmp).hash_code() == typeid (CloseParenthesisExpression).hash_code())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    if (typeid (*tmp).hash_code() == typeid (OpenBracketExpression).hash_code())
+    {
+        tmp = *(++it);
+        if (ArrayExpression::isArray(it))
+        {
+            tmp = *(++it);
+            if (typeid (*tmp).hash_code() == typeid (CloseBracketExpression).hash_code())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    return false;
 }
 
-bool isEXECUTION(Expression* a){
-    return typeid (*a).hash_code() == typeid (NameExpression).hash_code();
+bool ArrayExpression::isArray(list<Expression *>::iterator it){
+    Expression *tmp = *it;
+    if(ValueExpression::isValue(it))
+    {
+        tmp = *(++it);
+        if (typeid (*tmp).hash_code() == typeid (SeparatorExpression).hash_code())
+        {
+            tmp = *(++it);
+            if(ArrayExpression::isArray(it))
+            {
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+    return false;
 }
 
-bool isDEFINITION(Expression* a){
-    return typeid (*a).hash_code() == typeid (NameExpression).hash_code();
+bool MathOperationExpression::isMathOperation(list<Expression *>::iterator it){
+    return true;
 }
 
-bool isFOR_LOOP(Expression* a){
-    return typeid (*a).hash_code() == typeid (ForExpression).hash_code();
+bool BooleanOperationExpression::isBooleanOperation(list<Expression *>::iterator it){
+    return true;
 }
 
-bool isIF(Expression* a){
-    return typeid (*a).hash_code() == typeid (IfExpression).hash_code();
+bool ExecutionExpression::isExecution(list<Expression*>::iterator it){
+    return true;
 }
 
-bool isBREAK(Expression* a){
-    return typeid (*a).hash_code() == typeid (BreakExpression).hash_code();
+bool DefinitionExpression::isDefinition(list<Expression*>::iterator it){
+    return true;
 }
 
-Expression::Expression() {}
+bool NullValueExpression::isNull(list<Expression *>::iterator it){
+    return true;
+}
+
+bool ForExpression::isFor(list<Expression*>::iterator it){
+    return true;
+}
+
+bool IfExpression::isIf(list<Expression*>::iterator it){
+    return true;
+}
+
+bool BreakExpression::isBreak(list<Expression*>::iterator it){
+    return true;
+}
+
+Expression::Expression(size_t codeReference):_codeReference(codeReference) {}
 
 Expression::~Expression() {}
 
-void Expression::interpret(queue<Expression*>* q){
-    while(!q->empty()){
-        Expression* tmp = q->front();
-        q->pop();
+size_t Expression::getCodeReference(){
+    return _codeReference;
+}
 
-        if( isEOE(tmp) ) {} // Next expression
-        else if(
-                isASSIGNATION(tmp) ||
-                isEXECUTION(tmp) ||
-                isDEFINITION(tmp) ||
-                isFOR_LOOP(tmp) ||
-                isIF(tmp) ||
-                isBREAK(tmp)
-                ){
-            tmp->interpret(q);
+void Expression::interpret(list<Expression*>* expressionsList){
+    while(!expressionsList->empty()){
+        auto it = expressionsList->begin();
+        Expression* tmp = *it;
+        try {
+            if( EOEExpression::isEOE( it ) ) {
+                tmp = new EOEExpression(tmp->getCodeReference());
+            }
+            else if( AssignationExpression::isAssignation( it ) ){
+                tmp = new AssignationExpression(tmp->getCodeReference());
+            }
+            else if( ExecutionExpression::isExecution( it ) ){
+                tmp = new ExecutionExpression(tmp->getCodeReference());
+            }
+            else if( DefinitionExpression::isDefinition( it ) ){
+                tmp = new DefinitionExpression(tmp->getCodeReference());
+            }
+            else if( ForExpression::isFor( it ) ){
+                tmp = new ForExpression(tmp->getCodeReference());
+            }
+            else if( IfExpression::isIf( it ) ){
+                tmp = new IfExpression(tmp->getCodeReference());
+            }
+            else if( BreakExpression::isBreak( it ) ){
+                tmp = new BreakExpression(tmp->getCodeReference());
+            }
+            else {
+                throw SyntaxException("Syntax error",tmp->getCodeReference());
+            }
+        } catch (SyntaxException& e) {
+            throw e;
+        } catch (exception& e){
+            throw e;
         }
-        else throw SyntaxException("Syntax error");
+
+        tmp->interpret(expressionsList);
+
+        delete tmp;
     }
 }
 
-void EqualExpression::interpret(queue<Expression*>* q) {}
+void ValueExpression::interpret(list<Expression*>* q) {}
 
-void EOEExpression::interpret(queue<Expression*>* q) {}
+void AssignationExpression::interpret(list<Expression*>* q) {}
 
-void SubstractionExpression::interpret(queue<Expression*>* q) {}
+void DefinitionExpression::interpret(list<Expression*>* q) {}
 
-void AdditionExpression::interpret(queue<Expression*>* q) {}
+void ArrayExpression::interpret(list<Expression*>* q) {}
 
-void MultiplicationExpression::interpret(queue<Expression*>* q) {}
+void MathOperationExpression::interpret(list<Expression*>* q) {}
 
-void DivitionExpression::interpret(queue<Expression*>* q) {}
+void BooleanOperationExpression::interpret(list<Expression*>* q) {}
 
-void NegationExpression::interpret(queue<Expression*>* q) {}
+void ExecutionExpression::interpret(list<Expression*>* q) {}
 
-void OrExpression::interpret(queue<Expression*>* q) {}
+void EqualExpression::interpret(list<Expression*>* q) {}
 
-void AndExpression::interpret(queue<Expression*>* q) {}
+void EOEExpression::interpret(list<Expression*>* expressionsList) {
+    Expression* tmp = expressionsList->front();
+    expressionsList->pop_front();
+    delete tmp;
+}
 
-void MemberAccessExpression::interpret(queue<Expression*>* q) {}
+void SubstractionExpression::interpret(list<Expression*>* q) {}
 
-void SeparatorExpression::interpret(queue<Expression*>* q) {}
+void AdditionExpression::interpret(list<Expression*>* q) {}
 
-void OpenParenthesisExpression::interpret(queue<Expression*>* q) {}
+void MultiplicationExpression::interpret(list<Expression*>* q) {}
 
-void CloseParenthesisExpression::interpret(queue<Expression*>* q) {}
+void DivitionExpression::interpret(list<Expression*>* q) {}
 
-void OpenBracketExpression::interpret(queue<Expression*>* q) {}
+void NegationExpression::interpret(list<Expression*>* q) {}
 
-void CloseBracketExpression::interpret(queue<Expression*>* q) {}
+void OrExpression::interpret(list<Expression*>* q) {}
 
-void OpenBraceExpression::interpret(queue<Expression*>* q) {}
+void AndExpression::interpret(list<Expression*>* q) {}
 
-void CloseBraceExpression::interpret(queue<Expression*>* q) {}
+void MemberAccessExpression::interpret(list<Expression*>* q) {}
 
-StringExpression::StringExpression(string text) : _text(text) {}
+void SeparatorExpression::interpret(list<Expression*>* q) {}
 
-void StringExpression::interpret(queue<Expression*>* q) {}
+void OpenParenthesisExpression::interpret(list<Expression*>* q) {}
 
-NameExpression::NameExpression(string name) : _name(name) {}
+void CloseParenthesisExpression::interpret(list<Expression*>* q) {}
 
-void NameExpression::interpret(queue<Expression*>* q) {}
+void OpenBracketExpression::interpret(list<Expression*>* q) {}
 
-void ForExpression::interpret(queue<Expression*>* q) {}
+void CloseBracketExpression::interpret(list<Expression*>* q) {}
 
-void IfExpression::interpret(queue<Expression*>* q) {}
+void OpenBraceExpression::interpret(list<Expression*>* q) {}
 
-void BreakExpression::interpret(queue<Expression*>* q) {}
+void CloseBraceExpression::interpret(list<Expression*>* q) {}
 
-void ReturnExpression::interpret(queue<Expression*>* q) {}
+void StringExpression::interpret(list<Expression*>* q) {}
 
-void SampleTypeExpression::interpret(queue<Expression*>* q) {}
+void NameExpression::interpret(list<Expression*>* q) {
 
-void SoundTypeExpression::interpret(queue<Expression*>* q) {}
+}
 
-void RealTypeExpression::interpret(queue<Expression*>* q) {}
+void NullValueExpression::interpret(list<Expression *> *q ){}
 
-void IntegerTypeExpression::interpret(queue<Expression*>* q) {}
+void ForExpression::interpret(list<Expression*>* q) {}
 
-void ArgumentTypeExpression::interpret(queue<Expression*>* q) {}
+void IfExpression::interpret(list<Expression*>* q) {}
 
-void GroupTypeExpression::interpret(queue<Expression*>* q) {}
+void BreakExpression::interpret(list<Expression*>* q) {}
 
-void BoolTypeExpression::interpret(queue<Expression*>* q) {}
+void ReturnExpression::interpret(list<Expression*>* q) {}
 
-void BufferTypeExpression::interpret(queue<Expression*>* q) {}
+void SampleTypeExpression::interpret(list<Expression*>* q) {}
 
-void StringTypeExpression::interpret(queue<Expression*>* q) {}
+void SoundTypeExpression::interpret(list<Expression*>* q) {}
 
-BooleanValueExpression::BooleanValueExpression(bool boolValue) :
-    _boolValue(boolValue) {}
+void RealTypeExpression::interpret(list<Expression*>* q) {}
 
-void BooleanValueExpression::interpret(queue<Expression*>* q) {}
+void IntegerTypeExpression::interpret(list<Expression*>* q) {}
 
-IntegerNumberExpression::IntegerNumberExpression(int integerNumber) :
-    BooleanValueExpression((bool)integerNumber), _integerNumber(integerNumber) {}
+void ArgumentTypeExpression::interpret(list<Expression*>* q) {}
 
-void IntegerNumberExpression::interpret(queue<Expression*>* q) {}
+void GroupTypeExpression::interpret(list<Expression*>* q) {}
 
-RealNumberExpression::RealNumberExpression(double realNumber) :
-    IntegerNumberExpression((int)realNumber), _realNumber(realNumber) {}
+void BoolTypeExpression::interpret(list<Expression*>* q) {}
 
-void RealNumberExpression::interpret(queue<Expression*>* q) {}
+void BufferTypeExpression::interpret(list<Expression*>* q) {}
+
+void StringTypeExpression::interpret(list<Expression*>* q) {}
+
+void BooleanValueExpression::interpret(list<Expression*>* q) {}
+
+void IntegerNumberExpression::interpret(list<Expression*>* q) {}
+
+void RealNumberExpression::interpret(list<Expression*>* q) {}
