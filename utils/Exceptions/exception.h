@@ -40,6 +40,23 @@ protected:
     size_t _characterRefference = 0;
 };
 
+class SemanticException : public Exception {
+public:
+    explicit SemanticException();
+    explicit SemanticException( const string& message );
+    explicit SemanticException( const char* message );
+    explicit SemanticException( const string& message , size_t ref);
+    explicit SemanticException( const char* message , size_t ref);
+    SemanticException ( const SemanticException& e );
+    virtual ~SemanticException();
+
+    virtual const char* what() const throw ();
+
+    virtual size_t getCharacterRefference() const;
+protected:
+    size_t _characterRefference = 0;
+};
+
 class LogException : public Exception {
 public:
     explicit LogException();

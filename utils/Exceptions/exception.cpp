@@ -40,6 +40,30 @@ size_t SyntaxException::getCharacterRefference() const {
     return _characterRefference;
 }
 
+SemanticException::SemanticException() : Exception() {}
+
+SemanticException::SemanticException( const string& message ) : Exception(message) {}
+
+SemanticException::SemanticException( const char* message ) : Exception(message) {}
+
+SemanticException::SemanticException( const string& message , size_t ref ) :
+    Exception(message), _characterRefference(ref) {}
+
+SemanticException::SemanticException( const char * message , size_t ref ) :
+    Exception(message), _characterRefference(ref) {}
+SemanticException::SemanticException( const SemanticException& e ) :
+    Exception(e),_characterRefference(e.getCharacterRefference()) {}
+SemanticException::~SemanticException() {}
+
+const char* SemanticException::what() const throw() {
+    return _.c_str();
+}
+
+size_t SemanticException::getCharacterRefference() const {
+    return _characterRefference;
+}
+
+
 LogException::LogException() : Exception() {}
 
 LogException::LogException(const char * message) : Exception(message){
