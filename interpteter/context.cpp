@@ -18,13 +18,36 @@ Context::Context()
         {"string","string"},
     };
 
+    _reservedKeywords = {
+        "null",
+        "sample",
+        "sound",
+        "real",
+        "integer",
+        "argument",
+        "group",
+        "boolean",
+        "buffer",
+        "string",
+        "for",
+        "if",
+        "break",
+        "return",
+        "else",
+        "true",
+        "false",
+    };
+
     _variableNames = {
-        {"null","null"},
     };
 }
 
 bool Context::isDataType(string name){
     return _dataTypes.find(name) != _dataTypes.end();
+}
+
+bool Context::isValidName(string name){
+    return _reservedKeywords.find(name) != _reservedKeywords.end();
 }
 
 bool Context::nameExist(string name){

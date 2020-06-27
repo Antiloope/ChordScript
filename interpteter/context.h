@@ -3,6 +3,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 using namespace std;
 namespace CS {
@@ -13,10 +14,12 @@ public:
     static Context* getInstance();
     bool isDataType(string);
     bool nameExist(string);
+    bool isValidName(string);
 private:
     static Context* _instance;
     Context();
     unordered_map<string,string> _dataTypes;
+    unordered_set<string> _reservedKeywords;
     unordered_map<string,string> _variableNames;
 };
 
