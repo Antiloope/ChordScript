@@ -2,7 +2,7 @@
 #define LEXER_H
 
 #include <list>
-#include "expression.h"
+#include "terminalexpressions.h"
 
 using namespace std;
 
@@ -12,7 +12,7 @@ class Lexer
 {
 public:
     Lexer(){};
-    list<Expression*> tokenize(string sourceCode);
+    list<TerminalExpression*> tokenize(string sourceCode);
 };
 
 }

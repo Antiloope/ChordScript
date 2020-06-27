@@ -24,6 +24,8 @@ SOURCES += \
     interpteter/expression.cpp \
     interpteter/interpreter.cpp \
     interpteter/lexer.cpp \
+    interpteter/nonterminalexpressions.cpp \
+    interpteter/terminalexpressions.cpp \
     main.cpp \
     utils/Exceptions/exception.cpp \
     utils/log.cpp \
@@ -39,6 +41,8 @@ HEADERS += \
     interpteter/expression.h \
     interpteter/interpreter.h \
     interpteter/lexer.h \
+    interpteter/nonterminalexpressions.h \
+    interpteter/terminalexpressions.h \
     utils/Exceptions/exception.h \
     utils/log.h \
     utils/timehandler.h

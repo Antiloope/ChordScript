@@ -13,6 +13,8 @@ const char cAddition            = '+';
 const char cMultiplication      = '*';
 const char cDivition            = '/';
 const char cNegation            = '!';
+const char cGreaterThan         = '>';
+const char cLessThan            = '<';
 const char cOr                  = '|';
 const char cAnd                 = '&';
 const char cMemberAccess        = '.';
@@ -36,8 +38,8 @@ const string sTrueStatement     = "true";
 const string sFalseStatement    = "false";
 const string sNullValue         = "null";
 
-list<Expression*> Lexer::tokenize(string sourceCode){
-    list<Expression*> tokens;
+list<TerminalExpression*> Lexer::tokenize(string sourceCode){
+    list<TerminalExpression*> tokens;
 
     // To check correct number and order of parenthesis, brackets, and braces
     stack<char> containersStack;
@@ -71,6 +73,14 @@ list<Expression*> Lexer::tokenize(string sourceCode){
                 break;
             case cNegation:
                 tokens.push_back(new NegationExpression(i));
+                i++;
+                break;
+            case cGreaterThan:
+                tokens.push_back(new GreaterThanExpression(i));
+                i++;
+                break;
+            case cLessThan:
+                tokens.push_back(new LessThanExpression(i));
                 i++;
                 break;
             case cOr:
@@ -205,9 +215,9 @@ list<Expression*> Lexer::tokenize(string sourceCode){
                     }
 
                     if(isInteger){
-                        tokens.push_back(new IntegerNumberExpression(codeRef,(int)tmp));
+                        tokens.push_back(new IntegerValueExpression(codeRef,(int)tmp));
                     }else{
-                        tokens.push_back(new RealNumberExpression(codeRef,tmp));
+                        tokens.push_back(new RealValueExpression(codeRef,tmp));
                     }
                 }else{
                     throw SyntaxException("Unrecognized character",i);
