@@ -47,7 +47,7 @@ bool Context::isDataType(string name){
 }
 
 bool Context::isValidName(string name){
-    return _reservedKeywords.find(name) != _reservedKeywords.end();
+    return _reservedKeywords.find(name) == _reservedKeywords.end();
 }
 
 bool Context::nameExist(string name){
