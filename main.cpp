@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 
     Interpreter interpreter;
 
-    string testCode = "group myGroup = [a,b,snare,kick];";
+    string testCode = "numeric a = 5.4; group myGroup = [a,b,snare,kick];";
     testCode.push_back(0x0A);
     testCode += "myGroup.bpm(110);";
     testCode.push_back(0x0A);

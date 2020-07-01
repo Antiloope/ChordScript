@@ -182,7 +182,6 @@ list<TerminalExpression*> Lexer::tokenize(string sourceCode){
                     else tokens.push_back(new NameExpression(codeRef,tmp));
                 }
                 else if (sourceCode[i] >= '0' && sourceCode[i] <= '9'){
-                    bool isInteger = false;
                     size_t codeRef = i;
                     double tmp = sourceCode[i] - '0';
                     i++;
@@ -202,8 +201,6 @@ list<TerminalExpression*> Lexer::tokenize(string sourceCode){
                         }else{
                             throw SyntaxException("Expected decimal part of number",i);
                         }
-                    }else{
-                        isInteger = true;
                     }
 
                     if( (sourceCode[i] >= 'A' && sourceCode[i] <= 'Z') ||
@@ -214,11 +211,7 @@ list<TerminalExpression*> Lexer::tokenize(string sourceCode){
                         throw SyntaxException("Character not recognized as part of the number",i);
                     }
 
-                    if(isInteger){
-                        tokens.push_back(new IntegerValueExpression(codeRef,(int)tmp));
-                    }else{
-                        tokens.push_back(new RealValueExpression(codeRef,tmp));
-                    }
+                    tokens.push_back(new NumericValueExpression(codeRef,tmp));
                 }else{
                     throw SyntaxException("Unrecognized character",i);
                 }

@@ -172,9 +172,86 @@ void EOEInstructionExpression::interpret(){}
 
 /// Assignation expression
 
-AssignationExpression::AssignationExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){}
+AssignationExpression::AssignationExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
+    TerminalExpression* tmp = expressionsList->front();
+    if(
+        typeid (*tmp).hash_code() == typeid (NameExpression).hash_code() &&
+        Context::getInstance()->isDataType(((NameExpression*)tmp)->getName()))
+    {
+        _dataType = ((NameExpression*)tmp)->getName();
+        expressionsList->pop_front();
+        if(expressionsList->empty()) throw SyntaxException("Expected variable name",tmp->getCodeReference());
+        tmp = expressionsList->front();
+        if(typeid (*tmp).hash_code() == typeid (NameExpression).hash_code())
+        {
+            _varName = ((NameExpression*)tmp)->getName();
+            expressionsList->pop_front();
+            if(expressionsList->empty()) throw SyntaxException("Expected = after name",tmp->getCodeReference());
+            tmp = expressionsList->front();
+            if(typeid (*tmp).hash_code() == typeid (EqualExpression).hash_code())
+            {
+                expressionsList->pop_front();
+                if(expressionsList->empty()) throw SyntaxException("Expected a value after = ",tmp->getCodeReference());
+                tmp = expressionsList->front();
+                try {
+                    _valueExpression = new ValueExpression(expressionsList,tmp->getCodeReference());
+                } catch (SyntaxException& e) {
+                    throw e;
+                } catch (SemanticException& e) {
+                    throw e;
+                } catch (exception& e) {
+                    throw e;
+                }
 
-AssignationExpression::~AssignationExpression(){}
+                Context::getInstance()->newVariable(_varName,_valueExpression->getValue());
+            }
+            else
+            {
+                throw SyntaxException("Expected = ",tmp->getCodeReference());
+            }
+        }
+        else
+        {
+            throw SyntaxException("Expected variable name",tmp->getCodeReference());
+        }
+    }
+    else if(Context::getInstance()->nameExist(((NameExpression*)tmp)->getName()))
+    {
+        _varName = ((NameExpression*)tmp)->getName();
+        _dataType = Context::getInstance()->getDataTypeName(_varName);
+        expressionsList->pop_front();
+        if(expressionsList->empty()) throw SyntaxException("Expected = after name",tmp->getCodeReference());
+        tmp = expressionsList->front();
+        if(typeid (*tmp).hash_code() == typeid (EqualExpression).hash_code())
+        {
+            expressionsList->pop_front();
+            if(expressionsList->empty()) throw SyntaxException("Expected a value after = ",tmp->getCodeReference());
+            tmp = expressionsList->front();
+            try {//TODO: _valueExpression could be used in local scope. Because when assignation is interpreted only name and data type are useful to search in context
+                _valueExpression = new ValueExpression(expressionsList,tmp->getCodeReference());
+            } catch (SyntaxException& e) {
+                throw e;
+            } catch (SemanticException& e) {
+                throw e;
+            } catch (exception& e) {
+                throw e;
+            }
+            Context::getInstance()->newVariable(_varName,_valueExpression->getValue());
+        }
+        else
+        {
+            throw SyntaxException("Expected = ",tmp->getCodeReference());
+        }
+    }
+    else
+    {
+        throw SyntaxException("Expected another symbol",codeReference);
+    }
+}
+
+AssignationExpression::~AssignationExpression(){
+    delete _valueExpression;
+}
 
 void AssignationExpression::interpret(){}
 
@@ -193,3 +270,119 @@ ExecutionExpression::ExecutionExpression(list<TerminalExpression*>* expressionsL
 ExecutionExpression::~ExecutionExpression(){}
 
 void ExecutionExpression::interpret(){}
+
+/// Value expression
+
+ValueExpression::ValueExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
+    TerminalExpression* tmp = expressionsList->front();
+    auto hashCode = typeid (*tmp).hash_code();
+    try {
+        if(hashCode == typeid (StringExpression).hash_code()){
+            _value = new StringLinkedValue((StringExpression*)tmp);
+        }
+        else if(hashCode == typeid (NullValueExpression).hash_code())
+        {
+            _value = new NullLinkedValue();
+        }
+        else if(
+            hashCode == typeid (AdditionExpression).hash_code() ||
+            hashCode == typeid (SubstractionExpression).hash_code())
+        {
+            _value = new MathOperationLinkedValue(expressionsList);
+        }
+        else if(
+            hashCode == typeid (NegationExpression).hash_code() ||
+            hashCode == typeid (BooleanValueExpression).hash_code())
+        {
+            _value = new BooleanOperationLinkedValue(expressionsList);
+        }
+        else if(
+            hashCode == typeid (OpenBracketExpression).hash_code() ||
+            hashCode == typeid (OpenParenthesisExpression).hash_code())
+        {
+            _value = new ArrayLinkedValue(expressionsList);
+        }
+        else if(hashCode == typeid (NameExpression).hash_code())
+        {
+            auto it = expressionsList->begin();
+            advance(it,1);
+            if(it == expressionsList->end()) throw SyntaxException("Expected another symbol",codeReference);
+            tmp = *it;
+            hashCode = typeid (*tmp).hash_code();
+            if(
+                hashCode == typeid (OpenParenthesisExpression).hash_code() ||
+                hashCode == typeid (MemberAccessExpression).hash_code())
+            {
+                _value = new ExecutionLinkedValue(expressionsList);
+            }
+            else if(
+                hashCode == typeid (AdditionExpression).hash_code() ||
+                hashCode == typeid (SubstractionExpression).hash_code() ||
+                hashCode == typeid (DivitionExpression).hash_code() ||
+                hashCode == typeid (MultiplicationExpression).hash_code()
+                )
+            {
+                _value = new MathOperationLinkedValue(expressionsList);
+            }
+            else if(
+                hashCode == typeid (EqualExpression).hash_code() ||
+                hashCode == typeid (GreaterThanExpression).hash_code() ||
+                hashCode == typeid (LessThanExpression).hash_code() ||
+                hashCode == typeid (NegationExpression).hash_code()
+                )
+            {
+                _value = new BooleanOperationLinkedValue(expressionsList);
+            }
+            else
+            {
+                _value = new NameLinkedValue((NameExpression*)expressionsList->front());
+            }
+        }
+        else if(hashCode == typeid (NumericValueExpression).hash_code())
+        {
+            auto it = expressionsList->begin();
+            advance(it,1);
+            if(it == expressionsList->end()) throw SyntaxException("Expected another symbol",codeReference);
+            tmp = *it;
+            if(
+                typeid (*tmp).hash_code() == typeid (EqualExpression).hash_code() ||
+                typeid (*tmp).hash_code() == typeid (GreaterThanExpression).hash_code() ||
+                typeid (*tmp).hash_code() == typeid (LessThanExpression).hash_code() ||
+                typeid (*tmp).hash_code() == typeid (NegationExpression).hash_code()
+                )
+            {
+                _value = new BooleanOperationLinkedValue(expressionsList);
+            }
+            else
+            {
+                _value = new MathOperationLinkedValue(expressionsList);
+            }
+        }
+        else
+        {
+            throw SyntaxException("Expected a valid value",codeReference);
+        }
+    } catch (SyntaxException& e) {
+        throw e;
+    } catch (SemanticException& e) {
+        throw e;
+    } catch (exception& e) {
+        throw e;
+    }
+}
+
+Value* ValueExpression::getValue() const{
+    return _value;
+}
+
+ValueExpression::~ValueExpression(){}
+
+void ValueExpression::interpret(){}
+
+/// Math operation expression
+
+MathOperationExpression::MathOperationExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){}
+
+MathOperationExpression::~MathOperationExpression(){}
+
+void MathOperationExpression::interpret(){}

@@ -21,11 +21,13 @@ SOURCES += \
     executor/buffer.cpp \
     executor/executor.cpp \
     interpteter/context.cpp \
+    interpteter/datatype.cpp \
     interpteter/expression.cpp \
     interpteter/interpreter.cpp \
     interpteter/lexer.cpp \
     interpteter/nonterminalexpressions.cpp \
     interpteter/terminalexpressions.cpp \
+    interpteter/value.cpp \
     main.cpp \
     utils/Exceptions/exception.cpp \
     utils/log.cpp \
@@ -38,11 +40,13 @@ HEADERS += \
     executor/buffer.h \
     executor/executor.h \
     interpteter/context.h \
+    interpteter/datatype.h \
     interpteter/expression.h \
     interpteter/interpreter.h \
     interpteter/lexer.h \
     interpteter/nonterminalexpressions.h \
     interpteter/terminalexpressions.h \
+    interpteter/value.h \
     utils/Exceptions/exception.h \
     utils/log.h \
     utils/timehandler.h

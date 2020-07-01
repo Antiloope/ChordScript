@@ -227,31 +227,20 @@ public:
     StringTypeExpression(const StringTypeExpression& expression) : TerminalExpression(expression){}
 };
 
-class RealValueExpression : public TerminalExpression {
+class NumericValueExpression : public TerminalExpression {
 public:
-    RealValueExpression(size_t codeReference, int realValue) : TerminalExpression(codeReference), _realValue(realValue) {};
-    RealValueExpression(const RealValueExpression& expression) : TerminalExpression(expression), _realValue(expression._realValue){}
-    int getRealValue() const {return _realValue;}
+    NumericValueExpression(size_t codeReference, int realValue) : TerminalExpression(codeReference), _value(realValue) {};
+    NumericValueExpression(const NumericValueExpression& expression) : TerminalExpression(expression), _value(expression._value){}
+    double getValue() const {return _value;}
 protected:
-    int _realValue;
-};
-
-class IntegerValueExpression : public TerminalExpression {
-public:
-    IntegerValueExpression(size_t codeReference, int integerValue) : TerminalExpression(codeReference), _integerValue(integerValue) {};
-    IntegerValueExpression(const IntegerValueExpression& expression) : TerminalExpression(expression), _integerValue(expression._integerValue){}
-    IntegerValueExpression(const RealValueExpression& expression) : TerminalExpression(expression), _integerValue((int)expression.getRealValue()){}
-    int getIntegerValue() const {return _integerValue;}
-protected:
-    int _integerValue;
+    double _value;
 };
 
 class BooleanValueExpression : public TerminalExpression {
 public:
     BooleanValueExpression(size_t codeReference, bool boolValue) : TerminalExpression(codeReference), _boolValue(boolValue) {};
     BooleanValueExpression(const BooleanValueExpression& expression) : TerminalExpression(expression), _boolValue(expression._boolValue){}
-    BooleanValueExpression(const RealValueExpression& expression) : TerminalExpression(expression), _boolValue((bool)expression.getRealValue()){}
-    BooleanValueExpression(const IntegerValueExpression& expression) : TerminalExpression(expression), _boolValue((bool)expression.getIntegerValue()){}
+    BooleanValueExpression(const NumericValueExpression& expression) : TerminalExpression(expression), _boolValue((bool)expression.getValue()){}
     bool getBoolValue() const {return _boolValue;}
 protected:
     bool _boolValue;
