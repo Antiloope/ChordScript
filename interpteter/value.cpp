@@ -1,5 +1,6 @@
 #include "value.h"
 #include <stack>
+#include "context.h"
 
 using namespace CS;
 using namespace std;
@@ -156,7 +157,15 @@ MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* te
             }
             else
             {
-                _linkedValuesList.push_back(new NameLinkedValue((NameExpression*)tmp));
+                tmp = terminalExpressionsList->front();
+                if ( Context::getInstance()->nameExist(((NameExpression*)tmp)->getName()) )
+                {
+                    _linkedValuesList.push_back(new NameLinkedValue((NameExpression*)tmp));
+                }
+                else
+                {
+                    throw SemanticException("Unrecognized name", tmp->getCodeReference());
+                }
             }
         }
         else
