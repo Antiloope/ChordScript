@@ -5,6 +5,10 @@
 using namespace CS;
 using namespace std;
 
+////////////////////////////////////////
+///     Value
+////////////////////////////////////////
+
 Value::Value(string dataType) : _dataType(dataType) {}
 
 Value::~Value() {}
@@ -13,9 +17,21 @@ string Value::getDataTypeName() const {
     return _dataType;
 }
 
+////////////////////////////////////////
+///     LiteralValue : Value
+////////////////////////////////////////
+
 LiteralValue::LiteralValue(string dataType) : Value(dataType) {}
 
+////////////////////////////////////////
+///     LinkedValue : Value
+////////////////////////////////////////
+
 LinkedValue::LinkedValue() : Value("null") {}
+
+////////////////////////////////////////
+///     String
+////////////////////////////////////////
 
 string StringLiteralValue::getValue() const {
     return _text;
@@ -33,19 +49,37 @@ LiteralValue* StringLinkedValue::getValue() const {
     return new StringLiteralValue(_text);
 }
 
+////////////////////////////////////////
+///     Null
+////////////////////////////////////////
+
+NullLiteralValue::NullLiteralValue() : LiteralValue("null") {}
+
 LiteralValue* NullLinkedValue::getValue() const {
     return new NullLiteralValue();
 }
 
-NullLiteralValue::NullLiteralValue() : LiteralValue("null") {}
-
 NullLinkedValue::NullLinkedValue() {}
+
+////////////////////////////////////////
+///     Numeric
+////////////////////////////////////////
 
 NumericLiteralValue::NumericLiteralValue(double value) : LiteralValue("numeric"), _value(value) {}
 
 double NumericLiteralValue::getValue() const {
     return _value;
 }
+
+NumericLinkedValue::NumericLinkedValue(double value) : LinkedValue(), _value(value) {}
+
+LiteralValue* NumericLinkedValue::getValue() const {
+    return new NumericLiteralValue(_value);
+}
+
+////////////////////////////////////////
+///     MathOperation
+////////////////////////////////////////
 
 MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* terminalExpressionsList) {
     TerminalExpression* tmp = terminalExpressionsList->front();
@@ -54,6 +88,7 @@ MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* te
 
     stack<char> RPNStack;
 
+    //Check if first element of operation is a plus or minus sign to consider it or not in the operation
     if( hashCode == typeid (AdditionExpression).hash_code() ) {
         terminalExpressionsList->pop_front();
     }
@@ -69,6 +104,7 @@ MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* te
     bool isValidExpression = true;
     while(isValidExpression)
     {
+        // Check each kind of valid expression and store using RPN in _linkedValuesList.
         if( hashCode == typeid (OpenParenthesisExpression).hash_code() )
         {
             RPNStack.push('(');
@@ -168,7 +204,7 @@ MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* te
                 }
             }
         }
-        else
+        else // There are an invalid expression
         {
             isValidExpression = false;
         }
@@ -179,7 +215,7 @@ MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* te
             hashCode = typeid (*tmp).hash_code();
         }
     }
-    while(!RPNStack.empty())
+    while(!RPNStack.empty()) // Insert all operands in the list
     {
         if (
             RPNStack.top() == '*' ||
@@ -202,15 +238,14 @@ MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* te
     }
 }
 
+// TODO: Implement RPN reading
 LiteralValue* MathOperationLinkedValue::getValue() const {
     return nullptr;
 }
 
-OperatorLinkedValue::OperatorLinkedValue(char op) : _operator(op) {}
-
-LiteralValue * OperatorLinkedValue::getValue() const {
-    return new OperatorLiteralValue(_operator);
-}
+////////////////////////////////////////
+///     Operator
+////////////////////////////////////////
 
 OperatorLiteralValue::OperatorLiteralValue(char op) : LiteralValue("numeric"), _operator(op) {}
 
@@ -230,40 +265,64 @@ double OperatorLiteralValue::getValue(double a, double b) const {
     }
 }
 
+OperatorLinkedValue::OperatorLinkedValue(char op) : _operator(op) {}
+
+LiteralValue * OperatorLinkedValue::getValue() const {
+    return new OperatorLiteralValue(_operator);
+}
+
+////////////////////////////////////////
+///     BooleanOperator
+////////////////////////////////////////
+
+// TODO: Implement similar to MathOperation
 BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression*>*) {
 
 }
 
+// TODO: Implement similar to MathOperation
 LiteralValue* BooleanOperationLinkedValue::getValue() const {
     return nullptr;
 }
 
+////////////////////////////////////////
+///     Array
+////////////////////////////////////////
+
+// TODO: Implement with an list of values
 ArrayLinkedValue::ArrayLinkedValue(list<TerminalExpression*>*) {
 
 }
 
+// TODO: Return argument or array type
 LiteralValue* ArrayLinkedValue::getValue() const {
     return nullptr;
 }
 
+////////////////////////////////////////
+///     Execution
+////////////////////////////////////////
+
+// TODO: Implment to store with a list of arguments and check access methods
 ExecutionLinkedValue::ExecutionLinkedValue(list<TerminalExpression*>*) {
 
 }
 
+// TODO: Return numeric value result
 LiteralValue* ExecutionLinkedValue::getValue() const {
     return nullptr;
 }
 
+////////////////////////////////////////
+///     Name
+////////////////////////////////////////
+
+// TODO: Implement to store a value finding data type in context
 NameLinkedValue::NameLinkedValue(NameExpression*){
 
 }
 
+// TODO: Implement return the value finding in context
 LiteralValue* NameLinkedValue::getValue() const {
     return nullptr;
-}
-
-NumericLinkedValue::NumericLinkedValue(double value) : LinkedValue(), _value(value) {}
-
-LiteralValue* NumericLinkedValue::getValue() const {
-    return new NumericLiteralValue(_value);
 }

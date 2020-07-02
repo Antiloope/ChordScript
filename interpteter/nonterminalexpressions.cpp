@@ -3,6 +3,11 @@
 #include "context.h"
 
 using namespace CS;
+using namespace std;
+
+////////////////////////////////////////
+///     NonTerminalExpression
+////////////////////////////////////////
 
 NonTerminalExpression::NonTerminalExpression() : Expression() {}
 
@@ -10,7 +15,9 @@ NonTerminalExpression::NonTerminalExpression(size_t codeReference) : Expression(
 
 NonTerminalExpression::~NonTerminalExpression(){}
 
-/// Program expression
+////////////////////////////////////////
+///     ProgramExpression
+////////////////////////////////////////
 
 ProgramExpression::ProgramExpression(list<TerminalExpression*> expressionsList) : NonTerminalExpression(0){
     while (!expressionsList.empty())
@@ -41,11 +48,14 @@ ProgramExpression::~ProgramExpression(){
     }
 }
 
+/// TODO: Implement
 void ProgramExpression::interpret(){
 
 }
 
-/// Instruction expression
+////////////////////////////////////////
+///     InstructionExpression
+////////////////////////////////////////
 
 InstructionExpression::InstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
     if(expressionsList->empty()) throw SyntaxException("Expected another instruction",codeReference);
@@ -121,12 +131,16 @@ InstructionExpression::~InstructionExpression(){
     delete _instruction;
 }
 
+/// TODO: Implement
 void InstructionExpression::interpret(){
 
 }
 
-/// For loop expression
+////////////////////////////////////////
+///     ForInstructionExpression
+////////////////////////////////////////
 
+/// TODO: Implement
 ForInstructionExpression::ForInstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
 }
 
@@ -134,12 +148,16 @@ ForInstructionExpression::~ForInstructionExpression(){
 
 }
 
+/// TODO: Implement
 void ForInstructionExpression::interpret(){
 
 }
 
-/// If expression
+////////////////////////////////////////
+///     IfInstructionExpression
+////////////////////////////////////////
 
+/// TODO: Implement
 IfInstructionExpression::IfInstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
 }
 
@@ -147,30 +165,41 @@ IfInstructionExpression::~IfInstructionExpression(){
 
 }
 
+/// TODO: Implement
 void IfInstructionExpression::interpret(){
 
 }
 
-/// Break expression
+////////////////////////////////////////
+///     BreakInstructionExpression
+////////////////////////////////////////
 
+/// TODO: Implement
 BreakInstructionExpression::BreakInstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
 }
 
 BreakInstructionExpression::~BreakInstructionExpression(){}
 
+/// TODO: Implement
 void BreakInstructionExpression::interpret(){
 
 }
 
-/// EOE expression
+////////////////////////////////////////
+///     EOEInstructionExpression
+////////////////////////////////////////
 
+/// TODO: Implement
 EOEInstructionExpression::EOEInstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){}
 
 EOEInstructionExpression::~EOEInstructionExpression(){}
 
+/// TODO: Implement
 void EOEInstructionExpression::interpret(){}
 
-/// Assignation expression
+////////////////////////////////////////
+///     AssignationExpression
+////////////////////////////////////////
 
 AssignationExpression::AssignationExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
     TerminalExpression* tmp = expressionsList->front();
@@ -253,25 +282,36 @@ AssignationExpression::~AssignationExpression(){
     delete _valueExpression;
 }
 
+/// TODO: Implement
 void AssignationExpression::interpret(){}
 
-/// Definition expression
+////////////////////////////////////////
+///     DefinitionExpression
+////////////////////////////////////////
 
+/// TODO: Implement
 DefinitionExpression::DefinitionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){}
 
 DefinitionExpression::~DefinitionExpression(){}
 
+/// TODO: Implement
 void DefinitionExpression::interpret(){}
 
-/// Execution expression
+////////////////////////////////////////
+///     ExecutionExpression
+////////////////////////////////////////
 
+/// TODO: Implement
 ExecutionExpression::ExecutionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){}
 
 ExecutionExpression::~ExecutionExpression(){}
 
+/// TODO: Implement
 void ExecutionExpression::interpret(){}
 
-/// Value expression
+////////////////////////////////////////
+///     ValueExpression
+////////////////////////////////////////
 
 ValueExpression::ValueExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
     TerminalExpression* tmp = expressionsList->front();
@@ -371,15 +411,19 @@ ValueExpression::ValueExpression(list<TerminalExpression*>* expressionsList, siz
     }
 }
 
+/// TODO: Think if return a Value or a literal value or a liked value
 Value* ValueExpression::getValue() const{
     return _value;
 }
 
 ValueExpression::~ValueExpression(){}
 
+/// TODO: Implement
 void ValueExpression::interpret(){}
 
-/// Math operation expression
+////////////////////////////////////////
+///     MathOperationExpression
+////////////////////////////////////////
 
 MathOperationExpression::MathOperationExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){}
 
