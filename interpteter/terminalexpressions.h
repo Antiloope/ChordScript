@@ -229,7 +229,7 @@ public:
 
 class NumericValueExpression : public TerminalExpression {
 public:
-    NumericValueExpression(size_t codeReference, int realValue) : TerminalExpression(codeReference), _value(realValue) {};
+    NumericValueExpression(size_t codeReference, double realValue) : TerminalExpression(codeReference), _value(realValue) {};
     NumericValueExpression(const NumericValueExpression& expression) : TerminalExpression(expression), _value(expression._value){}
     double getValue() const {return _value;}
 protected:

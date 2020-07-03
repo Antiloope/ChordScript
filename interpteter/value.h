@@ -69,12 +69,17 @@ class BooleanOperationLinkedValue : public LinkedValue {
 public:
     BooleanOperationLinkedValue(list<TerminalExpression*>*);
     LiteralValue * getValue() const override;
+private:
+    list<LinkedValue*> _linkedValuesList;
 };
 
 class ArrayLinkedValue : public LinkedValue {
 public:
     ArrayLinkedValue(list<TerminalExpression*>*);
     LiteralValue * getValue() const override;
+private:
+    list<LinkedValue*> _linkedValuesList;
+    string _type;
 };
 
 class ExecutionLinkedValue : public LinkedValue {
@@ -87,6 +92,8 @@ class NameLinkedValue : public LinkedValue {
 public:
     NameLinkedValue(NameExpression*);
     LiteralValue * getValue() const override;
+private:
+    string _name;
 };
 
 class NumericLiteralValue : public LiteralValue {
@@ -121,6 +128,39 @@ private:
     char _operator;
 };
 
+class BooleanLiteralValue : public LiteralValue {
+public:
+    BooleanLiteralValue(bool);
+    bool getValue() const;
+private:
+    bool _value;
+};
+
+class BooleanLinkedValue : public LinkedValue {
+public:
+    BooleanLinkedValue(bool);
+    LiteralValue * getValue() const override;
+private:
+    bool _value;
+};
+
+class BooleanOperatorLiteralValue : public LiteralValue {
+public:
+    BooleanOperatorLiteralValue(char);
+    bool getValue(bool,bool) const;
+    bool getValue(double,double) const;
+    bool getValue(string,string) const;
+private:
+    char _operator;
+};
+
+class BooleanOperatorLinkedValue : public LinkedValue {
+public:
+    BooleanOperatorLinkedValue(char);
+    LiteralValue * getValue() const override;
+private:
+    char _operator;
+};
 }
 
 #endif // VALUE_H

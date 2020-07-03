@@ -28,6 +28,8 @@ void Interpreter::interpret(const string sourceCode)
         program = new ProgramExpression(expressionsList);
     } catch (const SyntaxException& e) {
         throw e;
+    } catch (const SemanticException& e) {
+        throw e;
     } catch (const exception& e) {
         throw e;
     }

@@ -2,7 +2,8 @@
 #include "UI/uimanager.h"
 #include "executor/executor.h"
 #include "utils/log.h"
-
+#include "utils/Exceptions/exception.h"
+#include <stdlib.h>
 #include "interpteter/interpreter.h"
 
 using namespace CS;
@@ -15,7 +16,7 @@ int main(int argc, char *argv[])
 
     Interpreter interpreter;
 
-    string testCode = "numeric a = 5.4+pepe; group myGroup = [a,b,snare,kick];";
+    string testCode = "numeric a = 5.4+(34*3-43); group myGroup = a == (54.5+3*4*5);";
     testCode.push_back(0x0A);
     testCode += "myGroup.bpm(110);";
     testCode.push_back(0x0A);
@@ -23,6 +24,10 @@ int main(int argc, char *argv[])
 
     try {
         interpreter.interpret(testCode);
+    } catch (SyntaxException& e) {
+        Log::getInstance().write(e.what() + to_string(e.getCharacterRefference()),Log::info_t);
+    } catch (SemanticException& e) {
+        Log::getInstance().write(e.what() + to_string(e.getCharacterRefference()),Log::info_t);
     } catch (exception& e) {
         Log::getInstance().write(e.what(),Log::info_t);
     }

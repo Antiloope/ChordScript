@@ -189,8 +189,9 @@ void BreakInstructionExpression::interpret(){
 ///     EOEInstructionExpression
 ////////////////////////////////////////
 
-/// TODO: Implement
-EOEInstructionExpression::EOEInstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){}
+EOEInstructionExpression::EOEInstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
+    expressionsList->pop_front();
+}
 
 EOEInstructionExpression::~EOEInstructionExpression(){}
 

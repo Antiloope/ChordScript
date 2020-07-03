@@ -167,16 +167,16 @@ MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* te
         }
         else if ( hashCode == typeid (CloseParenthesisExpression).hash_code() )
         {
-            while( RPNStack.top() != '(' )
+            while( !RPNStack.empty() && RPNStack.top() != '(' )
             {
-                if ( RPNStack.empty() ) throw SyntaxException("Closing a parenthesis not opened",tmp->getCodeReference());
                 _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
                 RPNStack.pop();
             }
-            if (RPNStack.top() == '(')
+            if ( !RPNStack.empty() && RPNStack.top() == '(' )
             {
                 RPNStack.pop();
             }
+            if ( RPNStack.empty() ) isValidExpression = false;
         }
         else if ( hashCode == typeid (NameExpression).hash_code() )
         {
@@ -275,9 +275,162 @@ LiteralValue * OperatorLinkedValue::getValue() const {
 ///     BooleanOperator
 ////////////////////////////////////////
 
-// TODO: Implement similar to MathOperation
-BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression*>*) {
+BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression*>* terminalExpressionsList) {
+    TerminalExpression* tmp = terminalExpressionsList->front();
 
+    auto hashCode = typeid (*tmp).hash_code();
+
+    stack<char> RPNStack;
+
+    bool isValidExpression = true;
+    while(isValidExpression)
+    {
+        // Check each kind of valid expression and store using RPN in _linkedValuesList.
+        if( hashCode == typeid (OpenParenthesisExpression).hash_code() )
+        {
+            RPNStack.push('(');
+        }
+        else if ( hashCode == typeid (EqualExpression).hash_code() )
+        {
+            if ( !RPNStack.empty() && RPNStack.top() != '(' )
+            {
+                throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
+            }
+            terminalExpressionsList->pop_front();
+            tmp = terminalExpressionsList->front();
+            hashCode = typeid (*tmp).hash_code();
+            if ( typeid (*tmp).hash_code() == typeid (EqualExpression).hash_code() )
+            {
+                RPNStack.push('=');
+            }
+            else
+            {
+                throw SyntaxException("Expected symbol ==",tmp->getCodeReference());
+            }
+        }
+        else if ( hashCode == typeid (NegationExpression).hash_code() )
+        {
+            if ( !RPNStack.empty() && RPNStack.top() != '(' )
+            {
+                throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
+            }
+            terminalExpressionsList->pop_front();
+            tmp = terminalExpressionsList->front();
+            hashCode = typeid (*tmp).hash_code();
+            if ( typeid (*tmp).hash_code() == typeid (EqualExpression).hash_code() )
+            {
+                RPNStack.push('!');
+            }
+            else
+            {
+                throw SyntaxException("Expected symbol !=",tmp->getCodeReference());
+            }
+        }
+        else if ( hashCode == typeid (GreaterThanExpression).hash_code() )
+        {
+            if ( !RPNStack.empty() && RPNStack.top() != '(' )
+            {
+                throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
+            }
+            auto it = terminalExpressionsList->begin();
+            advance(it,1);
+            if(it == terminalExpressionsList->end()) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+            tmp = *it;
+            if ( typeid (*tmp).hash_code() == typeid (EqualExpression).hash_code() )
+            {
+                terminalExpressionsList->pop_front();
+                RPNStack.push('g');
+            }
+            else
+            {
+                RPNStack.push('>');
+            }
+        }
+        else if ( hashCode == typeid (LessThanExpression).hash_code() )
+        {
+            if ( !RPNStack.empty() && RPNStack.top() != '(' )
+            {
+                throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
+            }
+            auto it = terminalExpressionsList->begin();
+            advance(it,1);
+            if(it == terminalExpressionsList->end()) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+            tmp = *it;
+            if ( typeid (*tmp).hash_code() == typeid (EqualExpression).hash_code() )
+            {
+                terminalExpressionsList->pop_front();
+                RPNStack.push('l');
+            }
+            else
+            {
+                RPNStack.push('<');
+            }
+        }
+        else if ( hashCode == typeid (StringExpression).hash_code() )
+        {
+            _linkedValuesList.push_back(new StringLinkedValue(((StringExpression*)tmp)));
+        }
+        else if ( hashCode == typeid (BooleanValueExpression).hash_code() )
+        {
+            _linkedValuesList.push_back(new BooleanLinkedValue(((BooleanValueExpression*)tmp)->getBoolValue()));
+            terminalExpressionsList->push_front(nullptr);
+        }
+        else if(
+            hashCode == typeid (AdditionExpression).hash_code() ||
+            hashCode == typeid (SubstractionExpression).hash_code() ||
+            hashCode == typeid (NumericValueExpression).hash_code() ||
+            hashCode == typeid (NameExpression).hash_code())
+        {
+            _linkedValuesList.push_back(new MathOperationLinkedValue(terminalExpressionsList));
+            terminalExpressionsList->push_front(nullptr);
+        }
+        else if ( hashCode == typeid (CloseParenthesisExpression).hash_code() )
+        {
+            while( !RPNStack.empty() && RPNStack.top() != '(' )
+            {
+                _linkedValuesList.push_back(new BooleanOperatorLinkedValue(RPNStack.top()));
+                RPNStack.pop();
+            }
+            if ( !RPNStack.empty() && RPNStack.top() == '(')
+            {
+                RPNStack.pop();
+            }
+            if ( RPNStack.empty() ) isValidExpression = false;
+        }
+        else // There are an invalid expression
+        {
+            isValidExpression = false;
+        }
+        if(isValidExpression)
+        {
+            terminalExpressionsList->pop_front();
+            tmp = terminalExpressionsList->front();
+            hashCode = typeid (*tmp).hash_code();
+        }
+    }
+    while(!RPNStack.empty()) // Insert all operands in the list
+    {
+        if (
+            RPNStack.top() == '=' ||
+            RPNStack.top() == '!' ||
+            RPNStack.top() == '>' ||
+            RPNStack.top() == 'g' ||
+            RPNStack.top() == 'l' ||
+            RPNStack.top() == '<'
+            )
+        {
+            _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+            RPNStack.pop();
+        }
+        else if (RPNStack.top() == '(')
+        {
+            throw SyntaxException("Expected )",tmp->getCodeReference());
+        }
+        else
+        {
+            throw SyntaxException("Invalid symbol at mathematical operation",tmp->getCodeReference());
+        }
+    }
 }
 
 // TODO: Implement similar to MathOperation
@@ -289,9 +442,125 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
 ///     Array
 ////////////////////////////////////////
 
-// TODO: Implement with an list of values
-ArrayLinkedValue::ArrayLinkedValue(list<TerminalExpression*>*) {
+ArrayLinkedValue::ArrayLinkedValue(list<TerminalExpression*>* terminalExpressionsList) {
+    TerminalExpression* tmp = terminalExpressionsList->front();
 
+    auto hashCode = typeid (*tmp).hash_code();
+
+    if( hashCode == typeid (OpenParenthesisExpression).hash_code() )
+    {
+        _type = "argument";
+    }
+    else if ( hashCode == typeid (OpenBracketExpression).hash_code() )
+    {
+        _type = "array";
+    }
+    else
+    {
+        throw SyntaxException("Expected ( or [",tmp->getCodeReference());
+    }
+    bool isValidValue = true;
+    while(isValidValue){
+        terminalExpressionsList->pop_front();
+        tmp = terminalExpressionsList->front();
+        hashCode = typeid (*tmp).hash_code();
+
+        if(hashCode == typeid (StringExpression).hash_code()){
+            _linkedValuesList.push_back(new StringLinkedValue((StringExpression*)tmp));
+        }
+        else if(hashCode == typeid (NullValueExpression).hash_code())
+        {
+            _linkedValuesList.push_back(new NullLinkedValue());
+        }
+        else if(
+            hashCode == typeid (AdditionExpression).hash_code() ||
+            hashCode == typeid (SubstractionExpression).hash_code())
+        {
+            _linkedValuesList.push_back(new MathOperationLinkedValue(terminalExpressionsList));
+        }
+        else if(
+            hashCode == typeid (NegationExpression).hash_code() ||
+            hashCode == typeid (BooleanValueExpression).hash_code())
+        {
+            _linkedValuesList.push_back(new BooleanOperationLinkedValue(terminalExpressionsList));
+        }
+        else if(
+            hashCode == typeid (OpenBracketExpression).hash_code() ||
+            hashCode == typeid (OpenParenthesisExpression).hash_code())
+        {
+            _linkedValuesList.push_back(new ArrayLinkedValue(terminalExpressionsList));
+        }
+        else if(hashCode == typeid (NameExpression).hash_code())
+        {
+            auto it = terminalExpressionsList->begin();
+            advance(it,1);
+            if(it == terminalExpressionsList->end()) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+            tmp = *it;
+            hashCode = typeid (*tmp).hash_code();
+            if(
+                hashCode == typeid (OpenParenthesisExpression).hash_code() ||
+                hashCode == typeid (MemberAccessExpression).hash_code())
+            {
+                _linkedValuesList.push_back(new ExecutionLinkedValue(terminalExpressionsList));
+            }
+            else if(
+                hashCode == typeid (AdditionExpression).hash_code() ||
+                hashCode == typeid (SubstractionExpression).hash_code() ||
+                hashCode == typeid (DivitionExpression).hash_code() ||
+                hashCode == typeid (MultiplicationExpression).hash_code()
+                )
+            {
+                _linkedValuesList.push_back(new MathOperationLinkedValue(terminalExpressionsList));
+            }
+            else if(
+                hashCode == typeid (EqualExpression).hash_code() ||
+                hashCode == typeid (GreaterThanExpression).hash_code() ||
+                hashCode == typeid (LessThanExpression).hash_code() ||
+                hashCode == typeid (NegationExpression).hash_code()
+                )
+            {
+                _linkedValuesList.push_back(new BooleanOperationLinkedValue(terminalExpressionsList));
+            }
+            else
+            {
+                _linkedValuesList.push_back(new NameLinkedValue((NameExpression*)terminalExpressionsList->front()));
+            }
+        }
+        else if(hashCode == typeid (NumericValueExpression).hash_code())
+        {
+            auto it = terminalExpressionsList->begin();
+            advance(it,1);
+            if(it == terminalExpressionsList->end()) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+            tmp = *it;
+            if(
+                typeid (*tmp).hash_code() == typeid (EqualExpression).hash_code() ||
+                typeid (*tmp).hash_code() == typeid (GreaterThanExpression).hash_code() ||
+                typeid (*tmp).hash_code() == typeid (LessThanExpression).hash_code() ||
+                typeid (*tmp).hash_code() == typeid (NegationExpression).hash_code()
+                )
+            {
+                _linkedValuesList.push_back(new BooleanOperationLinkedValue(terminalExpressionsList));
+            }
+            else
+            {
+                _linkedValuesList.push_back(new MathOperationLinkedValue(terminalExpressionsList));
+            }
+        }
+        else if ( hashCode == typeid (SeparatorExpression).hash_code() )
+        {
+        }
+        else if (
+            hashCode == typeid (CloseParenthesisExpression).hash_code() ||
+            hashCode == typeid (CloseBracketExpression).hash_code())
+        {
+            terminalExpressionsList->pop_front();
+            isValidValue = false;
+        }
+        else
+        {
+            throw SyntaxException("Expected a valid value",tmp->getCodeReference());
+        }
+    }
 }
 
 // TODO: Return argument or array type
@@ -317,12 +586,109 @@ LiteralValue* ExecutionLinkedValue::getValue() const {
 ///     Name
 ////////////////////////////////////////
 
-// TODO: Implement to store a value finding data type in context
-NameLinkedValue::NameLinkedValue(NameExpression*){
-
+NameLinkedValue::NameLinkedValue(NameExpression* nameExpression){
+    _name = nameExpression->getName();
+    if ( !Context::getInstance()->isValidName(_name) ) throw SyntaxException("Invalid name",nameExpression->getCodeReference());
+    if ( !Context::getInstance()->nameExist(_name) ) throw SemanticException("Unrecognized name",nameExpression->getCodeReference());
 }
 
 // TODO: Implement return the value finding in context
 LiteralValue* NameLinkedValue::getValue() const {
     return nullptr;
 }
+
+////////////////////////////////////////
+///     BooleanValue
+////////////////////////////////////////
+
+BooleanLiteralValue::BooleanLiteralValue(bool value) : LiteralValue("boolean"),_value(value){
+
+}
+
+bool BooleanLiteralValue::getValue() const {
+    return _value;
+}
+
+BooleanLinkedValue::BooleanLinkedValue(bool value) : _value(value){
+
+}
+
+LiteralValue * BooleanLinkedValue::getValue() const {
+    return new BooleanLiteralValue(_value);
+}
+
+////////////////////////////////////////
+///     BooleanOperator
+////////////////////////////////////////
+
+BooleanOperatorLiteralValue::BooleanOperatorLiteralValue(char op) : LiteralValue("boolean"),_operator(op){
+}
+
+bool BooleanOperatorLiteralValue::getValue(bool a,bool b) const{
+    switch (_operator) {
+    case '=':
+        return a == b;
+    case '!':
+        return a != b;
+    case '<':
+        return a < b;
+    case '>':
+        return a > b;
+    case 'g':
+        return a >= b;
+    case 'l':
+        return a <= b;
+    default:
+        throw; //TODO: Create a new type of exception
+        break;
+    }
+}
+
+bool BooleanOperatorLiteralValue::getValue(double a,double b) const{
+    switch (_operator) {
+    case '=':
+        return a == b;
+    case '!':
+        return a != b;
+    case '<':
+        return a < b;
+    case '>':
+        return a > b;
+    case 'g':
+        return a >= b;
+    case 'l':
+        return a <= b;
+    default:
+        throw; //TODO: Create a new type of exception
+        break;
+    }
+}
+
+bool BooleanOperatorLiteralValue::getValue(string a,string b) const{
+    switch (_operator) {
+    case '=':
+        return a == b;
+    case '!':
+        return a != b;
+    case '<':
+        return a < b;
+    case '>':
+        return a > b;
+    case 'g':
+        return a >= b;
+    case 'l':
+        return a <= b;
+    default:
+        throw; //TODO: Create a new type of exception
+        break;
+    }
+}
+
+BooleanOperatorLinkedValue::BooleanOperatorLinkedValue(char op) : _operator(op){
+
+}
+
+LiteralValue * BooleanOperatorLinkedValue::getValue() const {
+    return new BooleanOperatorLiteralValue(_operator);
+}
+
