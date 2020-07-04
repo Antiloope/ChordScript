@@ -5,6 +5,8 @@
 
 namespace CS {
 
+class FunctionDefinition;
+
 class NonTerminalExpression : public Expression {
 public:
     NonTerminalExpression();

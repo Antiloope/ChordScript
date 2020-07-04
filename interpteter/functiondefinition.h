@@ -11,6 +11,9 @@ namespace CS {
 class ArgumentDefinition {
 public:
     ArgumentDefinition(string,string);
+private:
+    string _dataType;
+    string _name;
 };
 
 class FunctionDefinition

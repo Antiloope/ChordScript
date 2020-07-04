@@ -243,7 +243,7 @@ AssignationExpression::AssignationExpression(list<TerminalExpression*>* expressi
                 if( expressionsList->empty()) throw SyntaxException("Expected a value after = ",tmp->getCodeReference() );
                 tmp = expressionsList->front();
 
-                Context::getInstance()->newVariable( _varName, generateLinkedValue(expressionsList) );
+                Context::getInstance()->newVariable( _varName, _dataType, generateLinkedValue(expressionsList) );
             }
             else
             {
@@ -268,7 +268,7 @@ AssignationExpression::AssignationExpression(list<TerminalExpression*>* expressi
             if( expressionsList->empty()) throw SyntaxException("Expected a value after = ",tmp->getCodeReference() );
             tmp = expressionsList->front();
 
-            Context::getInstance()->newVariable( _varName, generateLinkedValue(expressionsList) );
+            Context::getInstance()->newVariable( _varName, _dataType,generateLinkedValue(expressionsList) );
         }
         else
         {
@@ -291,8 +291,47 @@ void AssignationExpression::interpret(){}
 ///     DefinitionExpression
 ////////////////////////////////////////
 
-/// TODO: Implement
-DefinitionExpression::DefinitionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){}
+#include "functiondefinition.h"
+
+DefinitionExpression::DefinitionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
+    TerminalExpression* tmp = expressionsList->front();
+
+    if(
+        tmp->getType() != cCast(ExpressionTypes::Name) ||
+        !Context::getInstance()->isDataType(((NameExpression*)tmp)->getName()) )
+    {
+        throw SyntaxException("Expected data type",tmp->getCodeReference());
+    }
+
+    string dataType = ((NameExpression*)tmp)->getName();
+
+    expressionsList->pop_front();
+    if( expressionsList->empty()) throw SyntaxException("Expected a name",tmp->getCodeReference() );
+    tmp = expressionsList->front();
+
+    if( tmp->getType() != cCast(ExpressionTypes::Name) ) throw SyntaxException("Expected a name",tmp->getCodeReference());
+
+    string name = ((NameExpression*)tmp)->getName();
+
+    expressionsList->pop_front();
+    if( expressionsList->empty()) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
+    tmp = expressionsList->front();
+
+    if( tmp->getType() == cCast(ExpressionTypes::EOE) )
+    {
+        expressionsList->pop_front();
+        Context::getInstance()->newVariable(name,dataType,nullptr);
+    }
+    else if ( tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) )
+    {
+        FunctionDefinition* function = new FunctionDefinition(expressionsList);
+        Context::getInstance()->newFunction(name,dataType,function);
+    }
+    else
+    {
+        throw SyntaxException("Expected an end of line or a function definition",tmp->getCodeReference());
+    }
+}
 
 DefinitionExpression::~DefinitionExpression(){}
 

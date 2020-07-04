@@ -50,22 +50,34 @@ bool Context::isValidName(string name){
 }
 
 string Context::getDataTypeName(string name){
-    return get<0>(_variables.find(name)->second)->getDataTypeName();
+    return get<1>(_variables.find(name)->second)->getDataTypeName();
 }
 
 bool Context::nameExist(string name){
     return _variables.find(name) != _variables.end();
 }
 
-void Context::newVariable(string name, LinkedValue* value){
+void Context::newVariable(string name, string dataType, LinkedValue* value){
     auto tmp = _variables.find(name);
     if(tmp != _variables.end())
     {
-        delete get<0>(tmp->second);
         delete get<1>(tmp->second);
+        delete get<2>(tmp->second);
         _variables.erase(name);
     }
-    _variables.insert({name,tuple<LinkedValue*,LiteralValue*>(value,nullptr)});
+    _variables.insert({name,tuple<string,LinkedValue*,LiteralValue*>(dataType,value,nullptr)});
+}
+
+#include "functiondefinition.h"
+
+void Context::newFunction(string name, string dataType ,FunctionDefinition* function){
+    auto tmp = _functions.find(name);
+    if(tmp != _functions.end())
+    {
+        delete get<1>(tmp->second);
+        _functions.erase(name);
+    }
+    _functions.insert({name,tuple<string,FunctionDefinition*>(dataType,function)});
 }
 
 Context* Context::getInstance()

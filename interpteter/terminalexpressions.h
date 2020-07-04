@@ -41,7 +41,7 @@ class TerminalExpression : public Expression {
 public:
     TerminalExpression(size_t codeReference, char type) : Expression(codeReference), _type(type) {}
     TerminalExpression(const TerminalExpression& t) : Expression(t.getCodeReference()), _type(t.getType()) {}
-    char getType() const {return _type;}
+    inline char getType() const {return _type;}
 private:
     char _type;
 };

@@ -12,6 +12,8 @@
 using namespace std;
 namespace CS {
 
+class FunctionDefinition;
+
 class Context
 {
 public:
@@ -20,14 +22,15 @@ public:
     bool nameExist(string);
     bool isValidName(string);
     string getDataTypeName(string);
-    void newVariable(string,LinkedValue*);
+    void newVariable(string,string,LinkedValue*);
+    void newFunction(string,string,FunctionDefinition*);
 private:
     static Context* _instance;
     Context();
     unordered_map<string,DataType*> _dataTypes;
     unordered_set<string> _reservedKeywords;
-    unordered_map<string,tuple<LinkedValue*,LiteralValue*>> _variables;
-    //unordered_map<string,FunctionDefinition*> _functions;
+    unordered_map<string,tuple<string,LinkedValue*,LiteralValue*>> _variables;
+    unordered_map<string,tuple<string,FunctionDefinition*>> _functions;
 };
 
 }
