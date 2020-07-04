@@ -50,21 +50,22 @@ bool Context::isValidName(string name){
 }
 
 string Context::getDataTypeName(string name){
-    return _variables.find(name)->second->getDataTypeName();
+    return get<0>(_variables.find(name)->second)->getDataTypeName();
 }
 
 bool Context::nameExist(string name){
     return _variables.find(name) != _variables.end();
 }
 
-void Context::newVariable(string name, Value* value){
+void Context::newVariable(string name, LinkedValue* value){
     auto tmp = _variables.find(name);
     if(tmp != _variables.end())
     {
-        delete tmp->second;
+        delete get<0>(tmp->second);
+        delete get<1>(tmp->second);
         _variables.erase(name);
     }
-    _variables.insert({name,value});
+    _variables.insert({name,tuple<LinkedValue*,LiteralValue*>(value,nullptr)});
 }
 
 Context* Context::getInstance()

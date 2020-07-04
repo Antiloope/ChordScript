@@ -48,85 +48,85 @@ list<TerminalExpression*> Lexer::tokenize(string sourceCode){
     while ( i < sourceCode.length() ){
         switch(sourceCode[i]){
             case cEqual:
-                tokens.push_back(new EqualExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::Equal)));
                 i++;
                 break;
             case cEndOfExpression:
-                tokens.push_back(new EOEExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::EOE)));
                 i++;
                 break;
             case cSubstraction:
-                tokens.push_back(new SubstractionExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::Substract)));
                 i++;
                 break;
             case cAddition:
-                tokens.push_back(new AdditionExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::Addition)));
                 i++;
                 break;
             case cMultiplication:
-                tokens.push_back(new MultiplicationExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::Multiplication)));
                 i++;
                 break;
             case cDivition:
-                tokens.push_back(new DivitionExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::Divition)));
                 i++;
                 break;
             case cNegation:
-                tokens.push_back(new NegationExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::Negation)));
                 i++;
                 break;
             case cGreaterThan:
-                tokens.push_back(new GreaterThanExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::GreaterThan)));
                 i++;
                 break;
             case cLessThan:
-                tokens.push_back(new LessThanExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::LessThan)));
                 i++;
                 break;
             case cOr:
-                tokens.push_back(new OrExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::Or)));
                 i++;
                 break;
             case cAnd:
-                tokens.push_back(new AndExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::And)));
                 i++;
                 break;
             case cMemberAccess:
-                tokens.push_back(new MemberAccessExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::MemberAccess)));
                 i++;
                 break;
             case cSeparator:
-                tokens.push_back(new SeparatorExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::Separator)));
                 i++;
                 break;
             case cOpenParenthesis:
                 containersStack.push('(');
-                tokens.push_back(new OpenParenthesisExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::OpenParenthesis)));
                 i++;
                 break;
             case cCloseParenthesis:
                 containersStack.top() == '(' ? containersStack.pop() : throw SyntaxException("Closing a wrong parenthesis", i);
-                tokens.push_back(new CloseParenthesisExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::CloseParenthesis)));
                 i++;
                 break;
             case cOpenBracket:
                 containersStack.push('[');
-                tokens.push_back(new OpenBracketExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::OpenBracket)));
                 i++;
                 break;
             case cCloseBracket:
                 containersStack.top() == '[' ? containersStack.pop() : throw SyntaxException("Closing a wrong bracket", i);
-                tokens.push_back(new CloseBracketExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::CloseBracket)));
                 i++;
                 break;
             case cOpenBrace:
                 containersStack.push('{');
-                tokens.push_back(new OpenBraceExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::OpenBrace)));
                 i++;
                 break;
             case cCloseBrace:
                 containersStack.top() == '{' ? containersStack.pop() : throw SyntaxException("Closing a wrong brace", i);
-                tokens.push_back(new CloseBraceExpression(i));
+                tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::CloseBrace)));
                 i++;
                 break;
             case cEndOfLine:
@@ -150,7 +150,7 @@ list<TerminalExpression*> Lexer::tokenize(string sourceCode){
                     i++;
                 }
                 i++;
-                tokens.push_back(new StringExpression(codeRef,tmp));
+                tokens.push_back(new StringExpression(codeRef,cCast(ExpressionTypes::String),tmp));
                 }
                 break;
             default:{
@@ -172,14 +172,14 @@ list<TerminalExpression*> Lexer::tokenize(string sourceCode){
                         i++;
                     }
                     // Check for reseved keywords
-                    if (tmp == sForStatement) tokens.push_back(new ForExpression(codeRef));
-                    else if (tmp == sIfStatement) tokens.push_back(new IfExpression(codeRef));
-                    else if (tmp == sBreakStatement) tokens.push_back(new BreakExpression(codeRef));
-                    else if (tmp == sReturnStatement) tokens.push_back(new ReturnExpression(codeRef));
-                    else if (tmp == sTrueStatement) tokens.push_back(new BooleanValueExpression(codeRef,true));
-                    else if (tmp == sFalseStatement) tokens.push_back(new BooleanValueExpression(codeRef,false));
-                    else if (tmp == sNullValue) tokens.push_back(new NullValueExpression(codeRef));
-                    else tokens.push_back(new NameExpression(codeRef,tmp));
+                    if (tmp == sForStatement) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::For)));
+                    else if (tmp == sIfStatement) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::If)));
+                    else if (tmp == sBreakStatement) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Break)));
+                    else if (tmp == sReturnStatement) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Return)));
+                    else if (tmp == sTrueStatement) tokens.push_back(new BooleanExpression(codeRef,cCast(ExpressionTypes::For),true));
+                    else if (tmp == sFalseStatement) tokens.push_back(new BooleanExpression(codeRef,cCast(ExpressionTypes::For),false));
+                    else if (tmp == sNullValue) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Null)));
+                    else tokens.push_back(new NameExpression(codeRef,cCast(ExpressionTypes::Name),tmp));
                 }
                 else if (sourceCode[i] >= '0' && sourceCode[i] <= '9'){
                     size_t codeRef = i;
@@ -211,7 +211,7 @@ list<TerminalExpression*> Lexer::tokenize(string sourceCode){
                         throw SyntaxException("Character not recognized as part of the number",i);
                     }
 
-                    tokens.push_back(new NumericValueExpression(codeRef,tmp));
+                    tokens.push_back(new NumericExpression(codeRef,cCast(ExpressionTypes::Numeric),tmp));
                 }else{
                     throw SyntaxException("Unrecognized character",i);
                 }

@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 
     Interpreter interpreter;
 
-    string testCode = "numeric a = 5.4+(34*3-43); group myGroup = a == (54.5+3*4*5);";
+    string testCode = "numeric a = 5.4+(34*3-43); group myGroup = a.d(3,54.5);";
     testCode.push_back(0x0A);
     testCode += "myGroup.bpm(110);";
     testCode.push_back(0x0A);

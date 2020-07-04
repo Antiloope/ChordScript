@@ -13,6 +13,6 @@ Expression::Expression(size_t codeReference) : _codeReference(codeReference) {
 Expression::~Expression(){
 
 }
-size_t Expression::getCodeReference() {
+size_t Expression::getCodeReference() const {
     return _codeReference;
 }

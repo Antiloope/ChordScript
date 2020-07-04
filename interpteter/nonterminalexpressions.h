@@ -8,19 +8,9 @@ namespace CS {
 class NonTerminalExpression : public Expression {
 public:
     NonTerminalExpression();
-    NonTerminalExpression(size_t codeReference);
+    NonTerminalExpression(size_t);
     virtual ~NonTerminalExpression();
     virtual void interpret() = 0;
-};
-
-class ValueExpression : public NonTerminalExpression {
-public:
-    ValueExpression(list<TerminalExpression*>* expressionsList, size_t codeReference);
-    ~ValueExpression();
-    void interpret() override;
-    Value* getValue() const ;
-private:
-    Value* _value;
 };
 
 class DefinitionExpression : public NonTerminalExpression {
@@ -45,7 +35,6 @@ public:
 private:
     string _varName;
     string _dataType;
-    ValueExpression* _valueExpression;
 };
 
 class ExecutionExpression : public NonTerminalExpression {

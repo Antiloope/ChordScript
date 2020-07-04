@@ -4,6 +4,7 @@
 #include <string>
 #include "terminalexpressions.h"
 #include "utils/Exceptions/exception.h"
+#include <tuple>
 
 using namespace std;
 
@@ -12,7 +13,7 @@ namespace CS {
 class Value
 {
 public:
-    Value(string dataType);
+    Value(string);
     ~Value();
     string getDataTypeName() const;
 protected:
@@ -21,7 +22,11 @@ protected:
 
 class LiteralValue : public Value {
 public:
-    LiteralValue(string dataType);
+    LiteralValue(string,void*);
+    ~LiteralValue();
+    void* getValue() const {return _value;}
+private:
+    void* _value;
 };
 
 class LinkedValue : public Value {
@@ -30,25 +35,12 @@ public:
     virtual LiteralValue* getValue() const = 0;
 };
 
-class StringLiteralValue : public LiteralValue {
-public:
-    StringLiteralValue(string);
-    string getValue() const;
-private:
-    string _text;
-};
-
 class StringLinkedValue : public LinkedValue {
 public:
     StringLinkedValue(const StringExpression*);
     LiteralValue * getValue() const override;
 private:
     string _text;
-};
-
-class NullLiteralValue : public LiteralValue {
-public:
-    NullLiteralValue();
 };
 
 class NullLinkedValue : public LinkedValue {
@@ -86,6 +78,9 @@ class ExecutionLinkedValue : public LinkedValue {
 public:
     ExecutionLinkedValue(list<TerminalExpression*>*);
     LiteralValue * getValue() const override;
+private:
+    string _name;
+    list<tuple<string,ArrayLinkedValue*>> _methodsList;
 };
 
 class NameLinkedValue : public LinkedValue {
@@ -96,28 +91,12 @@ private:
     string _name;
 };
 
-class NumericLiteralValue : public LiteralValue {
-public:
-    NumericLiteralValue(double);
-    double getValue() const;
-private:
-    double _value;
-};
-
 class NumericLinkedValue : public LinkedValue {
 public:
     NumericLinkedValue(const double);
     LiteralValue * getValue() const override;
 private:
     double _value;
-};
-
-class OperatorLiteralValue : public LiteralValue {
-public:
-    OperatorLiteralValue(char);
-    double getValue(double, double) const;
-private:
-    char _operator;
 };
 
 class OperatorLinkedValue : public LinkedValue {
@@ -128,30 +107,12 @@ private:
     char _operator;
 };
 
-class BooleanLiteralValue : public LiteralValue {
-public:
-    BooleanLiteralValue(bool);
-    bool getValue() const;
-private:
-    bool _value;
-};
-
 class BooleanLinkedValue : public LinkedValue {
 public:
     BooleanLinkedValue(bool);
     LiteralValue * getValue() const override;
 private:
     bool _value;
-};
-
-class BooleanOperatorLiteralValue : public LiteralValue {
-public:
-    BooleanOperatorLiteralValue(char);
-    bool getValue(bool,bool) const;
-    bool getValue(double,double) const;
-    bool getValue(string,string) const;
-private:
-    char _operator;
 };
 
 class BooleanOperatorLinkedValue : public LinkedValue {
