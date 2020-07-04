@@ -1,6 +1,8 @@
 #include "functiondefinition.h"
 
-FunctionDefinition::FunctionDefinition()
+using namespace CS;
+
+FunctionDefinition::FunctionDefinition(list<TerminalExpression*>* terminalEspressionsList)
 {
 
 }

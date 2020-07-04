@@ -23,6 +23,7 @@ SOURCES += \
     interpteter/context.cpp \
     interpteter/datatype.cpp \
     interpteter/expression.cpp \
+    interpteter/functiondefinition.cpp \
     interpteter/interpreter.cpp \
     interpteter/lexer.cpp \
     interpteter/nonterminalexpressions.cpp \
@@ -42,6 +43,7 @@ HEADERS += \
     interpteter/context.h \
     interpteter/datatype.h \
     interpteter/expression.h \
+    interpteter/functiondefinition.h \
     interpteter/interpreter.h \
     interpteter/lexer.h \
     interpteter/nonterminalexpressions.h \
