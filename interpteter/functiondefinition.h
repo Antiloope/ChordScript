@@ -10,10 +10,11 @@ namespace CS {
 
 class ArgumentDefinition {
 public:
-    ArgumentDefinition(string,string);
+    ArgumentDefinition(string,string,bool);
 private:
     string _dataType;
     string _name;
+    bool _byReference;
 };
 
 class FunctionDefinition
@@ -23,7 +24,6 @@ public:
 private:
     list<ArgumentDefinition> _argumentsDefinitionList;
     ProgramExpression* _function;
-    string _returnDataType;
     LinkedValue* _returnValue;
 };
 

@@ -513,7 +513,6 @@ LiteralValue* ArrayLinkedValue::getValue() const {
 ///     Execution
 ////////////////////////////////////////
 
-// TODO: Implment to store with a list of arguments and check access methods
 ExecutionLinkedValue::ExecutionLinkedValue(list<TerminalExpression*>* terminalExpressionsList) {
     TerminalExpression* tmp = terminalExpressionsList->front();
 

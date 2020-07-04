@@ -343,7 +343,50 @@ void DefinitionExpression::interpret(){}
 ////////////////////////////////////////
 
 /// TODO: Implement
-ExecutionExpression::ExecutionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){}
+ExecutionExpression::ExecutionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
+    TerminalExpression* tmp = expressionsList->front();
+
+    if ( tmp->getType() != cCast(ExpressionTypes::Name) ) throw SyntaxException("Expected a name", tmp->getCodeReference());
+
+    _name = ((NameExpression*)tmp)->getName();
+    if ( !Context::getInstance()->isValidName(_name) ) throw SyntaxException("Invalid name",tmp->getCodeReference());
+    if ( !Context::getInstance()->nameExist(_name) && !Context::getInstance()->functionNameExist(_name) ) throw SemanticException("Unrecognized name",tmp->getCodeReference());
+
+    expressionsList->pop_front();
+    if ( expressionsList->empty() ) throw SyntaxException("Expected arguments",tmp->getCodeReference());
+    tmp = expressionsList->front();
+
+    if ( tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) )
+    {
+        _methodsList.push_back(tuple<string,ArrayLinkedValue*>(_name,new ArrayLinkedValue(expressionsList)));
+    }
+    bool isValidMethod = true;
+    while(isValidMethod)
+    {
+        if( tmp->getType() == cCast(ExpressionTypes::MemberAccess) )
+        {
+            expressionsList->pop_front();
+            if ( expressionsList->empty() ) throw SyntaxException("Expected arguments",tmp->getCodeReference());
+            tmp = expressionsList->front();
+
+            if ( tmp->getType() != cCast(ExpressionTypes::Name) ) throw SyntaxException("Expected a name", tmp->getCodeReference());
+
+            string name = ((NameExpression*)tmp)->getName();
+
+            expressionsList->pop_front();
+            if ( expressionsList->empty() ) throw SyntaxException("Expected (",tmp->getCodeReference());
+            tmp = expressionsList->front();
+
+            if ( tmp->getType() != cCast(ExpressionTypes::OpenParenthesis) ) throw SyntaxException("Expected (",tmp->getCodeReference());
+
+            _methodsList.push_back(tuple<string,ArrayLinkedValue*>(name,new ArrayLinkedValue(expressionsList)));
+        }
+        else
+        {
+            isValidMethod = false;
+        }
+    }
+}
 
 ExecutionExpression::~ExecutionExpression(){}
 

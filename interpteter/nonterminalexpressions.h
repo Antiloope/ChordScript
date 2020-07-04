@@ -37,6 +37,9 @@ public:
     ExecutionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference);
     ~ExecutionExpression();
     void interpret() override;
+private:
+    string _name;
+    list<tuple<string,ArrayLinkedValue*>> _methodsList;
 };
 
 class ForInstructionExpression : public NonTerminalExpression {

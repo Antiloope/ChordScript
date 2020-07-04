@@ -20,6 +20,7 @@ public:
     static Context* getInstance();
     bool isDataType(string);
     bool nameExist(string);
+    bool functionNameExist(string);
     bool isValidName(string);
     string getDataTypeName(string);
     void newVariable(string,string,LinkedValue*);

@@ -39,6 +39,9 @@ Context::Context()
 
     _variables = {
     };
+
+    _functions = {
+    };
 }
 
 bool Context::isDataType(string name){
@@ -55,6 +58,10 @@ string Context::getDataTypeName(string name){
 
 bool Context::nameExist(string name){
     return _variables.find(name) != _variables.end();
+}
+
+bool Context::functionNameExist(string name){
+    return _functions.find(name) != _functions.end();
 }
 
 void Context::newVariable(string name, string dataType, LinkedValue* value){
