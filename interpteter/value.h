@@ -33,6 +33,7 @@ class LinkedValue : public Value {
 public:
     LinkedValue();
     virtual LiteralValue* getValue() const = 0;
+    virtual ~LinkedValue();
 };
 
 class StringLinkedValue : public LinkedValue {

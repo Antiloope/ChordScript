@@ -33,6 +33,8 @@ LiteralValue::~LiteralValue(){
 
 LinkedValue::LinkedValue() : Value("null") {}
 
+LinkedValue::~LinkedValue() {}
+
 ////////////////////////////////////////
 ///     String
 ////////////////////////////////////////
@@ -100,8 +102,8 @@ MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* te
                 (RPNStack.top() == '/' ||
                  RPNStack.top() == '-' ||
                  RPNStack.top() == '+' ||
-                 RPNStack.top() == '*')
-                ){
+                 RPNStack.top() == '*') )
+            {
                 _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
                 RPNStack.pop();
             }
