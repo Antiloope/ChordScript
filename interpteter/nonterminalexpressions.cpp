@@ -312,7 +312,7 @@ ExecutionExpression::~ExecutionExpression(){}
 void ExecutionExpression::interpret(){}
 
 ////////////////////////////////////////
-///     ValueExpression
+///     generateLinkedValue
 ////////////////////////////////////////
 
 LinkedValue* generateLinkedValue(list<TerminalExpression*>* terminalExpressionsList){

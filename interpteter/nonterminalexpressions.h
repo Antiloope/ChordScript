@@ -20,13 +20,6 @@ public:
     void interpret() override;
 };
 
-class MathOperationExpression : public NonTerminalExpression {
-public:
-    MathOperationExpression(list<TerminalExpression*>* expressionsList, size_t codeReference);
-    ~MathOperationExpression();
-    void interpret() override;
-};
-
 class AssignationExpression : public NonTerminalExpression {
 public:
     AssignationExpression(list<TerminalExpression*>* expressionsList, size_t codeReference);
