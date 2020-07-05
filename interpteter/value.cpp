@@ -250,8 +250,27 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
         case cCast(ExpressionTypes::OpenParenthesis):
             RPNStack.push('(');
             break;
+        case cCast(ExpressionTypes::And):
+            while(
+                !RPNStack.empty() &&
+                RPNStack.top() != '(' )
+            {
+                _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+                RPNStack.pop();
+            }
+            RPNStack.push('&');
+        case cCast(ExpressionTypes::Or):
+            while(
+                !RPNStack.empty() &&
+                RPNStack.top() != '(' )
+            {
+                _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+                RPNStack.pop();
+            }
+            RPNStack.push('|');
+            break;
         case cCast(ExpressionTypes::Equal):
-            if ( !RPNStack.empty() && RPNStack.top() != '(' )
+            if ( !RPNStack.empty() && RPNStack.top() != '(' && RPNStack.top() != '&' && RPNStack.top() != '|' )
             {
                 throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
             }
@@ -267,7 +286,7 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
             }
             break;
         case cCast(ExpressionTypes::Negation):
-            if ( !RPNStack.empty() && RPNStack.top() != '(' )
+            if ( !RPNStack.empty() && RPNStack.top() != '(' && RPNStack.top() != '&' && RPNStack.top() != '|' )
             {
                 throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
             }
@@ -284,7 +303,7 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
             break;
         case cCast(ExpressionTypes::GreaterThan):
         {
-            if ( !RPNStack.empty() && RPNStack.top() != '(' )
+            if ( !RPNStack.empty() && RPNStack.top() != '(' && RPNStack.top() != '&' && RPNStack.top() != '|' )
             {
                 throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
             }
@@ -305,7 +324,7 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
             break;
         case cCast(ExpressionTypes::LessThan):
         {
-            if ( !RPNStack.empty() && RPNStack.top() != '(' )
+            if ( !RPNStack.empty() && RPNStack.top() != '(' && RPNStack.top() != '&' && RPNStack.top() != '|' )
             {
                 throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
             }
@@ -368,7 +387,9 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
             RPNStack.top() == '>' ||
             RPNStack.top() == 'g' ||
             RPNStack.top() == 'l' ||
-            RPNStack.top() == '<' )
+            RPNStack.top() == '<' ||
+            RPNStack.top() == '&' ||
+            RPNStack.top() == '|' )
         {
             _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
             RPNStack.pop();
