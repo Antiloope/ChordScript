@@ -24,7 +24,6 @@ public:
 private:
     list<ArgumentDefinition> _argumentsDefinitionList;
     ProgramExpression* _function;
-    LinkedValue* _returnValue;
 };
 
 }

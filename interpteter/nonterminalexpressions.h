@@ -70,6 +70,15 @@ public:
     void interpret() override;
 };
 
+class ReturnInstructionExpression : public NonTerminalExpression {
+public:
+    ReturnInstructionExpression(list<TerminalExpression*>*,size_t codeReference);
+    ~ReturnInstructionExpression();
+    void interpret() override;
+private:
+    LinkedValue* _returnValue;
+};
+
 class InstructionExpression : public NonTerminalExpression {
 public:
     InstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference);

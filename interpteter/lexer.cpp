@@ -32,6 +32,7 @@ const char cEndOfLine           = 0x0A;
 const char cSpace               = ' ';
 const string sForStatement      = "for";
 const string sIfStatement       = "if";
+const string sElseStatement     = "else";
 const string sBreakStatement    = "break";
 const string sReturnStatement   = "return";
 const string sTrueStatement     = "true";
@@ -174,6 +175,7 @@ list<TerminalExpression*> Lexer::tokenize(string sourceCode){
                     // Check for reseved keywords
                     if (tmp == sForStatement) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::For)));
                     else if (tmp == sIfStatement) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::If)));
+                    else if (tmp == sElseStatement) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Else)));
                     else if (tmp == sBreakStatement) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Break)));
                     else if (tmp == sReturnStatement) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Return)));
                     else if (tmp == sTrueStatement) tokens.push_back(new BooleanExpression(codeRef,cCast(ExpressionTypes::For),true));

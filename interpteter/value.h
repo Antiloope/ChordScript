@@ -34,6 +34,7 @@ public:
     LinkedValue();
     virtual LiteralValue* getValue() const = 0;
     virtual ~LinkedValue();
+    static LinkedValue* generateLinkedValue(list<TerminalExpression*>*);
 };
 
 class StringLinkedValue : public LinkedValue {

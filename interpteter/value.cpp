@@ -35,6 +35,84 @@ LinkedValue::LinkedValue() : Value("null") {}
 
 LinkedValue::~LinkedValue() {}
 
+LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* terminalExpressionsList){
+    TerminalExpression* tmp = terminalExpressionsList->front();
+
+    LinkedValue* ret;
+
+    switch ( tmp->getType() )
+    {
+    case cCast(ExpressionTypes::String):
+        ret = new StringLinkedValue((StringExpression*)tmp); // TODO: Correct to use simply a string instead of StringExpression
+        break;
+    case cCast(ExpressionTypes::Null):
+        ret = new NullLinkedValue();
+        break;
+    case cCast(ExpressionTypes::Addition):
+    case cCast(ExpressionTypes::Substract):
+        ret = new MathOperationLinkedValue(terminalExpressionsList);
+        break;
+    case cCast(ExpressionTypes::OpenBracket):
+    case cCast(ExpressionTypes::OpenParenthesis):
+        ret = new BooleanOperationLinkedValue(terminalExpressionsList);
+        break;
+    case cCast(ExpressionTypes::Name):
+    {
+        auto it = terminalExpressionsList->begin();
+        advance(it,1);
+        if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+        tmp = *it;
+        switch (tmp->getType()) {
+        case cCast(ExpressionTypes::OpenParenthesis):
+        case cCast(ExpressionTypes::MemberAccess):
+            ret = new ExecutionLinkedValue(terminalExpressionsList);
+            break;
+        case cCast(ExpressionTypes::Addition):
+        case cCast(ExpressionTypes::Substract):
+        case cCast(ExpressionTypes::Divition):
+        case cCast(ExpressionTypes::Multiplication):
+            ret = new MathOperationLinkedValue(terminalExpressionsList);
+            break;
+        case cCast(ExpressionTypes::Equal):
+        case cCast(ExpressionTypes::GreaterThan):
+        case cCast(ExpressionTypes::LessThan):
+        case cCast(ExpressionTypes::Negation):
+            ret = new BooleanOperationLinkedValue(terminalExpressionsList);
+            break;
+        default:
+            ret = new NameLinkedValue((NameExpression*)terminalExpressionsList->front());
+            break;
+        }
+        break;
+    }
+    case cCast(ExpressionTypes::Numeric):
+    {
+        auto it = terminalExpressionsList->begin();
+        advance(it,1);
+        if(it == terminalExpressionsList->end()) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+        tmp = *it;
+        if(
+            tmp->getType() == cCast(ExpressionTypes::Equal) ||
+            tmp->getType() == cCast(ExpressionTypes::GreaterThan) ||
+            tmp->getType() == cCast(ExpressionTypes::LessThan)||
+            tmp->getType() == cCast(ExpressionTypes::Negation)
+            )
+        {
+            ret = new BooleanOperationLinkedValue(terminalExpressionsList);
+        }
+        else
+        {
+            ret = new MathOperationLinkedValue(terminalExpressionsList);
+        }
+        break;
+    }
+    default:
+        throw SyntaxException("Expected a valid value",tmp->getCodeReference());
+        break;
+    }
+    return ret;
+}
+
 ////////////////////////////////////////
 ///     String
 ////////////////////////////////////////

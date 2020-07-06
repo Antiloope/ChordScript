@@ -30,6 +30,7 @@ enum struct ExpressionTypes: char{
     Null,
     For,
     If,
+    Else,
     Break,
     Return,
     Boolean,

@@ -7,6 +7,8 @@ ArgumentDefinition::ArgumentDefinition(string dataType, string name, bool byRefe
 
 FunctionDefinition::FunctionDefinition(list<TerminalExpression*>* terminalEspressionsList)
 {
+    // TODO: Change context scope and define arguments.
+
     TerminalExpression *tmp = terminalEspressionsList->front();
     if( tmp->getType() != cCast(ExpressionTypes::OpenParenthesis) ) throw SyntaxException("Expected (",tmp->getCodeReference());
 
@@ -105,6 +107,25 @@ FunctionDefinition::FunctionDefinition(list<TerminalExpression*>* terminalEspres
         {
             throw SyntaxException("Expected arguments", tmp->getCodeReference());
         }
+    }
 
+    if( tmp->getType() != cCast(ExpressionTypes::OpenBrace) ) throw SyntaxException("Expected {",tmp->getCodeReference());
+
+    terminalEspressionsList->pop_front();
+    if( terminalEspressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
+    tmp = terminalEspressionsList->front();
+
+    _function = new ProgramExpression(terminalEspressionsList,tmp->getCodeReference());
+
+    if( terminalEspressionsList->empty() ) throw SyntaxException("Expected }",tmp->getCodeReference() );
+
+    if ( tmp->getType() == cCast(ExpressionTypes::CloseBrace) )
+    {
+        terminalEspressionsList->pop_front();
+    }
+    else
+    {
+        throw SyntaxException("Expected }",tmp->getCodeReference() );
     }
 }
+

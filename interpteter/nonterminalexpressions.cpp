@@ -5,8 +5,6 @@
 using namespace CS;
 using namespace std;
 
-LinkedValue* generateLinkedValue(list<TerminalExpression*>*);
-
 ////////////////////////////////////////
 ///     NonTerminalExpression
 ////////////////////////////////////////
@@ -31,9 +29,8 @@ ProgramExpression::ProgramExpression(list<TerminalExpression*> expressionsList) 
 ProgramExpression::ProgramExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
     TerminalExpression* tmp = expressionsList->front();
     while (
-        tmp->getType() != cCast(ExpressionTypes::Return) &&
         tmp->getType() != cCast(ExpressionTypes::CloseBrace) &&
-        !expressionsList->empty())
+        !expressionsList->empty() )
     {
         _instructionsList.push_back(new InstructionExpression(expressionsList,tmp->getCodeReference()));
         tmp = expressionsList->front();
@@ -77,6 +74,9 @@ InstructionExpression::InstructionExpression(list<TerminalExpression*>* expressi
         break;
     case cCast(ExpressionTypes::EOE):
         _instruction = new EOEInstructionExpression(expressionsList,tmp->getCodeReference());
+        break;
+    case cCast(ExpressionTypes::Return):
+        _instruction = new ReturnInstructionExpression(expressionsList,tmp->getCodeReference());
         break;
     case cCast(ExpressionTypes::Name):
     {
@@ -243,7 +243,7 @@ AssignationExpression::AssignationExpression(list<TerminalExpression*>* expressi
                 if( expressionsList->empty()) throw SyntaxException("Expected a value after = ",tmp->getCodeReference() );
                 tmp = expressionsList->front();
 
-                Context::getInstance()->newVariable( _varName, _dataType, generateLinkedValue(expressionsList) );
+                Context::getInstance()->newVariable( _varName, _dataType, LinkedValue::generateLinkedValue(expressionsList) );
             }
             else
             {
@@ -268,7 +268,7 @@ AssignationExpression::AssignationExpression(list<TerminalExpression*>* expressi
             if( expressionsList->empty()) throw SyntaxException("Expected a value after = ",tmp->getCodeReference() );
             tmp = expressionsList->front();
 
-            Context::getInstance()->newVariable( _varName, _dataType,generateLinkedValue(expressionsList) );
+            Context::getInstance()->newVariable( _varName, _dataType,LinkedValue::generateLinkedValue(expressionsList) );
         }
         else
         {
@@ -339,6 +339,31 @@ DefinitionExpression::~DefinitionExpression(){}
 void DefinitionExpression::interpret(){}
 
 ////////////////////////////////////////
+///     ReturnExpression
+////////////////////////////////////////
+
+ReturnInstructionExpression::ReturnInstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
+    expressionsList->pop_front();
+    if ( expressionsList->empty() ) throw SyntaxException("Expected a return value or end of line",codeReference);
+    TerminalExpression* tmp = expressionsList->front();
+
+    if ( tmp->getType() == cCast(ExpressionTypes::EOE) )
+    {
+        _returnValue = new NullLinkedValue();
+        expressionsList->pop_front();
+    }
+    else
+    {
+        _returnValue = LinkedValue::generateLinkedValue(expressionsList);
+    }
+}
+
+ReturnInstructionExpression::~ReturnInstructionExpression() {}
+
+// TODO: Implement
+void ReturnInstructionExpression::interpret() {}
+
+////////////////////////////////////////
 ///     ExecutionExpression
 ////////////////////////////////////////
 
@@ -392,85 +417,3 @@ ExecutionExpression::~ExecutionExpression(){}
 
 /// TODO: Implement
 void ExecutionExpression::interpret(){}
-
-////////////////////////////////////////
-///     generateLinkedValue
-////////////////////////////////////////
-
-LinkedValue* generateLinkedValue(list<TerminalExpression*>* terminalExpressionsList){
-    TerminalExpression* tmp = terminalExpressionsList->front();
-
-    LinkedValue* ret;
-
-    switch ( tmp->getType() )
-    {
-    case cCast(ExpressionTypes::String):
-        ret = new StringLinkedValue((StringExpression*)tmp); // TODO: Correct to use simply a string instead of StringExpression
-        break;
-    case cCast(ExpressionTypes::Null):
-        ret = new NullLinkedValue();
-        break;
-    case cCast(ExpressionTypes::Addition):
-    case cCast(ExpressionTypes::Substract):
-        ret = new MathOperationLinkedValue(terminalExpressionsList);
-        break;
-    case cCast(ExpressionTypes::OpenBracket):
-    case cCast(ExpressionTypes::OpenParenthesis):
-        ret = new BooleanOperationLinkedValue(terminalExpressionsList);
-        break;
-    case cCast(ExpressionTypes::Name):
-    {
-        auto it = terminalExpressionsList->begin();
-        advance(it,1);
-        if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
-        tmp = *it;
-        switch (tmp->getType()) {
-        case cCast(ExpressionTypes::OpenParenthesis):
-        case cCast(ExpressionTypes::MemberAccess):
-            ret = new ExecutionLinkedValue(terminalExpressionsList);
-            break;
-        case cCast(ExpressionTypes::Addition):
-        case cCast(ExpressionTypes::Substract):
-        case cCast(ExpressionTypes::Divition):
-        case cCast(ExpressionTypes::Multiplication):
-            ret = new MathOperationLinkedValue(terminalExpressionsList);
-            break;
-        case cCast(ExpressionTypes::Equal):
-        case cCast(ExpressionTypes::GreaterThan):
-        case cCast(ExpressionTypes::LessThan):
-        case cCast(ExpressionTypes::Negation):
-            ret = new BooleanOperationLinkedValue(terminalExpressionsList);
-            break;
-        default:
-            ret = new NameLinkedValue((NameExpression*)terminalExpressionsList->front());
-            break;
-        }
-        break;
-    }
-    case cCast(ExpressionTypes::Numeric):
-    {
-        auto it = terminalExpressionsList->begin();
-        advance(it,1);
-        if(it == terminalExpressionsList->end()) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
-        tmp = *it;
-        if(
-            tmp->getType() == cCast(ExpressionTypes::Equal) ||
-            tmp->getType() == cCast(ExpressionTypes::GreaterThan) ||
-            tmp->getType() == cCast(ExpressionTypes::LessThan)||
-            tmp->getType() == cCast(ExpressionTypes::Negation)
-            )
-        {
-            ret = new BooleanOperationLinkedValue(terminalExpressionsList);
-        }
-        else
-        {
-            ret = new MathOperationLinkedValue(terminalExpressionsList);
-        }
-        break;
-    }
-    default:
-        throw SyntaxException("Expected a valid value",tmp->getCodeReference());
-        break;
-    }
-    return ret;
-}
