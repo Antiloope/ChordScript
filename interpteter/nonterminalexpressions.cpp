@@ -243,7 +243,8 @@ AssignationExpression::AssignationExpression(list<TerminalExpression*>* expressi
                 if( expressionsList->empty()) throw SyntaxException("Expected a value after = ",tmp->getCodeReference() );
                 tmp = expressionsList->front();
 
-                Context::getInstance()->newVariable( _varName, _dataType, LinkedValue::generateLinkedValue(expressionsList) );
+                _value = LinkedValue::generateLinkedValue(expressionsList);
+                Context::getInstance()->newVariable( _varName, _dataType, _value );
             }
             else
             {
@@ -268,7 +269,8 @@ AssignationExpression::AssignationExpression(list<TerminalExpression*>* expressi
             if( expressionsList->empty()) throw SyntaxException("Expected a value after = ",tmp->getCodeReference() );
             tmp = expressionsList->front();
 
-            Context::getInstance()->newVariable( _varName, _dataType,LinkedValue::generateLinkedValue(expressionsList) );
+            _value = LinkedValue::generateLinkedValue(expressionsList);
+            Context::getInstance()->newVariable( _varName, _dataType, _value );
         }
         else
         {
@@ -303,7 +305,7 @@ DefinitionExpression::DefinitionExpression(list<TerminalExpression*>* expression
         throw SyntaxException("Expected data type",tmp->getCodeReference());
     }
 
-    string dataType = ((NameExpression*)tmp)->getName();
+    _dataType = ((NameExpression*)tmp)->getName();
 
     expressionsList->pop_front();
     if( expressionsList->empty()) throw SyntaxException("Expected a name",tmp->getCodeReference() );
@@ -311,7 +313,7 @@ DefinitionExpression::DefinitionExpression(list<TerminalExpression*>* expression
 
     if( tmp->getType() != cCast(ExpressionTypes::Name) ) throw SyntaxException("Expected a name",tmp->getCodeReference());
 
-    string name = ((NameExpression*)tmp)->getName();
+    _varName = ((NameExpression*)tmp)->getName();
 
     expressionsList->pop_front();
     if( expressionsList->empty()) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
@@ -320,12 +322,12 @@ DefinitionExpression::DefinitionExpression(list<TerminalExpression*>* expression
     if( tmp->getType() == cCast(ExpressionTypes::EOE) )
     {
         expressionsList->pop_front();
-        Context::getInstance()->newVariable(name,dataType,nullptr);
+        Context::getInstance()->newVariable(_varName,_dataType,nullptr);
     }
     else if ( tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) )
     {
-        FunctionDefinition* function = new FunctionDefinition(expressionsList);
-        Context::getInstance()->newFunction(name,dataType,function);
+        _function = new FunctionDefinition(expressionsList);
+        Context::getInstance()->newFunction(_varName,_dataType,_function);
     }
     else
     {
@@ -367,7 +369,6 @@ void ReturnInstructionExpression::interpret() {}
 ///     ExecutionExpression
 ////////////////////////////////////////
 
-/// TODO: Implement
 ExecutionExpression::ExecutionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
     TerminalExpression* tmp = expressionsList->front();
 

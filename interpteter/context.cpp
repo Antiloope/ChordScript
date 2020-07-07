@@ -37,11 +37,12 @@ Context::Context()
         "false",
     };
 
-    _variables = {
-    };
+    _variables[GlobalContext] = variables_map();
 
     _functions = {
     };
+
+    _currentContext = GlobalContext;
 }
 
 bool Context::isDataType(string name){
@@ -53,11 +54,17 @@ bool Context::isValidName(string name){
 }
 
 string Context::getDataTypeName(string name){
-    return get<1>(_variables.find(name)->second)->getDataTypeName();
+    if(_variables[_currentContext].find(name) != _variables[_currentContext].end())
+    {
+        return get<1>(_variables[_currentContext].find(name)->second)->getDataTypeName();
+    }
+    return get<1>(_variables[GlobalContext].find(name)->second)->getDataTypeName();
 }
 
 bool Context::nameExist(string name){
-    return _variables.find(name) != _variables.end();
+    return
+        (_variables[_currentContext].find(name) != _variables[_currentContext].end() ||
+         _variables[GlobalContext].find(name) != _variables[GlobalContext].end() );
 }
 
 bool Context::functionNameExist(string name){
@@ -65,14 +72,14 @@ bool Context::functionNameExist(string name){
 }
 
 void Context::newVariable(string name, string dataType, LinkedValue* value){
-    auto tmp = _variables.find(name);
-    if(tmp != _variables.end())
+    auto tmp = _variables[_currentContext].find(name);
+    if(tmp != _variables[_currentContext].end())
     {
         delete get<1>(tmp->second);
         delete get<2>(tmp->second);
-        _variables.erase(name);
+        _variables[_currentContext].erase(name);
     }
-    _variables.insert({name,tuple<string,LinkedValue*,LiteralValue*>(dataType,value,nullptr)});
+    _variables[_currentContext].insert({name,tuple<string,LinkedValue*,LiteralValue*>(dataType,value,nullptr)});
 }
 
 #include "functiondefinition.h"

@@ -20,6 +20,10 @@ public:
     DefinitionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference);
     ~DefinitionExpression();
     void interpret() override;
+private:
+    string _varName;
+    string _dataType;
+    FunctionDefinition* _function;
 };
 
 class AssignationExpression : public NonTerminalExpression {
@@ -30,6 +34,7 @@ public:
 private:
     string _varName;
     string _dataType;
+    LinkedValue* _value;
 };
 
 class ExecutionExpression : public NonTerminalExpression {

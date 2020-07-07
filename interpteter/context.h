@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <map>
 #include <tuple>
 
 #include "value.h"
@@ -13,6 +14,14 @@ using namespace std;
 namespace CS {
 
 class FunctionDefinition;
+
+typedef unordered_map<string,tuple<string,LinkedValue*,LiteralValue*>> variables_map;
+typedef map<size_t,variables_map> context_map;
+typedef unordered_map<string,tuple<string,FunctionDefinition*>> functions_map;
+typedef unordered_map<string,DataType*> data_types_map;
+typedef unordered_set<string> reserved_keywords_map;
+
+const size_t GlobalContext = 0;
 
 class Context
 {
@@ -28,10 +37,11 @@ public:
 private:
     static Context* _instance;
     Context();
-    unordered_map<string,DataType*> _dataTypes;
-    unordered_set<string> _reservedKeywords;
-    unordered_map<string,tuple<string,LinkedValue*,LiteralValue*>> _variables;
-    unordered_map<string,tuple<string,FunctionDefinition*>> _functions;
+    size_t _currentContext;
+    data_types_map _dataTypes;
+    reserved_keywords_map _reservedKeywords;
+    context_map _variables;
+    functions_map _functions;
 };
 
 }
