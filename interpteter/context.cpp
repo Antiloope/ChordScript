@@ -37,12 +37,29 @@ Context::Context()
         "false",
     };
 
-    _variables[GlobalContext] = variables_map();
+    _variables.insert( pair<size_t,variables_map>(GlobalContext,variables_map()) );
 
     _functions = {
     };
 
     _currentContext = GlobalContext;
+}
+
+size_t Context::newContext(){
+    static size_t counter;
+    _variables.insert(pair<size_t,variables_map>(++counter,variables_map()));
+    _currentContext = counter;
+    return counter;
+}
+
+size_t Context::switchContext(size_t ctx){
+    if ( _variables.find(ctx) == _variables.end() ) return 0;
+    _currentContext = ctx;
+    return ctx;
+}
+
+size_t Context::getCurrentContext() const {
+    return _currentContext;
 }
 
 bool Context::isDataType(string name){
@@ -54,17 +71,17 @@ bool Context::isValidName(string name){
 }
 
 string Context::getDataTypeName(string name){
-    if(_variables[_currentContext].find(name) != _variables[_currentContext].end())
+    if(_variables.find(_currentContext)->second.find(name) != _variables.find(_currentContext)->second.end())
     {
-        return get<1>(_variables[_currentContext].find(name)->second)->getDataTypeName();
+        return get<1>(_variables.find(_currentContext)->second.find(name)->second)->getDataTypeName();
     }
-    return get<1>(_variables[GlobalContext].find(name)->second)->getDataTypeName();
+    return get<1>(_variables.find(GlobalContext)->second.find(name)->second)->getDataTypeName();
 }
 
 bool Context::nameExist(string name){
     return
-        (_variables[_currentContext].find(name) != _variables[_currentContext].end() ||
-         _variables[GlobalContext].find(name) != _variables[GlobalContext].end() );
+        (_variables.find(_currentContext)->second.find(name) != _variables.find(_currentContext)->second.end() ||
+         _variables.find(GlobalContext)->second.find(name) != _variables.find(GlobalContext)->second.end() );
 }
 
 bool Context::functionNameExist(string name){
@@ -72,14 +89,14 @@ bool Context::functionNameExist(string name){
 }
 
 void Context::newVariable(string name, string dataType, LinkedValue* value){
-    auto tmp = _variables[_currentContext].find(name);
-    if(tmp != _variables[_currentContext].end())
+    auto tmp = _variables.find(_currentContext)->second.find(name);
+    if(tmp != _variables.find(_currentContext)->second.end())
     {
         delete get<1>(tmp->second);
         delete get<2>(tmp->second);
-        _variables[_currentContext].erase(name);
+        _variables.find(_currentContext)->second.erase(name);
     }
-    _variables[_currentContext].insert({name,tuple<string,LinkedValue*,LiteralValue*>(dataType,value,nullptr)});
+    _variables.find(_currentContext)->second.insert({name,tuple<string,LinkedValue*,LiteralValue*>(dataType,value,nullptr)});
 }
 
 #include "functiondefinition.h"

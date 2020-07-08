@@ -24,6 +24,7 @@ public:
 private:
     list<ArgumentDefinition> _argumentsDefinitionList;
     ProgramExpression* _function;
+    size_t _context;
 };
 
 }

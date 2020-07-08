@@ -7,58 +7,75 @@ ArgumentDefinition::ArgumentDefinition(string dataType, string name, bool byRefe
 
 FunctionDefinition::FunctionDefinition(list<TerminalExpression*>* terminalEspressionsList)
 {
-    // TODO: Change context scope and define arguments.
-
     TerminalExpression *tmp = terminalEspressionsList->front();
-    if( tmp->getType() != cCast(ExpressionTypes::OpenParenthesis) ) throw SyntaxException("Expected (",tmp->getCodeReference());
 
-    terminalEspressionsList->pop_front();
-    if( terminalEspressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
-    tmp = terminalEspressionsList->front();
+    Context* ctx  =Context::getInstance();
 
-    string dataType;
-    bool byReference;
+    if( ctx->getCurrentContext() != GlobalContext ) throw SemanticException("Functions must be defined on global scope",tmp->getCodeReference());
 
-    bool isValidArgument = true;
-    while( isValidArgument )
-    {
-        if ( tmp->getType() == cCast(ExpressionTypes::Name) )
+    _context = ctx->newContext();
+
+    try {
+        if( tmp->getType() != cCast(ExpressionTypes::OpenParenthesis) ) throw SyntaxException("Expected (",tmp->getCodeReference());
+
+        terminalEspressionsList->pop_front();
+        if( terminalEspressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
+        tmp = terminalEspressionsList->front();
+
+        string dataType;
+        bool byReference;
+
+        bool isValidArgument = true;
+        while( isValidArgument )
         {
-            if ( Context::getInstance()->isDataType(((NameExpression*)tmp)->getName()) )
+            if ( tmp->getType() == cCast(ExpressionTypes::Name) )
             {
-                dataType = ((NameExpression*)tmp)->getName();
-
-                terminalEspressionsList->pop_front();
-                if( terminalEspressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
-                tmp = terminalEspressionsList->front();
-
-                byReference = false;
-                if ( tmp->getType() == cCast(ExpressionTypes::And) )
+                if ( ctx->isDataType(((NameExpression*)tmp)->getName()) )
                 {
-                    byReference = true;
+                    dataType = ((NameExpression*)tmp)->getName();
 
                     terminalEspressionsList->pop_front();
                     if( terminalEspressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
                     tmp = terminalEspressionsList->front();
-                }
 
-                if( tmp->getType() == cCast(ExpressionTypes::Name) )
-                {
-                    if( Context::getInstance()->isValidName(((NameExpression*)tmp)->getName()) )
+                    byReference = false;
+                    if ( tmp->getType() == cCast(ExpressionTypes::And) )
                     {
-                        _argumentsDefinitionList.push_back(ArgumentDefinition(dataType,((NameExpression*)tmp)->getName(),byReference));
+                        byReference = true;
 
                         terminalEspressionsList->pop_front();
                         if( terminalEspressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
                         tmp = terminalEspressionsList->front();
+                    }
 
-                        if( tmp->getType() == cCast(ExpressionTypes::Separator) )
+                    if( tmp->getType() == cCast(ExpressionTypes::Name) )
+                    {
+                        if( ctx->isValidName(((NameExpression*)tmp)->getName()) )
                         {
+                            ctx->newVariable(((NameExpression*)tmp)->getName(),dataType,nullptr);
+
+                            _argumentsDefinitionList.push_back(ArgumentDefinition(dataType,((NameExpression*)tmp)->getName(),byReference));
+
                             terminalEspressionsList->pop_front();
                             if( terminalEspressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
                             tmp = terminalEspressionsList->front();
 
-                            if( tmp->getType() == cCast(ExpressionTypes::CloseParenthesis) )
+                            if( tmp->getType() == cCast(ExpressionTypes::Separator) )
+                            {
+                                terminalEspressionsList->pop_front();
+                                if( terminalEspressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
+                                tmp = terminalEspressionsList->front();
+
+                                if( tmp->getType() == cCast(ExpressionTypes::CloseParenthesis) )
+                                {
+                                    isValidArgument = false;
+
+                                    terminalEspressionsList->pop_front();
+                                    if( terminalEspressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
+                                    tmp = terminalEspressionsList->front();
+                                }
+                            }
+                            else if( tmp->getType() == cCast(ExpressionTypes::CloseParenthesis) )
                             {
                                 isValidArgument = false;
 
@@ -66,66 +83,70 @@ FunctionDefinition::FunctionDefinition(list<TerminalExpression*>* terminalEspres
                                 if( terminalEspressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
                                 tmp = terminalEspressionsList->front();
                             }
-                        }
-                        else if( tmp->getType() == cCast(ExpressionTypes::CloseParenthesis) )
-                        {
-                            isValidArgument = false;
-
-                            terminalEspressionsList->pop_front();
-                            if( terminalEspressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
-                            tmp = terminalEspressionsList->front();
+                            else
+                            {
+                                throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
+                            }
                         }
                         else
                         {
-                            throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
+                            throw SyntaxException("Invalid name",tmp->getCodeReference());
                         }
                     }
                     else
                     {
-                        throw SyntaxException("Invalid name",tmp->getCodeReference());
+                        throw SyntaxException("Expected argument name",tmp->getCodeReference());
                     }
                 }
                 else
                 {
-                    throw SyntaxException("Expected argument name",tmp->getCodeReference());
+                    throw SyntaxException("Expected data type", tmp->getCodeReference());
                 }
+            }
+            else if( tmp->getType() == cCast(ExpressionTypes::CloseParenthesis) )
+            {
+                isValidArgument = false;
+
+                terminalEspressionsList->pop_front();
+                if( terminalEspressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
+                tmp = terminalEspressionsList->front();
             }
             else
             {
-                throw SyntaxException("Expected data type", tmp->getCodeReference());
+                throw SyntaxException("Expected arguments", tmp->getCodeReference());
             }
         }
-        else if( tmp->getType() == cCast(ExpressionTypes::CloseParenthesis) )
-        {
-            isValidArgument = false;
 
+        if( tmp->getType() != cCast(ExpressionTypes::OpenBrace) ) throw SyntaxException("Expected {",tmp->getCodeReference());
+
+        terminalEspressionsList->pop_front();
+        if( terminalEspressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
+        tmp = terminalEspressionsList->front();
+
+        _function = new ProgramExpression(terminalEspressionsList,tmp->getCodeReference());
+
+        if( terminalEspressionsList->empty() ) throw SyntaxException("Expected }",tmp->getCodeReference() );
+
+        if ( tmp->getType() == cCast(ExpressionTypes::CloseBrace) )
+        {
             terminalEspressionsList->pop_front();
-            if( terminalEspressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
-            tmp = terminalEspressionsList->front();
         }
         else
         {
-            throw SyntaxException("Expected arguments", tmp->getCodeReference());
+            throw SyntaxException("Expected }",tmp->getCodeReference() );
         }
-    }
 
-    if( tmp->getType() != cCast(ExpressionTypes::OpenBrace) ) throw SyntaxException("Expected {",tmp->getCodeReference());
+        ctx->switchContext(GlobalContext);
 
-    terminalEspressionsList->pop_front();
-    if( terminalEspressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
-    tmp = terminalEspressionsList->front();
-
-    _function = new ProgramExpression(terminalEspressionsList,tmp->getCodeReference());
-
-    if( terminalEspressionsList->empty() ) throw SyntaxException("Expected }",tmp->getCodeReference() );
-
-    if ( tmp->getType() == cCast(ExpressionTypes::CloseBrace) )
-    {
-        terminalEspressionsList->pop_front();
-    }
-    else
-    {
-        throw SyntaxException("Expected }",tmp->getCodeReference() );
+    } catch (SyntaxException &e) {
+        ctx->switchContext(GlobalContext);
+        throw e;
+    } catch (SemanticException &e) {
+        ctx->switchContext(GlobalContext);
+        throw e;
+    } catch (exception &e) {
+        ctx->switchContext(GlobalContext);
+        throw e;
     }
 }
 

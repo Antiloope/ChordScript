@@ -34,6 +34,10 @@ public:
     string getDataTypeName(string);
     void newVariable(string,string,LinkedValue*);
     void newFunction(string,string,FunctionDefinition*);
+
+    size_t newContext();
+    size_t switchContext(size_t);
+    size_t getCurrentContext() const;
 private:
     static Context* _instance;
     Context();

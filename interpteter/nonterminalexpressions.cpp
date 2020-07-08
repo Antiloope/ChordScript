@@ -243,6 +243,8 @@ AssignationExpression::AssignationExpression(list<TerminalExpression*>* expressi
                 if( expressionsList->empty()) throw SyntaxException("Expected a value after = ",tmp->getCodeReference() );
                 tmp = expressionsList->front();
 
+                if( !Context::getInstance()->isValidName(_varName) ) throw SyntaxException("Invalid name",tmp->getCodeReference());
+
                 _value = LinkedValue::generateLinkedValue(expressionsList);
                 Context::getInstance()->newVariable( _varName, _dataType, _value );
             }
@@ -312,6 +314,8 @@ DefinitionExpression::DefinitionExpression(list<TerminalExpression*>* expression
     tmp = expressionsList->front();
 
     if( tmp->getType() != cCast(ExpressionTypes::Name) ) throw SyntaxException("Expected a name",tmp->getCodeReference());
+
+    if( !Context::getInstance()->isValidName(((NameExpression*)tmp)->getName()) ) throw SyntaxException("Invalid name", tmp->getCodeReference());
 
     _varName = ((NameExpression*)tmp)->getName();
 
