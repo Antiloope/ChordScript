@@ -15,7 +15,7 @@ public:
     Expression();
     Expression(size_t codeReference);
     virtual ~Expression();
-    inline size_t getCodeReference() const;
+    size_t getCodeReference() const;
 private:
     size_t _codeReference;
 };

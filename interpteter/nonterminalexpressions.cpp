@@ -355,12 +355,13 @@ ReturnInstructionExpression::ReturnInstructionExpression(list<TerminalExpression
 
     if ( tmp->getType() == cCast(ExpressionTypes::EOE) )
     {
-        _returnValue = new NullLinkedValue();
-        expressionsList->pop_front();
+        _returnValue = new NullLinkedValue(expressionsList);
     }
     else
     {
         _returnValue = LinkedValue::generateLinkedValue(expressionsList);
+        tmp = expressionsList->front();
+        if ( tmp->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",tmp->getCodeReference());
     }
 }
 

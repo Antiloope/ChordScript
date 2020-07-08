@@ -125,6 +125,7 @@ FunctionDefinition::FunctionDefinition(list<TerminalExpression*>* terminalEspres
 
         _function = new ProgramExpression(terminalEspressionsList,tmp->getCodeReference());
 
+        tmp = terminalEspressionsList->front();
         if( terminalEspressionsList->empty() ) throw SyntaxException("Expected }",tmp->getCodeReference() );
 
         if ( tmp->getType() == cCast(ExpressionTypes::CloseBrace) )

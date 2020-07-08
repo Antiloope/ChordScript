@@ -43,10 +43,10 @@ LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* termina
     switch ( tmp->getType() )
     {
     case cCast(ExpressionTypes::String):
-        ret = new StringLinkedValue((StringExpression*)tmp); // TODO: Correct to use simply a string instead of StringExpression
+        ret = new StringLinkedValue(terminalExpressionsList);
         break;
     case cCast(ExpressionTypes::Null):
-        ret = new NullLinkedValue();
+        ret = new NullLinkedValue(terminalExpressionsList);
         break;
     case cCast(ExpressionTypes::Addition):
     case cCast(ExpressionTypes::Substract):
@@ -117,8 +117,13 @@ LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* termina
 ///     String
 ////////////////////////////////////////
 
-StringLinkedValue::StringLinkedValue(const StringExpression* stringExpression) {
-    _text = stringExpression->getText();
+StringLinkedValue::StringLinkedValue(list<TerminalExpression*>* terminalExpressionsList) {
+    TerminalExpression* tmp = terminalExpressionsList->front();
+    if( tmp->getType() != cCast(ExpressionTypes::String) ) throw SyntaxException("Expected a string",tmp->getCodeReference());
+
+    _text = ((StringExpression*)tmp)->getText();
+
+    terminalExpressionsList->pop_front();
 }
 
 LiteralValue* StringLinkedValue::getValue() const {
@@ -133,7 +138,10 @@ LiteralValue* NullLinkedValue::getValue() const {
     return new LiteralValue("null",nullptr);
 }
 
-NullLinkedValue::NullLinkedValue() {}
+NullLinkedValue::NullLinkedValue(list<TerminalExpression*>* terminalExpressionsList) {
+    if( terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::Null) ) throw SyntaxException("Expected null", terminalExpressionsList->front()->getCodeReference());
+    terminalExpressionsList->pop_front();
+}
 
 ////////////////////////////////////////
 ///     Numeric
@@ -422,7 +430,8 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
         }
             break;
         case cCast(ExpressionTypes::String):
-            _linkedValuesList.push_back(new StringLinkedValue(((StringExpression*)tmp)));
+            _linkedValuesList.push_back(new StringLinkedValue(terminalExpressionsList));
+            terminalExpressionsList->push_front(nullptr);
             break;
         case cCast(ExpressionTypes::Boolean):
             _linkedValuesList.push_back(new BooleanLinkedValue(((BooleanExpression*)tmp)->getValue()));
@@ -508,22 +517,18 @@ ArrayLinkedValue::ArrayLinkedValue(list<TerminalExpression*>* terminalExpression
         throw SyntaxException("Expected ( or [",tmp->getCodeReference());
     }
     terminalExpressionsList->pop_front();
-    tmp = terminalExpressionsList->front();
 
     bool isValidValue = true;
     while( isValidValue )
     {
+        tmp = terminalExpressionsList->front();
         switch ( tmp->getType() )
         {
         case cCast(ExpressionTypes::String):
-            _linkedValuesList.push_back(new StringLinkedValue((StringExpression*)tmp));
-            terminalExpressionsList->pop_front();
-            tmp = terminalExpressionsList->front();
+            _linkedValuesList.push_back(new StringLinkedValue(terminalExpressionsList));
             break;
         case cCast(ExpressionTypes::Null):
-            _linkedValuesList.push_back(new NullLinkedValue());
-            terminalExpressionsList->pop_front();
-            tmp = terminalExpressionsList->front();
+            _linkedValuesList.push_back(new NullLinkedValue(terminalExpressionsList));
             break;
         case cCast(ExpressionTypes::Addition):
         case cCast(ExpressionTypes::Substract):
@@ -589,7 +594,6 @@ ArrayLinkedValue::ArrayLinkedValue(list<TerminalExpression*>* terminalExpression
             break;
         case cCast(ExpressionTypes::Separator):
             terminalExpressionsList->pop_front();
-            tmp = terminalExpressionsList->front();
             break;
         case cCast(ExpressionTypes::CloseParenthesis):
         case cCast(ExpressionTypes::CloseBracket):

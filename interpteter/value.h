@@ -39,7 +39,7 @@ public:
 
 class StringLinkedValue : public LinkedValue {
 public:
-    StringLinkedValue(const StringExpression*);
+    StringLinkedValue(list<TerminalExpression*>*);
     LiteralValue * getValue() const override;
 private:
     string _text;
@@ -47,7 +47,7 @@ private:
 
 class NullLinkedValue : public LinkedValue {
 public:
-    NullLinkedValue();
+    NullLinkedValue(list<TerminalExpression*>*);
     LiteralValue * getValue() const override;
 };
 
