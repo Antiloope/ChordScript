@@ -9,7 +9,7 @@ FunctionDefinition::FunctionDefinition(list<TerminalExpression*>* terminalEspres
 {
     TerminalExpression *tmp = terminalEspressionsList->front();
 
-    Context* ctx  =Context::getInstance();
+    Context* ctx = Context::getInstance();
 
     if( ctx->getCurrentContext() != GlobalContext ) throw SemanticException("Functions must be defined on global scope",tmp->getCodeReference());
 
@@ -125,9 +125,9 @@ FunctionDefinition::FunctionDefinition(list<TerminalExpression*>* terminalEspres
 
         _function = new ProgramExpression(terminalEspressionsList,tmp->getCodeReference());
 
-        tmp = terminalEspressionsList->front();
         if( terminalEspressionsList->empty() ) throw SyntaxException("Expected }",tmp->getCodeReference() );
 
+        tmp = terminalEspressionsList->front();
         if ( tmp->getType() == cCast(ExpressionTypes::CloseBrace) )
         {
             terminalEspressionsList->pop_front();

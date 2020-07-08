@@ -15,7 +15,8 @@ Context::Context()
         {"boolean",     new BooleanDataType()},
         {"buffer",      new BufferDataType()},
         {"string",      new StringDataType()},
-        {"null",        new DataType()},
+        {"null",        new NullDataType()},
+        {"function",    new FunctionDataType()},
     };
 
     _reservedKeywords = {
@@ -28,6 +29,7 @@ Context::Context()
         "boolean",
         "buffer",
         "string",
+        "function",
         "for",
         "if",
         "break",

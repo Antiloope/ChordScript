@@ -246,6 +246,8 @@ AssignationExpression::AssignationExpression(list<TerminalExpression*>* expressi
                 if( !Context::getInstance()->isValidName(_varName) ) throw SyntaxException("Invalid name",tmp->getCodeReference());
 
                 _value = LinkedValue::generateLinkedValue(expressionsList);
+                if ( expressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",expressionsList->front()->getCodeReference());
+
                 Context::getInstance()->newVariable( _varName, _dataType, _value );
             }
             else
@@ -272,6 +274,7 @@ AssignationExpression::AssignationExpression(list<TerminalExpression*>* expressi
             tmp = expressionsList->front();
 
             _value = LinkedValue::generateLinkedValue(expressionsList);
+            if ( expressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",expressionsList->front()->getCodeReference());
             Context::getInstance()->newVariable( _varName, _dataType, _value );
         }
         else
@@ -415,6 +418,7 @@ ExecutionExpression::ExecutionExpression(list<TerminalExpression*>* expressionsL
         else
         {
             isValidMethod = false;
+            if ( expressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",expressionsList->front()->getCodeReference());
         }
     }
 }

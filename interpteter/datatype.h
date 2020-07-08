@@ -54,6 +54,16 @@ class StringDataType : public DataType
 
 };
 
+class NullDataType : public DataType
+{
+
+};
+
+class FunctionDataType : public DataType
+{
+
+};
+
 }
 
 #endif // DATATYPE_H
