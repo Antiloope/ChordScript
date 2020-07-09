@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include "interpteter/interpreter.h"
 
+#include <iostream>
+
 using namespace CS;
 
 int main(int argc, char *argv[])
@@ -16,15 +18,12 @@ int main(int argc, char *argv[])
 
     Interpreter interpreter;
 
-    string testCode = "string pepe(sound carlos, numeric d){numeric a = 4; return ";
-    testCode += '"';
-    testCode += "ds";
-    testCode += '"';
-    testCode += ";} numeric a = 5.4+(34*3-43); if(54 >= 3 ) {a.pelea();pepe();}numeric a = 5.4+(34*3-43); group myGroup = a.d(3,54.5);";
-    testCode.push_back(0x0A);
-    testCode += "myGroup.bpm(110);";
-    testCode.push_back(0x0A);
-    testCode += "myGroup.reverb(a);";
+    string testCode;
+    ifstream source("source.txt",ifstream::in);
+    char c;
+    while(source.get(c))
+        testCode.push_back(c);
+    source.close();
 
     try {
         interpreter.interpret(testCode);
