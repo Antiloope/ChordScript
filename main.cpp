@@ -20,11 +20,11 @@ int main(int argc, char *argv[])
     testCode += '"';
     testCode += "ds";
     testCode += '"';
-    testCode += ";} numeric a = 5.4+(34*3-43); group myGroup = a.d(3,54.5);";
+    testCode += ";} numeric a = 5.4+(34*3-43); if(54 >= 3 ) {a.pelea();pepe();}numeric a = 5.4+(34*3-43); group myGroup = a.d(3,54.5);";
     testCode.push_back(0x0A);
     testCode += "myGroup.bpm(110);";
     testCode.push_back(0x0A);
-    testCode += "myGroup.reverb(hall);";
+    testCode += "myGroup.reverb(a);";
 
     try {
         interpreter.interpret(testCode);
@@ -35,7 +35,6 @@ int main(int argc, char *argv[])
     } catch (exception& e) {
         Log::getInstance().write(e.what(),Log::info_t);
     }
-
 
     uiManager ui;
     Executor* audio = Executor::getInstance();

@@ -36,6 +36,8 @@ LinkedValue::LinkedValue() : Value("null") {}
 LinkedValue::~LinkedValue() {}
 
 LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* terminalExpressionsList){
+    if( terminalExpressionsList->empty() ) throw SyntaxException("Expected a value");
+
     TerminalExpression* tmp = terminalExpressionsList->front();
 
     LinkedValue* ret;
@@ -80,7 +82,7 @@ LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* termina
             ret = new BooleanOperationLinkedValue(terminalExpressionsList);
             break;
         default:
-            ret = new NameLinkedValue((NameExpression*)terminalExpressionsList->front());
+            ret = new NameLinkedValue(terminalExpressionsList);
             break;
         }
         break;
@@ -256,13 +258,15 @@ MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* te
                 tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) )
             {
                 _linkedValuesList.push_back(new ExecutionLinkedValue(terminalExpressionsList));
+                terminalExpressionsList->push_front(nullptr);
             }
             else
             {
                 tmp = terminalExpressionsList->front();
                 if ( Context::getInstance()->nameExist(((NameExpression*)tmp)->getName()) )
                 {
-                    _linkedValuesList.push_back(new NameLinkedValue((NameExpression*)tmp));
+                    _linkedValuesList.push_back(new NameLinkedValue(terminalExpressionsList));
+                    terminalExpressionsList->push_front(nullptr);
                 }
                 else
                 {
@@ -567,7 +571,7 @@ ArrayLinkedValue::ArrayLinkedValue(list<TerminalExpression*>* terminalExpression
                 _linkedValuesList.push_back(new BooleanOperationLinkedValue(terminalExpressionsList));
                 break;
             default:
-                _linkedValuesList.push_back(new NameLinkedValue((NameExpression*)terminalExpressionsList->front()));
+                _linkedValuesList.push_back(new NameLinkedValue(terminalExpressionsList));
                 break;
             }
         }
@@ -670,10 +674,13 @@ LiteralValue* ExecutionLinkedValue::getValue() const {
 ///     Name
 ////////////////////////////////////////
 
-NameLinkedValue::NameLinkedValue(NameExpression* nameExpression){
+NameLinkedValue::NameLinkedValue(list<TerminalExpression*>* terminalExpressionsList){
+    if ( terminalExpressionsList->empty() ) throw SyntaxException("Expected a name");
+    NameExpression* nameExpression = (NameExpression*)terminalExpressionsList->front();
     _name = nameExpression->getName();
     if ( !Context::getInstance()->isValidName(_name) ) throw SyntaxException("Invalid name",nameExpression->getCodeReference());
     if ( !Context::getInstance()->nameExist(_name) ) throw SemanticException("Unrecognized name",nameExpression->getCodeReference());
+    terminalExpressionsList->pop_front();
 }
 
 // TODO: Implement return the value finding in context

@@ -87,7 +87,7 @@ private:
 
 class NameLinkedValue : public LinkedValue {
 public:
-    NameLinkedValue(NameExpression*);
+    NameLinkedValue(list<TerminalExpression*>*);
     LiteralValue * getValue() const override;
 private:
     string _name;

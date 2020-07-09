@@ -47,11 +47,19 @@ private:
     list<tuple<string,ArrayLinkedValue*>> _methodsList;
 };
 
+class ProgramExpression;
+
 class ForInstructionExpression : public NonTerminalExpression {
 public:
     ForInstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference);
     ~ForInstructionExpression();
     void interpret() override;
+private:
+    size_t _context;
+    AssignationExpression* _assignation;
+    LinkedValue* _booleanOperation;
+    AssignationExpression* _endAssignation;
+    ProgramExpression* _function;
 };
 
 class IfInstructionExpression : public NonTerminalExpression {
@@ -59,6 +67,12 @@ public:
     IfInstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference);
     ~IfInstructionExpression();
     void interpret() override;
+private:
+    size_t _context;
+    size_t _elseContext;
+    LinkedValue* _condition;
+    ProgramExpression* _function;
+    ProgramExpression* _elseFunction;
 };
 
 class BreakInstructionExpression : public NonTerminalExpression {
