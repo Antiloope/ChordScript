@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['sampledatatype_64',['SampleDataType',['../classCS_1_1SampleDataType.html',1,'CS']]],
+  ['samples_65',['samples',['../classAudioFile.html#af937119db095c5af870851050dcbeabb',1,'AudioFile']]],
+  ['save_66',['save',['../classAudioFile.html#a415239cad5b54b4fef4a210ab79911e3',1,'AudioFile']]],
+  ['semanticexception_67',['SemanticException',['../classCS_1_1SemanticException.html',1,'CS']]],
+  ['setaudiobuffer_68',['setAudioBuffer',['../classAudioFile.html#afa0a0f7d576b0597c938c5a89746636e',1,'AudioFile']]],
+  ['setaudiobuffersize_69',['setAudioBufferSize',['../classAudioFile.html#ac155ed12db0f3b02011a7d75b525e71a',1,'AudioFile']]],
+  ['setbitdepth_70',['setBitDepth',['../classAudioFile.html#a2adf2ea23e7daeb8401e717c1b3d874b',1,'AudioFile']]],
+  ['setnumchannels_71',['setNumChannels',['../classAudioFile.html#a354018a94ae15907d7308782f2adadbb',1,'AudioFile']]],
+  ['setnumsamplesperchannel_72',['setNumSamplesPerChannel',['../classAudioFile.html#a4cff9513d49e21d25de13513564784b7',1,'AudioFile']]],
+  ['setsamplerate_73',['setSampleRate',['../classAudioFile.html#a2d8fa306e40535113c3eba111e16483b',1,'AudioFile']]],
+  ['shouldlogerrorstoconsole_74',['shouldLogErrorsToConsole',['../classAudioFile.html#a1986c0297e4e4db99435702528e9c3c4',1,'AudioFile']]],
+  ['sound_75',['Sound',['../classCS_1_1Sound.html',1,'CS']]],
+  ['sounddatatype_76',['SoundDataType',['../classCS_1_1SoundDataType.html',1,'CS']]],
+  ['stringdatatype_77',['StringDataType',['../classCS_1_1StringDataType.html',1,'CS']]],
+  ['stringexpression_78',['StringExpression',['../classCS_1_1StringExpression.html',1,'CS']]],
+  ['stringlinkedvalue_79',['StringLinkedValue',['../classCS_1_1StringLinkedValue.html',1,'CS::StringLinkedValue'],['../classCS_1_1StringLinkedValue.html#a85424e908e979f1a61a4df207f322cbb',1,'CS::StringLinkedValue::StringLinkedValue()']]],
+  ['syntaxexception_80',['SyntaxException',['../classCS_1_1SyntaxException.html',1,'CS']]]
+];
