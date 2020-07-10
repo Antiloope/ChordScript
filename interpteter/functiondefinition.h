@@ -20,7 +20,10 @@ private:
 class FunctionDefinition
 {
 public:
-    FunctionDefinition(list<TerminalExpression*>*);
+    FunctionDefinition();
+    ~FunctionDefinition();
+    void load(list<TerminalExpression*>*);
+    void interpret(LiteralValue*);
 private:
     list<ArgumentDefinition> _argumentsDefinitionList;
     ProgramExpression* _function;

@@ -19,90 +19,97 @@ NonTerminalExpression::~NonTerminalExpression(){}
 ///     ProgramExpression
 ////////////////////////////////////////
 
-ProgramExpression::ProgramExpression(list<TerminalExpression*> expressionsList) : NonTerminalExpression(0){
-    while (!expressionsList.empty())
-    {
-        _instructionsList.push_back(new InstructionExpression(&expressionsList,expressionsList.front()->getCodeReference()));
-    }
-}
+ProgramExpression::ProgramExpression() : NonTerminalExpression(0) {}
 
-ProgramExpression::ProgramExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
-    TerminalExpression* tmp = expressionsList->front();
+ProgramExpression::ProgramExpression(size_t codeReference) : NonTerminalExpression(codeReference) {}
+
+void ProgramExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
+    TerminalExpression* tmp = terminalExpressionsList->front();
     while (
         tmp->getType() != cCast(ExpressionTypes::CloseBrace) &&
-        !expressionsList->empty() )
+        !terminalExpressionsList->empty() )
     {
-        _instructionsList.push_back(new InstructionExpression(expressionsList,tmp->getCodeReference()));
-        tmp = expressionsList->front();
+        _instructionsList.push_back(InstructionExpression(tmp->getCodeReference()));
+        _instructionsList.back().load(terminalExpressionsList);
+        tmp = terminalExpressionsList->front();
     }
 }
 
-ProgramExpression::~ProgramExpression(){
-    InstructionExpression* tmp;
-    while(!_instructionsList.empty())
+void ProgramExpression::interpret(list<TerminalExpression*> terminalExpressionsList) {
+    while (!terminalExpressionsList.empty())
     {
-        tmp = _instructionsList.front();
-        _instructionsList.pop_front();
-        delete tmp;
+        Context::getInstance()->switchContext(GlobalContext);
+        InstructionExpression tmp(terminalExpressionsList.front()->getCodeReference());
+        tmp.load(&terminalExpressionsList);
+        tmp.interpret();
     }
 }
 
-/// TODO: Implement
 void ProgramExpression::interpret(){
-
+    Context::getInstance()->setReturnValue(nullptr);
+    for( InstructionExpression tmp : _instructionsList )
+    {
+        if( Context::getInstance()->getReturnValue() ) break;
+    }
 }
+
+ProgramExpression::~ProgramExpression() {}
 
 ////////////////////////////////////////
 ///     InstructionExpression
 ////////////////////////////////////////
 
-InstructionExpression::InstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
-    if(expressionsList->empty()) throw SyntaxException("Expected another instruction",codeReference);
+InstructionExpression::InstructionExpression(size_t codeReference) : NonTerminalExpression(codeReference) {}
 
-    TerminalExpression* tmp = expressionsList->front();
+InstructionExpression::InstructionExpression(const InstructionExpression& e) : NonTerminalExpression(e.getCodeReference()) {
+    _instruction = e._instruction;
+}
+
+void InstructionExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
+    TerminalExpression* tmp = terminalExpressionsList->front();
 
     switch (tmp->getType())
     {
     case cCast(ExpressionTypes::For):
-        _instruction = new ForInstructionExpression(expressionsList,tmp->getCodeReference());
+        _instruction = new ForInstructionExpression(tmp->getCodeReference());
         break;
     case cCast(ExpressionTypes::If):
-        _instruction = new IfInstructionExpression(expressionsList,tmp->getCodeReference());
+        _instruction = new IfInstructionExpression(tmp->getCodeReference());
         break;
     case cCast(ExpressionTypes::Break):
-        _instruction = new BreakInstructionExpression(expressionsList,tmp->getCodeReference());
+        _instruction = new BreakInstructionExpression(tmp->getCodeReference());
         break;
     case cCast(ExpressionTypes::EOE):
-        _instruction = new EOEInstructionExpression(expressionsList,tmp->getCodeReference());
+        _instruction = new EOEInstructionExpression(tmp->getCodeReference());
         break;
     case cCast(ExpressionTypes::Return):
-        _instruction = new ReturnInstructionExpression(expressionsList,tmp->getCodeReference());
+        _instruction = new ReturnInstructionExpression(tmp->getCodeReference());
         break;
     case cCast(ExpressionTypes::Name):
     {
         NameExpression* nameExpression = (NameExpression*)tmp;
         if ( Context::getInstance()->isDataType(nameExpression->getName()) )
         {
-            auto it = expressionsList->begin();
+            auto it = terminalExpressionsList->begin();
             advance(it,1);
-            if(it == expressionsList->end()) throw SyntaxException("Expected variable name",codeReference);
+            if(it == terminalExpressionsList->end()) throw SyntaxException("Expected variable name",tmp->getCodeReference());
             tmp = *it;
             if (
                 tmp->getType() == cCast(ExpressionTypes::Name) &&
                 Context::getInstance()->isValidName(((NameExpression*)tmp)->getName()))
             {
                 advance(it,1);
-                if( it == expressionsList->end()) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+                if( it == terminalExpressionsList->end()) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
                 tmp = *it;
                 if( tmp->getType() == cCast(ExpressionTypes::Equal) )
                 {
-                    _instruction = new AssignationExpression(expressionsList,tmp->getCodeReference());
+                    _instruction = new AssignationExpression(tmp->getCodeReference());
                 }
                 else if(
                     tmp->getType() == cCast(ExpressionTypes::EOE) ||
                     tmp->getType() == cCast(ExpressionTypes::OpenParenthesis))
                 {
-                    _instruction = new DefinitionExpression(expressionsList,tmp->getCodeReference());
+                    _instruction = new DefinitionExpression(tmp->getCodeReference());
                 }
                 else
                 {
@@ -116,62 +123,65 @@ InstructionExpression::InstructionExpression(list<TerminalExpression*>* expressi
         }
         else if( Context::getInstance()->isValidName(nameExpression->getName()) )
         {
-            auto it = expressionsList->begin();
+            auto it = terminalExpressionsList->begin();
             advance(it,1);
-            if(it == expressionsList->end()) throw SyntaxException("Expected variable name",codeReference);
+            if(it == terminalExpressionsList->end()) throw SyntaxException("Expected variable name",tmp->getCodeReference());
             tmp = *it;
             if( tmp->getType() == cCast(ExpressionTypes::Equal) )
             {
-                _instruction = new AssignationExpression(expressionsList,tmp->getCodeReference());
+                _instruction = new AssignationExpression(tmp->getCodeReference());
             }
             else if(
                 tmp->getType() == cCast(ExpressionTypes::MemberAccess) ||
                 tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) )
             {
-                _instruction = new ExecutionExpression(expressionsList,tmp->getCodeReference());
+                _instruction = new ExecutionExpression(tmp->getCodeReference());
             }
             else
             {
-                throw SyntaxException("Expected another symbol",codeReference);
+                throw SyntaxException("Expected another symbol",tmp->getCodeReference());
             }
         }
         else
         {
-            throw SyntaxException("Unrecognized variable name or data type",codeReference);
+            throw SyntaxException("Unrecognized variable name or data type",tmp->getCodeReference());
         }
         break;
     }
     default:
-        throw SyntaxException("Expected another instruction",codeReference);
+        throw SyntaxException("Expected another instruction",tmp->getCodeReference());
     }
+
+    _instruction->load(terminalExpressionsList);
 }
 
 InstructionExpression::~InstructionExpression(){
     delete _instruction;
 }
 
-/// TODO: Implement
 void InstructionExpression::interpret(){
-
+    _instruction->interpret();
 }
 
 ////////////////////////////////////////
 ///     ForInstructionExpression
 ////////////////////////////////////////
 
-ForInstructionExpression::ForInstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
-    TerminalExpression* tmp = expressionsList->front();
-    if( tmp->getType() != cCast(ExpressionTypes::For) ) throw SyntaxException("Expected for",codeReference);
+ForInstructionExpression::ForInstructionExpression(size_t codeReference) : NonTerminalExpression(codeReference) {}
 
-    expressionsList->pop_front();
-    if( expressionsList->empty()) throw SyntaxException("Expected for arguments",tmp->getCodeReference() );
-    tmp = expressionsList->front();
+void ForInstructionExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
+    TerminalExpression* tmp = terminalExpressionsList->front();
+    if( tmp->getType() != cCast(ExpressionTypes::For) ) throw SyntaxException("Expected for",tmp->getCodeReference());
+
+    terminalExpressionsList->pop_front();
+    if( terminalExpressionsList->empty()) throw SyntaxException("Expected for arguments",tmp->getCodeReference() );
+    tmp = terminalExpressionsList->front();
 
     if( tmp->getType() != cCast(ExpressionTypes::OpenParenthesis) ) throw SyntaxException("Expected (",tmp->getCodeReference());
 
-    expressionsList->pop_front();
-    if( expressionsList->empty()) throw SyntaxException("Expected for arguments",tmp->getCodeReference() );
-    tmp = expressionsList->front();
+    terminalExpressionsList->pop_front();
+    if( terminalExpressionsList->empty()) throw SyntaxException("Expected for arguments",tmp->getCodeReference() );
+    tmp = terminalExpressionsList->front();
 
     Context* ctx = Context::getInstance();
 
@@ -179,40 +189,48 @@ ForInstructionExpression::ForInstructionExpression(list<TerminalExpression*>* ex
 
     _context = ctx->newContext();
 
-    _assignation = new AssignationExpression(expressionsList,codeReference);
+    _assignation = new AssignationExpression(tmp->getCodeReference());
+    _assignation->load(terminalExpressionsList);
 
-    if( expressionsList->empty() || expressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",tmp->getCodeReference() );
-    expressionsList->pop_front();
-    tmp = expressionsList->front();
+    if( terminalExpressionsList->empty() || terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",tmp->getCodeReference() );
+    terminalExpressionsList->pop_front();
+    tmp = terminalExpressionsList->front();
 
-    _booleanOperation = LinkedValue::generateLinkedValue(expressionsList);
+    _booleanOperation = LinkedValue::generateLinkedValue(terminalExpressionsList);
 
-    if( expressionsList->empty() || expressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",tmp->getCodeReference() );
-    expressionsList->pop_front();
-    tmp = expressionsList->front();
+    if( terminalExpressionsList->empty() || terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",tmp->getCodeReference() );
+    terminalExpressionsList->pop_front();
+    tmp = terminalExpressionsList->front();
 
-    _endAssignation = new AssignationExpression(expressionsList,tmp->getCodeReference());
+    _endAssignation = new AssignationExpression(tmp->getCodeReference());
+    _endAssignation->load(terminalExpressionsList);
 
-    if( expressionsList->empty() || expressionsList->front()->getType() != cCast(ExpressionTypes::CloseParenthesis) ) throw SyntaxException("Expected )",tmp->getCodeReference() );
-    expressionsList->pop_front();
-    tmp = expressionsList->front();
+    if( terminalExpressionsList->empty() || terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::CloseParenthesis) ) throw SyntaxException("Expected )",tmp->getCodeReference() );
+    terminalExpressionsList->pop_front();
+    tmp = terminalExpressionsList->front();
 
-    if( expressionsList->empty()) throw SyntaxException("Expected {",tmp->getCodeReference() );
-    tmp = expressionsList->front();
+    if( terminalExpressionsList->empty()) throw SyntaxException("Expected {",tmp->getCodeReference() );
+    tmp = terminalExpressionsList->front();
 
-    _function = new ProgramExpression(expressionsList,tmp->getCodeReference());
+    _function = new ProgramExpression(tmp->getCodeReference());
+    _function->load(terminalExpressionsList);
 
-    if( expressionsList->empty() ) throw SyntaxException("Expected }",tmp->getCodeReference() );
-    tmp = expressionsList->front();
+    if( terminalExpressionsList->empty() ) throw SyntaxException("Expected }",tmp->getCodeReference() );
+    tmp = terminalExpressionsList->front();
     if( tmp->getType() != cCast(ExpressionTypes::CloseBrace) ) throw SyntaxException("Expected }",tmp->getCodeReference());
 
-    expressionsList->pop_front();
+    terminalExpressionsList->pop_front();
 
     ctx->switchContext(oldContext);
 }
 
 ForInstructionExpression::~ForInstructionExpression(){
+    if( _function ) delete _function;
+    if( _endAssignation ) delete _endAssignation;
+    if( _assignation ) delete _assignation;
+    if( _booleanOperation ) delete _booleanOperation;
 
+    Context::getInstance()->removeContext(_context);
 }
 
 /// TODO: Implement
@@ -224,34 +242,36 @@ void ForInstructionExpression::interpret(){
 ///     IfInstructionExpression
 ////////////////////////////////////////
 
-IfInstructionExpression::IfInstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
-    TerminalExpression* tmp = expressionsList->front();
-    if( tmp->getType() != cCast(ExpressionTypes::If) ) throw SyntaxException("Expected if",codeReference);
+IfInstructionExpression::IfInstructionExpression(size_t codeReference) : NonTerminalExpression(codeReference) {}
 
-    expressionsList->pop_front();
-    if( expressionsList->empty()) throw SyntaxException("Expected if arguments",tmp->getCodeReference() );
-    tmp = expressionsList->front();
+void IfInstructionExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
+    TerminalExpression* tmp = terminalExpressionsList->front();
+    if( tmp->getType() != cCast(ExpressionTypes::If) ) throw SyntaxException("Expected if",tmp->getCodeReference());
+
+    terminalExpressionsList->pop_front();
+    if( terminalExpressionsList->empty()) throw SyntaxException("Expected if arguments",tmp->getCodeReference() );
+    tmp = terminalExpressionsList->front();
 
     if( tmp->getType() != cCast(ExpressionTypes::OpenParenthesis) ) throw SyntaxException("Expected (",tmp->getCodeReference());
 
-    expressionsList->pop_front();
-    if( expressionsList->empty()) throw SyntaxException("Expected if arguments",tmp->getCodeReference() );
-    tmp = expressionsList->front();
+    terminalExpressionsList->pop_front();
+    if( terminalExpressionsList->empty()) throw SyntaxException("Expected if arguments",tmp->getCodeReference() );
+    tmp = terminalExpressionsList->front();
 
-    _condition = LinkedValue::generateLinkedValue(expressionsList);
+    _condition = LinkedValue::generateLinkedValue(terminalExpressionsList);
 
-    if( expressionsList->empty()) throw SyntaxException("Expected )",tmp->getCodeReference() );
-    tmp = expressionsList->front();
+    if( terminalExpressionsList->empty()) throw SyntaxException("Expected )",tmp->getCodeReference() );
+    tmp = terminalExpressionsList->front();
     if( tmp->getType() != cCast(ExpressionTypes::CloseParenthesis) ) throw SyntaxException("Expected )",tmp->getCodeReference());
 
-    expressionsList->pop_front();
-    if( expressionsList->empty()) throw SyntaxException("Expected {",tmp->getCodeReference() );
-    tmp = expressionsList->front();
+    terminalExpressionsList->pop_front();
+    if( terminalExpressionsList->empty()) throw SyntaxException("Expected {",tmp->getCodeReference() );
+    tmp = terminalExpressionsList->front();
     if( tmp->getType() != cCast(ExpressionTypes::OpenBrace) ) throw SyntaxException("Expected {",tmp->getCodeReference());
 
-    expressionsList->pop_front();
-    if( expressionsList->empty()) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
-    tmp = expressionsList->front();
+    terminalExpressionsList->pop_front();
+    if( terminalExpressionsList->empty()) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
+    tmp = terminalExpressionsList->front();
 
     Context* ctx = Context::getInstance();
 
@@ -259,46 +279,52 @@ IfInstructionExpression::IfInstructionExpression(list<TerminalExpression*>* expr
 
     _context = ctx->newContext();
 
-    _function = new ProgramExpression(expressionsList,tmp->getCodeReference());
+    _function = new ProgramExpression(tmp->getCodeReference());
+    _function->load(terminalExpressionsList);
 
-    if( expressionsList->empty() ) throw SyntaxException("Expected }",tmp->getCodeReference() );
-    tmp = expressionsList->front();
+    if( terminalExpressionsList->empty() ) throw SyntaxException("Expected }",tmp->getCodeReference() );
+    tmp = terminalExpressionsList->front();
     if( tmp->getType() != cCast(ExpressionTypes::CloseBrace) ) throw SyntaxException("Expected }",tmp->getCodeReference());
 
-    expressionsList->pop_front();
-    if( expressionsList->empty() || expressionsList->front()->getType() != cCast(ExpressionTypes::Else) )
+    terminalExpressionsList->pop_front();
+    if( terminalExpressionsList->empty() || terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::Else) )
     {
         _elseContext = 0;
         _elseFunction = nullptr;
     }
     else
     {
-        expressionsList->pop_front();
-        if( expressionsList->empty() ) throw SyntaxException("Expected {",tmp->getCodeReference() );
-        tmp = expressionsList->front();
+        terminalExpressionsList->pop_front();
+        if( terminalExpressionsList->empty() ) throw SyntaxException("Expected {",tmp->getCodeReference() );
+        tmp = terminalExpressionsList->front();
 
         if( tmp->getType() != cCast(ExpressionTypes::OpenBrace) ) throw SyntaxException("Expected {",tmp->getCodeReference());
 
-        expressionsList->pop_front();
-        if( expressionsList->empty()) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
-        tmp = expressionsList->front();
+        terminalExpressionsList->pop_front();
+        if( terminalExpressionsList->empty()) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
+        tmp = terminalExpressionsList->front();
 
         _elseContext = ctx->newContext();
 
-        _elseFunction = new ProgramExpression(expressionsList,tmp->getCodeReference());
+        _elseFunction = new ProgramExpression(tmp->getCodeReference());
+        _elseFunction->load(terminalExpressionsList);
 
-        if( expressionsList->empty() ) throw SyntaxException("Expected }",tmp->getCodeReference() );
-        tmp = expressionsList->front();
+        if( terminalExpressionsList->empty() ) throw SyntaxException("Expected }",tmp->getCodeReference() );
+        tmp = terminalExpressionsList->front();
         if( tmp->getType() != cCast(ExpressionTypes::CloseBrace) ) throw SyntaxException("Expected }",tmp->getCodeReference());
-        expressionsList->pop_front();
+        terminalExpressionsList->pop_front();
     }
-
 
     ctx->switchContext(oldContext);
 }
 
 IfInstructionExpression::~IfInstructionExpression(){
+    if( _function ) delete _function;
+    if( _elseFunction ) delete _elseFunction;
+    if( _condition ) delete _condition;
 
+    Context::getInstance()->removeContext(_context);
+    Context::getInstance()->removeContext(_elseContext);
 }
 
 /// TODO: Implement
@@ -310,15 +336,18 @@ void IfInstructionExpression::interpret(){
 ///     BreakInstructionExpression
 ////////////////////////////////////////
 
-BreakInstructionExpression::BreakInstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
-    expressionsList->pop_front();
-    if( expressionsList->empty() || expressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",expressionsList->front()->getCodeReference());
+BreakInstructionExpression::BreakInstructionExpression(size_t codeReference) : NonTerminalExpression(codeReference) {}
+
+void BreakInstructionExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
+    if(Context::getInstance()->getCurrentContext() == GlobalContext) throw SyntaxException("Break is not valid in global scope",terminalExpressionsList->front()->getCodeReference());
+    terminalExpressionsList->pop_front();
+    if( terminalExpressionsList->empty() || terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",terminalExpressionsList->front()->getCodeReference());
 }
 
-BreakInstructionExpression::~BreakInstructionExpression(){}
+BreakInstructionExpression::~BreakInstructionExpression() {}
 
 /// TODO: Implement
-void BreakInstructionExpression::interpret(){
+void BreakInstructionExpression::interpret() {
 
 }
 
@@ -326,91 +355,71 @@ void BreakInstructionExpression::interpret(){
 ///     EOEInstructionExpression
 ////////////////////////////////////////
 
-EOEInstructionExpression::EOEInstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
-    expressionsList->pop_front();
+EOEInstructionExpression::EOEInstructionExpression(size_t codeReference) : NonTerminalExpression(codeReference) {}
+
+void EOEInstructionExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
+    terminalExpressionsList->pop_front();
 }
 
-EOEInstructionExpression::~EOEInstructionExpression(){}
+EOEInstructionExpression::~EOEInstructionExpression() {}
 
-/// TODO: Implement
-void EOEInstructionExpression::interpret(){}
+void EOEInstructionExpression::interpret() {}
 
 ////////////////////////////////////////
 ///     AssignationExpression
 ////////////////////////////////////////
 
-AssignationExpression::AssignationExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
-    TerminalExpression* tmp = expressionsList->front();
+AssignationExpression::AssignationExpression(size_t codeReference) : NonTerminalExpression(codeReference) {}
+
+void AssignationExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
+    TerminalExpression* tmp = terminalExpressionsList->front();
+    string dataType;
+
     if(
         tmp->getType() == cCast(ExpressionTypes::Name) &&
         Context::getInstance()->isDataType(((NameExpression*)tmp)->getName()) )
     {
-        _dataType = ((NameExpression*)tmp)->getName();
-        expressionsList->pop_front();
-        if( expressionsList->empty()) throw SyntaxException("Expected variable name",tmp->getCodeReference() );
-        tmp = expressionsList->front();
-        if( tmp->getType() == cCast(ExpressionTypes::Name) )
-        {
-            _varName = ((NameExpression*)tmp)->getName();
-            expressionsList->pop_front();
-            if( expressionsList->empty()) throw SyntaxException("Expected = after name",tmp->getCodeReference() );
-            tmp = expressionsList->front();
-            if( tmp->getType() == cCast(ExpressionTypes::Equal) )
-            {
-                expressionsList->pop_front();
-                if( expressionsList->empty()) throw SyntaxException("Expected a value after = ",tmp->getCodeReference() );
-                tmp = expressionsList->front();
+        string dataType = ((NameExpression*)tmp)->getName();
 
-                if( !Context::getInstance()->isValidName(_varName) ) throw SyntaxException("Invalid name",tmp->getCodeReference());
+        terminalExpressionsList->pop_front();
+        if( terminalExpressionsList->empty()) throw SyntaxException("Expected variable name",tmp->getCodeReference() );
+        tmp = terminalExpressionsList->front();
 
-                _value = LinkedValue::generateLinkedValue(expressionsList);
-                if ( expressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",expressionsList->front()->getCodeReference());
-
-                Context::getInstance()->newVariable( _varName, _dataType, _value );
-            }
-            else
-            {
-                throw SyntaxException("Expected = ",tmp->getCodeReference());
-            }
-        }
-        else
-        {
-            throw SyntaxException("Expected variable name",tmp->getCodeReference());
-        }
+        if( tmp->getType() != cCast(ExpressionTypes::Name) ) throw SyntaxException("Expected variable name",tmp->getCodeReference());
     }
     else if( Context::getInstance()->nameExist(((NameExpression*)tmp)->getName()) )
     {
-        _varName = ((NameExpression*)tmp)->getName();
-        _dataType = Context::getInstance()->getDataTypeName(_varName);
-        expressionsList->pop_front();
-        if( expressionsList->empty()) throw SyntaxException("Expected = after name",tmp->getCodeReference() );
-        tmp = expressionsList->front();
-        if( tmp->getType() == cCast(ExpressionTypes::Equal) )
-        {
-            expressionsList->pop_front();
-            if( expressionsList->empty()) throw SyntaxException("Expected a value after = ",tmp->getCodeReference() );
-            tmp = expressionsList->front();
-
-            _value = LinkedValue::generateLinkedValue(expressionsList);
-            if ( expressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",expressionsList->front()->getCodeReference());
-            Context::getInstance()->newVariable( _varName, _dataType, _value );
-        }
-        else
-        {
-            throw SyntaxException("Expected = ",tmp->getCodeReference());
-        }
+        dataType = Context::getInstance()->getDataTypeName(((NameExpression*)tmp)->getName());
     }
     else
     {
-        throw SyntaxException("Expected another symbol",codeReference);
+        throw SyntaxException("Expected another symbol",tmp->getCodeReference());
     }
+
+    _varName = ((NameExpression*)tmp)->getName();
+
+    if( !Context::getInstance()->isValidName(_varName) ) throw SyntaxException("Invalid name",tmp->getCodeReference());
+
+    terminalExpressionsList->pop_front();
+    if( terminalExpressionsList->empty()) throw SyntaxException("Expected = after name",tmp->getCodeReference() );
+    tmp = terminalExpressionsList->front();
+
+    if( tmp->getType() != cCast(ExpressionTypes::Equal) ) throw SyntaxException("Expected = ",tmp->getCodeReference());
+
+    terminalExpressionsList->pop_front();
+    if( terminalExpressionsList->empty()) throw SyntaxException("Expected a value after = ",tmp->getCodeReference() );
+    tmp = terminalExpressionsList->front();
+
+    LinkedValue* value = LinkedValue::generateLinkedValue(terminalExpressionsList);
+    if ( terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",terminalExpressionsList->front()->getCodeReference());
+
+    Context::getInstance()->newVariable( _varName, dataType, value );
 }
 
-AssignationExpression::~AssignationExpression(){
-}
+AssignationExpression::~AssignationExpression() {}
 
 /// TODO: Implement
-void AssignationExpression::interpret(){}
+void AssignationExpression::interpret() {}
 
 ////////////////////////////////////////
 ///     DefinitionExpression
@@ -418,8 +427,10 @@ void AssignationExpression::interpret(){}
 
 #include "functiondefinition.h"
 
-DefinitionExpression::DefinitionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
-    TerminalExpression* tmp = expressionsList->front();
+DefinitionExpression::DefinitionExpression(size_t codeReference) : NonTerminalExpression(codeReference) {}
+
+void DefinitionExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
+    TerminalExpression* tmp = terminalExpressionsList->front();
 
     if(
         tmp->getType() != cCast(ExpressionTypes::Name) ||
@@ -428,31 +439,32 @@ DefinitionExpression::DefinitionExpression(list<TerminalExpression*>* expression
         throw SyntaxException("Expected data type",tmp->getCodeReference());
     }
 
-    _dataType = ((NameExpression*)tmp)->getName();
+    string dataType = ((NameExpression*)tmp)->getName();
 
-    expressionsList->pop_front();
-    if( expressionsList->empty()) throw SyntaxException("Expected a name",tmp->getCodeReference() );
-    tmp = expressionsList->front();
+    terminalExpressionsList->pop_front();
+    if( terminalExpressionsList->empty()) throw SyntaxException("Expected a name",tmp->getCodeReference() );
+    tmp = terminalExpressionsList->front();
 
     if( tmp->getType() != cCast(ExpressionTypes::Name) ) throw SyntaxException("Expected a name",tmp->getCodeReference());
 
     if( !Context::getInstance()->isValidName(((NameExpression*)tmp)->getName()) ) throw SyntaxException("Invalid name", tmp->getCodeReference());
 
-    _varName = ((NameExpression*)tmp)->getName();
+    string varName = ((NameExpression*)tmp)->getName();
 
-    expressionsList->pop_front();
-    if( expressionsList->empty()) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
-    tmp = expressionsList->front();
+    terminalExpressionsList->pop_front();
+    if( terminalExpressionsList->empty()) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
+    tmp = terminalExpressionsList->front();
 
     if( tmp->getType() == cCast(ExpressionTypes::EOE) )
     {
-        expressionsList->pop_front();
-        Context::getInstance()->newVariable(_varName,_dataType,nullptr);
+        terminalExpressionsList->pop_front();
+        Context::getInstance()->newVariable(varName,dataType,nullptr);
     }
     else if ( tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) )
     {
-        _function = new FunctionDefinition(expressionsList);
-        Context::getInstance()->newFunction(_varName,_dataType,_function);
+        FunctionDefinition* function = new FunctionDefinition();
+        function->load(terminalExpressionsList);
+        Context::getInstance()->newFunction(varName,dataType,function);
     }
     else
     {
@@ -460,33 +472,43 @@ DefinitionExpression::DefinitionExpression(list<TerminalExpression*>* expression
     }
 }
 
-DefinitionExpression::~DefinitionExpression(){}
+DefinitionExpression::~DefinitionExpression() {}
 
 /// TODO: Implement
-void DefinitionExpression::interpret(){}
+void DefinitionExpression::interpret() {}
 
 ////////////////////////////////////////
 ///     ReturnExpression
 ////////////////////////////////////////
 
-ReturnInstructionExpression::ReturnInstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
-    expressionsList->pop_front();
-    if ( expressionsList->empty() ) throw SyntaxException("Expected a return value or end of line",codeReference);
-    TerminalExpression* tmp = expressionsList->front();
+ReturnInstructionExpression::ReturnInstructionExpression(size_t codeReference) : NonTerminalExpression(codeReference) {}
+
+void ReturnInstructionExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
+    TerminalExpression* tmp = terminalExpressionsList->front();
+
+    if( tmp->getType() != cCast(ExpressionTypes::Return) ) throw SyntaxException("Expected return", tmp->getCodeReference());
+
+    if( Context::getInstance()->getCurrentContext() == GlobalContext ) throw SyntaxException("Return is not valid in global scope",tmp->getCodeReference());
+
+    terminalExpressionsList->pop_front();
+    if ( terminalExpressionsList->empty() ) throw SyntaxException("Expected a return value or end of line",tmp->getCodeReference());
+    tmp = terminalExpressionsList->front();
 
     if ( tmp->getType() == cCast(ExpressionTypes::EOE) )
     {
-        _returnValue = new NullLinkedValue(expressionsList);
+        _returnValue = new NullLinkedValue(terminalExpressionsList);
     }
     else
     {
-        _returnValue = LinkedValue::generateLinkedValue(expressionsList);
-        tmp = expressionsList->front();
+        _returnValue = LinkedValue::generateLinkedValue(terminalExpressionsList);
+        tmp = terminalExpressionsList->front();
         if ( tmp->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",tmp->getCodeReference());
     }
 }
 
-ReturnInstructionExpression::~ReturnInstructionExpression() {}
+ReturnInstructionExpression::~ReturnInstructionExpression() {
+    if( _returnValue ) delete _returnValue;
+}
 
 // TODO: Implement
 void ReturnInstructionExpression::interpret() {}
@@ -495,8 +517,10 @@ void ReturnInstructionExpression::interpret() {}
 ///     ExecutionExpression
 ////////////////////////////////////////
 
-ExecutionExpression::ExecutionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference) : NonTerminalExpression(codeReference){
-    TerminalExpression* tmp = expressionsList->front();
+ExecutionExpression::ExecutionExpression(size_t codeReference) : NonTerminalExpression(codeReference) {}
+
+void ExecutionExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
+    TerminalExpression* tmp = terminalExpressionsList->front();
 
     if ( tmp->getType() != cCast(ExpressionTypes::Name) ) throw SyntaxException("Expected a name", tmp->getCodeReference());
 
@@ -504,44 +528,51 @@ ExecutionExpression::ExecutionExpression(list<TerminalExpression*>* expressionsL
     if ( !Context::getInstance()->isValidName(_name) ) throw SyntaxException("Invalid name",tmp->getCodeReference());
     if ( !Context::getInstance()->nameExist(_name) && !Context::getInstance()->functionNameExist(_name) ) throw SemanticException("Unrecognized name",tmp->getCodeReference());
 
-    expressionsList->pop_front();
-    if ( expressionsList->empty() ) throw SyntaxException("Expected arguments",tmp->getCodeReference());
-    tmp = expressionsList->front();
+    terminalExpressionsList->pop_front();
+    if ( terminalExpressionsList->empty() ) throw SyntaxException("Expected arguments",tmp->getCodeReference());
+    tmp = terminalExpressionsList->front();
 
     if ( tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) )
     {
-        _methodsList.push_back(tuple<string,ArrayLinkedValue*>(_name,new ArrayLinkedValue(expressionsList)));
+        _methodsList.push_back(tuple<string,ArrayLinkedValue*>(_name,new ArrayLinkedValue(terminalExpressionsList)));
     }
     bool isValidMethod = true;
     while(isValidMethod)
     {
         if( tmp->getType() == cCast(ExpressionTypes::MemberAccess) )
         {
-            expressionsList->pop_front();
-            if ( expressionsList->empty() ) throw SyntaxException("Expected arguments",tmp->getCodeReference());
-            tmp = expressionsList->front();
+            terminalExpressionsList->pop_front();
+            if ( terminalExpressionsList->empty() ) throw SyntaxException("Expected arguments",tmp->getCodeReference());
+            tmp = terminalExpressionsList->front();
 
             if ( tmp->getType() != cCast(ExpressionTypes::Name) ) throw SyntaxException("Expected a name", tmp->getCodeReference());
 
             string name = ((NameExpression*)tmp)->getName();
 
-            expressionsList->pop_front();
-            if ( expressionsList->empty() ) throw SyntaxException("Expected (",tmp->getCodeReference());
-            tmp = expressionsList->front();
+            terminalExpressionsList->pop_front();
+            if ( terminalExpressionsList->empty() ) throw SyntaxException("Expected (",tmp->getCodeReference());
+            tmp = terminalExpressionsList->front();
 
             if ( tmp->getType() != cCast(ExpressionTypes::OpenParenthesis) ) throw SyntaxException("Expected (",tmp->getCodeReference());
 
-            _methodsList.push_back(tuple<string,ArrayLinkedValue*>(name,new ArrayLinkedValue(expressionsList)));
+            _methodsList.push_back(tuple<string,ArrayLinkedValue*>(name,new ArrayLinkedValue(terminalExpressionsList)));
         }
         else
         {
             isValidMethod = false;
-            if ( expressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",expressionsList->front()->getCodeReference());
+            if ( terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",terminalExpressionsList->front()->getCodeReference());
         }
     }
 }
 
-ExecutionExpression::~ExecutionExpression(){}
+ExecutionExpression::~ExecutionExpression(){
+    while( !_methodsList.empty() )
+    {
+        tuple<string,ArrayLinkedValue*> tmp = _methodsList.front();
+        delete get<1>(tmp);
+        _methodsList.pop_front();
+    }
+}
 
 /// TODO: Implement
 void ExecutionExpression::interpret(){}

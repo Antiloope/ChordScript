@@ -4,8 +4,7 @@ using namespace CS;
 
 Context* Context::_instance = nullptr;
 
-Context::Context()
-{
+Context::Context() {
     _dataTypes = {
         {"sample",      new SampleDataType()},
         {"sound",       new SoundDataType()},
@@ -47,14 +46,14 @@ Context::Context()
     _currentContext = GlobalContext;
 }
 
-size_t Context::newContext(){
+size_t Context::newContext() {
     static size_t counter;
     _variables.insert(pair<size_t,variables_map>(++counter,variables_map()));
     _currentContext = counter;
     return counter;
 }
 
-size_t Context::switchContext(size_t ctx){
+size_t Context::switchContext(size_t ctx) {
     if ( _variables.find(ctx) == _variables.end() ) return 0;
     _currentContext = ctx;
     return ctx;
@@ -64,15 +63,15 @@ size_t Context::getCurrentContext() const {
     return _currentContext;
 }
 
-bool Context::isDataType(string name){
+bool Context::isDataType(string name) {
     return _dataTypes.find(name) != _dataTypes.end();
 }
 
-bool Context::isValidName(string name){
+bool Context::isValidName(string name) {
     return _reservedKeywords.find(name) == _reservedKeywords.end();
 }
 
-string Context::getDataTypeName(string name){
+string Context::getDataTypeName(string name) {
     if(_variables.find(_currentContext)->second.find(name) != _variables.find(_currentContext)->second.end())
     {
         return get<1>(_variables.find(_currentContext)->second.find(name)->second)->getDataTypeName();
@@ -80,17 +79,17 @@ string Context::getDataTypeName(string name){
     return get<1>(_variables.find(GlobalContext)->second.find(name)->second)->getDataTypeName();
 }
 
-bool Context::nameExist(string name){
+bool Context::nameExist(string name) {
     return
         (_variables.find(_currentContext)->second.find(name) != _variables.find(_currentContext)->second.end() ||
          _variables.find(GlobalContext)->second.find(name) != _variables.find(GlobalContext)->second.end() );
 }
 
-bool Context::functionNameExist(string name){
+bool Context::functionNameExist(string name) {
     return _functions.find(name) != _functions.end();
 }
 
-void Context::newVariable(string name, string dataType, LinkedValue* value){
+void Context::newVariable(string name, string dataType, LinkedValue* value) {
     auto tmp = _variables.find(_currentContext)->second.find(name);
     if(tmp != _variables.find(_currentContext)->second.end())
     {
@@ -103,7 +102,7 @@ void Context::newVariable(string name, string dataType, LinkedValue* value){
 
 #include "functiondefinition.h"
 
-void Context::newFunction(string name, string dataType ,FunctionDefinition* function){
+void Context::newFunction(string name, string dataType ,FunctionDefinition* function) {
     auto tmp = _functions.find(name);
     if(tmp != _functions.end())
     {
@@ -113,8 +112,29 @@ void Context::newFunction(string name, string dataType ,FunctionDefinition* func
     _functions.insert({name,tuple<string,FunctionDefinition*>(dataType,function)});
 }
 
-Context* Context::getInstance()
-{
+Context* Context::getInstance() {
     if ( !_instance ) _instance = new Context();
     return _instance;
+}
+
+void Context::removeContext(context_index ctx) {
+    auto tmp = _variables.find(ctx);
+    if( tmp == _variables.end() ) return;
+
+    variables_map variableMap = tmp->second;
+    for(auto it : variableMap)
+    {
+        if (get<1>(it.second)) delete get<1>(it.second);
+        if (get<2>(it.second)) delete get<2>(it.second);
+    }
+
+    _variables.erase(ctx);
+}
+
+void Context::setReturnValue(LinkedValue* value) {
+    _returnValue = value;
+}
+
+LinkedValue* Context::getReturnValue() const {
+    return _returnValue;
 }

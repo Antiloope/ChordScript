@@ -5,7 +5,6 @@
 
 using namespace std;
 
-
 namespace CS {
 
 class Interpreter

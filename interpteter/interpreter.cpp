@@ -6,39 +6,44 @@
 using namespace std;
 using namespace CS;
 
-Interpreter::Interpreter()
-{
+Interpreter::Interpreter() {
 
 }
 
-void Interpreter::interpret(const string sourceCode)
-{
+void Interpreter::interpret(const string sourceCode) {
     Lexer lexer;
     list<TerminalExpression*> expressionsList;
+    ProgramExpression program;
+
     try {
         expressionsList = lexer.tokenize(sourceCode);
+        program.interpret(expressionsList);
     } catch (const SyntaxException& e) {
-        throw e;
-    } catch (const exception& e) {
-        throw e;
-    }
-
-    ProgramExpression* program;
-    try {
-        program = new ProgramExpression(expressionsList);
-    } catch (const SyntaxException& e) {
+        TerminalExpression* tmp;
+        while(!expressionsList.empty())
+        {
+            tmp = expressionsList.front();
+            expressionsList.pop_front();
+            delete tmp;
+        }
         throw e;
     } catch (const SemanticException& e) {
+        TerminalExpression* tmp;
+        while(!expressionsList.empty())
+        {
+            tmp = expressionsList.front();
+            expressionsList.pop_front();
+            delete tmp;
+        }
         throw e;
     } catch (const exception& e) {
-        throw e;
-    }
-
-    try {
-        program->interpret();
-    } catch (const SyntaxException& e) {
-        throw e;
-    } catch (const exception& e) {
+        TerminalExpression* tmp;
+        while(!expressionsList.empty())
+        {
+            tmp = expressionsList.front();
+            expressionsList.pop_front();
+            delete tmp;
+        }
         throw e;
     }
 

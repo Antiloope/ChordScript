@@ -12,35 +12,33 @@ public:
     NonTerminalExpression();
     NonTerminalExpression(size_t);
     virtual ~NonTerminalExpression();
+    virtual void load(list<TerminalExpression*>*) = 0;
     virtual void interpret() = 0;
 };
 
 class DefinitionExpression : public NonTerminalExpression {
 public:
-    DefinitionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference);
+    DefinitionExpression(size_t);
     ~DefinitionExpression();
+    void load(list<TerminalExpression*>*) override;
     void interpret() override;
-private:
-    string _varName;
-    string _dataType;
-    FunctionDefinition* _function;
 };
 
 class AssignationExpression : public NonTerminalExpression {
 public:
-    AssignationExpression(list<TerminalExpression*>* expressionsList, size_t codeReference);
+    AssignationExpression(size_t);
     ~AssignationExpression();
+    void load(list<TerminalExpression*>*) override;
     void interpret() override;
 private:
     string _varName;
-    string _dataType;
-    LinkedValue* _value;
 };
 
 class ExecutionExpression : public NonTerminalExpression {
 public:
-    ExecutionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference);
+    ExecutionExpression(size_t);
     ~ExecutionExpression();
+    void load(list<TerminalExpression*>*) override;
     void interpret() override;
 private:
     string _name;
@@ -51,8 +49,9 @@ class ProgramExpression;
 
 class ForInstructionExpression : public NonTerminalExpression {
 public:
-    ForInstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference);
+    ForInstructionExpression(size_t);
     ~ForInstructionExpression();
+    void load(list<TerminalExpression*>*) override;
     void interpret() override;
 private:
     size_t _context;
@@ -64,8 +63,9 @@ private:
 
 class IfInstructionExpression : public NonTerminalExpression {
 public:
-    IfInstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference);
+    IfInstructionExpression(size_t);
     ~IfInstructionExpression();
+    void load(list<TerminalExpression*>*) override;
     void interpret() override;
 private:
     size_t _context;
@@ -77,22 +77,25 @@ private:
 
 class BreakInstructionExpression : public NonTerminalExpression {
 public:
-    BreakInstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference);
+    BreakInstructionExpression(size_t);
     ~BreakInstructionExpression();
+    void load(list<TerminalExpression*>*) override;
     void interpret() override;
 };
 
 class EOEInstructionExpression : public NonTerminalExpression {
 public:
-    EOEInstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference);
+    EOEInstructionExpression(size_t);
     ~EOEInstructionExpression();
+    void load(list<TerminalExpression*>*) override;
     void interpret() override;
 };
 
 class ReturnInstructionExpression : public NonTerminalExpression {
 public:
-    ReturnInstructionExpression(list<TerminalExpression*>*,size_t codeReference);
+    ReturnInstructionExpression(size_t);
     ~ReturnInstructionExpression();
+    void load(list<TerminalExpression*>*) override;
     void interpret() override;
 private:
     LinkedValue* _returnValue;
@@ -100,8 +103,10 @@ private:
 
 class InstructionExpression : public NonTerminalExpression {
 public:
-    InstructionExpression(list<TerminalExpression*>* expressionsList, size_t codeReference);
+    InstructionExpression(size_t);
+    InstructionExpression(const InstructionExpression&);
     ~InstructionExpression();
+    void load(list<TerminalExpression*>*) override;
     void interpret() override;
 private:
     NonTerminalExpression* _instruction;
@@ -109,12 +114,14 @@ private:
 
 class ProgramExpression : public NonTerminalExpression {
 public:
-    ProgramExpression(list<TerminalExpression*> expressionsList);
-    ProgramExpression(list<TerminalExpression*>* expressionsList, size_t codeReference);
+    ProgramExpression(size_t);
+    ProgramExpression();
     ~ProgramExpression();
+    void load(list<TerminalExpression*>*) override;
     void interpret() override;
+    void interpret(list<TerminalExpression*>);
 private:
-    list<InstructionExpression*> _instructionsList;
+    list<InstructionExpression> _instructionsList;
 };
 
 }
