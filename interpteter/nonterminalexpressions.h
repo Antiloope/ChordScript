@@ -98,7 +98,7 @@ public:
     void load(list<TerminalExpression*>*) override;
     void interpret() override;
 private:
-    LinkedValue* _returnValue;
+    LinkedValue* _returnValue = nullptr;
 };
 
 class InstructionExpression : public NonTerminalExpression {
@@ -109,7 +109,7 @@ public:
     void load(list<TerminalExpression*>*) override;
     void interpret() override;
 private:
-    NonTerminalExpression* _instruction;
+    NonTerminalExpression* _instruction = nullptr;
 };
 
 class ProgramExpression : public NonTerminalExpression {
@@ -121,7 +121,7 @@ public:
     void interpret() override;
     void interpret(list<TerminalExpression*>);
 private:
-    list<InstructionExpression> _instructionsList;
+    list<InstructionExpression*> _instructionsList;
 };
 
 }

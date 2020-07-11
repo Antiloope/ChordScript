@@ -26,11 +26,12 @@ ProgramExpression::ProgramExpression(size_t codeReference) : NonTerminalExpressi
 void ProgramExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
     TerminalExpression* tmp = terminalExpressionsList->front();
     while (
-        tmp->getType() != cCast(ExpressionTypes::CloseBrace) &&
-        !terminalExpressionsList->empty() )
+        !terminalExpressionsList->empty() &&
+        tmp->getType() != cCast(ExpressionTypes::CloseBrace) )
     {
-        _instructionsList.push_back(InstructionExpression(tmp->getCodeReference()));
-        _instructionsList.back().load(terminalExpressionsList);
+        InstructionExpression* instruction = new InstructionExpression(tmp->getCodeReference());
+        instruction->load(terminalExpressionsList);
+        _instructionsList.push_back(instruction);
         tmp = terminalExpressionsList->front();
     }
 }
@@ -47,13 +48,16 @@ void ProgramExpression::interpret(list<TerminalExpression*> terminalExpressionsL
 
 void ProgramExpression::interpret(){
     Context::getInstance()->setReturnValue(nullptr);
-    for( InstructionExpression tmp : _instructionsList )
-    {
-        if( Context::getInstance()->getReturnValue() ) break;
-    }
 }
 
-ProgramExpression::~ProgramExpression() {}
+ProgramExpression::~ProgramExpression() {
+    while( !_instructionsList.empty() )
+    {
+        InstructionExpression* tmp = _instructionsList.front();
+        delete tmp;
+        _instructionsList.pop_front();
+    }
+}
 
 ////////////////////////////////////////
 ///     InstructionExpression
@@ -156,7 +160,7 @@ void InstructionExpression::load(list<TerminalExpression*>* terminalExpressionsL
 }
 
 InstructionExpression::~InstructionExpression(){
-    delete _instruction;
+    if( _instruction ) delete _instruction;
 }
 
 void InstructionExpression::interpret(){
@@ -323,8 +327,8 @@ IfInstructionExpression::~IfInstructionExpression(){
     if( _elseFunction ) delete _elseFunction;
     if( _condition ) delete _condition;
 
-    Context::getInstance()->removeContext(_context);
-    Context::getInstance()->removeContext(_elseContext);
+    if( _context ) Context::getInstance()->removeContext(_context);
+    if( _elseContext ) Context::getInstance()->removeContext(_elseContext);
 }
 
 /// TODO: Implement
