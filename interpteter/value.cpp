@@ -56,7 +56,7 @@ LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* termina
         break;
     case cCast(ExpressionTypes::OpenBracket):
     case cCast(ExpressionTypes::OpenParenthesis):
-        ret = new BooleanOperationLinkedValue(terminalExpressionsList);
+        ret = new ArrayLinkedValue(terminalExpressionsList);
         break;
     case cCast(ExpressionTypes::Name):
     {
@@ -627,7 +627,7 @@ ExecutionLinkedValue::ExecutionLinkedValue(list<TerminalExpression*>* terminalEx
 
     _name = ((NameExpression*)tmp)->getName();
     if ( !Context::getInstance()->isValidName(_name) ) throw SyntaxException("Invalid name",tmp->getCodeReference());
-    if ( !Context::getInstance()->nameExist(_name) ) throw SemanticException("Unrecognized name",tmp->getCodeReference());
+    if ( !Context::getInstance()->functionNameExist(_name) ) throw SemanticException("Unrecognized name",tmp->getCodeReference());
 
     terminalExpressionsList->pop_front();
     if ( terminalExpressionsList->empty() ) throw SyntaxException("Expected arguments",tmp->getCodeReference());

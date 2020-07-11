@@ -3,7 +3,7 @@
 
 using namespace CS;
 
-ArgumentDefinition::ArgumentDefinition(string dataType, string name, bool byReference) : _dataType(dataType),_name(name),_byReference(byReference) {}
+ArgumentDefinition::ArgumentDefinition(string dataType, string name) : _dataType(dataType),_name(name) {}
 
 FunctionDefinition::FunctionDefinition() {}
 
@@ -23,7 +23,6 @@ void FunctionDefinition::load(list<TerminalExpression*>* terminalExpressionsList
     tmp = terminalExpressionsList->front();
 
     string dataType;
-    bool byReference;
 
     bool isValidArgument = true;
     while( isValidArgument )
@@ -38,23 +37,13 @@ void FunctionDefinition::load(list<TerminalExpression*>* terminalExpressionsList
             if( terminalExpressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
             tmp = terminalExpressionsList->front();
 
-            byReference = false;
-            if ( tmp->getType() == cCast(ExpressionTypes::And) )
-            {
-                byReference = true;
-
-                terminalExpressionsList->pop_front();
-                if( terminalExpressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
-                tmp = terminalExpressionsList->front();
-            }
-
             if( tmp->getType() != cCast(ExpressionTypes::Name) ) throw SyntaxException("Expected argument name",tmp->getCodeReference());
 
             if( !ctx->isValidName(((NameExpression*)tmp)->getName()) ) throw SyntaxException("Invalid name",tmp->getCodeReference());
 
             ctx->newVariable(((NameExpression*)tmp)->getName(),dataType,nullptr);
 
-            _argumentsDefinitionList.push_back(ArgumentDefinition(dataType,((NameExpression*)tmp)->getName(),byReference));
+            _argumentsDefinitionList.push_back(ArgumentDefinition(dataType,((NameExpression*)tmp)->getName()));
 
             terminalExpressionsList->pop_front();
             if( terminalExpressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
