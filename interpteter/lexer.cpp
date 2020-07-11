@@ -178,8 +178,8 @@ list<TerminalExpression*> Lexer::tokenize(string sourceCode){
                     else if (tmp == sElseStatement) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Else)));
                     else if (tmp == sBreakStatement) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Break)));
                     else if (tmp == sReturnStatement) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Return)));
-                    else if (tmp == sTrueStatement) tokens.push_back(new BooleanExpression(codeRef,cCast(ExpressionTypes::For),true));
-                    else if (tmp == sFalseStatement) tokens.push_back(new BooleanExpression(codeRef,cCast(ExpressionTypes::For),false));
+                    else if (tmp == sTrueStatement) tokens.push_back(new BooleanExpression(codeRef,cCast(ExpressionTypes::Boolean),true));
+                    else if (tmp == sFalseStatement) tokens.push_back(new BooleanExpression(codeRef,cCast(ExpressionTypes::Boolean),false));
                     else if (tmp == sNullValue) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Null)));
                     else tokens.push_back(new NameExpression(codeRef,cCast(ExpressionTypes::Name),tmp));
                 }

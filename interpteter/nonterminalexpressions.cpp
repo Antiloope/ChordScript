@@ -425,9 +425,15 @@ AssignationExpression::~AssignationExpression() {
     if( _value ) delete _value;
 }
 
-/// TODO: Implement
 void AssignationExpression::interpret() {
-
+    if( !Context::getInstance()->setVariableValue(_varName,_value->getValue()) )
+    {
+        string errorDescription = "Invalid conversion from ";
+        errorDescription.append(_value->getDataTypeName());
+        errorDescription.append(" to ");
+        errorDescription.append(Context::getInstance()->getDataTypeName(_varName));
+        throw SemanticException(errorDescription,this->getCodeReference());
+    }
 }
 
 ////////////////////////////////////////

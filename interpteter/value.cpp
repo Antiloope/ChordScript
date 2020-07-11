@@ -58,6 +58,10 @@ LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* termina
     case cCast(ExpressionTypes::OpenParenthesis):
         ret = new ArrayLinkedValue(terminalExpressionsList);
         break;
+    case cCast(ExpressionTypes::Boolean):
+    case cCast(ExpressionTypes::Negation):
+        ret = new BooleanOperationLinkedValue(terminalExpressionsList);
+        break;
     case cCast(ExpressionTypes::Name):
     {
         auto it = terminalExpressionsList->begin();
@@ -172,7 +176,7 @@ MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* te
     else if ( tmp->getType() == cCast(ExpressionTypes::Substract) )
     {
         _linkedValuesList.push_back(new NumericLinkedValue(-1));
-        RPNStack.push('*');
+        RPNStack.push(Symbols::Multiplication);
         terminalExpressionsList->pop_front();
     }
     tmp = terminalExpressionsList->front();
@@ -182,66 +186,66 @@ MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* te
     {
         switch (tmp->getType()) {
         case cCast(ExpressionTypes::OpenParenthesis):
-            RPNStack.push('(');
+            RPNStack.push(Symbols::OpenParenthesis);
             break;
         case cCast(ExpressionTypes::Addition):
             while(
                 !RPNStack.empty() &&
-                (RPNStack.top() == '/' ||
-                 RPNStack.top() == '-' ||
-                 RPNStack.top() == '+' ||
-                 RPNStack.top() == '*') )
+                (RPNStack.top() == Symbols::Divition ||
+                 RPNStack.top() == Symbols::Substraction ||
+                 RPNStack.top() == Symbols::Addition ||
+                 RPNStack.top() == Symbols::Multiplication) )
             {
                 _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
                 RPNStack.pop();
             }
-            RPNStack.push('+');
+            RPNStack.push(Symbols::Addition);
             break;
         case cCast(ExpressionTypes::Substract):
             while(
                 !RPNStack.empty() &&
-                (RPNStack.top() == '/' ||
-                 RPNStack.top() == '-' ||
-                 RPNStack.top() == '+' ||
-                 RPNStack.top() == '*')
+                (RPNStack.top() == Symbols::Divition ||
+                 RPNStack.top() == Symbols::Substraction ||
+                 RPNStack.top() == Symbols::Addition ||
+                 RPNStack.top() == Symbols::Multiplication)
                 ){
                 _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
                 RPNStack.pop();
             }
-            RPNStack.push('-');
+            RPNStack.push(Symbols::Substraction);
             break;
         case cCast(ExpressionTypes::Multiplication):
             while(
                 !RPNStack.empty() &&
-                (RPNStack.top() == '/' ||
-                 RPNStack.top() == '*')
+                (RPNStack.top() == Symbols::Divition ||
+                 RPNStack.top() == Symbols::Multiplication)
                 ){
                 _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
                 RPNStack.pop();
             }
-            RPNStack.push('*');
+            RPNStack.push(Symbols::Multiplication);
             break;
         case cCast(ExpressionTypes::Divition):
             while(
                 !RPNStack.empty() &&
-                (RPNStack.top() == '/' ||
-                 RPNStack.top() == '*')
+                (RPNStack.top() == Symbols::Divition ||
+                 RPNStack.top() == Symbols::Multiplication)
                 ){
                 _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
                 RPNStack.pop();
             }
-            RPNStack.push('/');
+            RPNStack.push(Symbols::Divition);
             break;
         case cCast(ExpressionTypes::Numeric):
             _linkedValuesList.push_back(new NumericLinkedValue(((NumericExpression*)tmp)->getValue()));
             break;
         case cCast(ExpressionTypes::CloseParenthesis):
-            while( !RPNStack.empty() && RPNStack.top() != '(' )
+            while( !RPNStack.empty() && RPNStack.top() != Symbols::OpenParenthesis )
             {
                 _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
                 RPNStack.pop();
             }
-            if ( !RPNStack.empty() && RPNStack.top() == '(' )
+            if ( !RPNStack.empty() && RPNStack.top() == Symbols::OpenParenthesis )
             {
                 RPNStack.pop();
             }
@@ -288,15 +292,15 @@ MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* te
     while( !RPNStack.empty() ) // Insert all operands in the list
     {
         if (
-            RPNStack.top() == '*' ||
-            RPNStack.top() == '-' ||
-            RPNStack.top() == '+' ||
-            RPNStack.top() == '/' )
+            RPNStack.top() == Symbols::Multiplication ||
+            RPNStack.top() == Symbols::Substraction ||
+            RPNStack.top() == Symbols::Addition ||
+            RPNStack.top() == Symbols::Divition )
         {
             _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
             RPNStack.pop();
         }
-        else if ( RPNStack.top() == '(' )
+        else if ( RPNStack.top() == Symbols::OpenParenthesis )
         {
             throw SyntaxException("Expected )",tmp->getCodeReference());
         }
@@ -338,38 +342,43 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
         switch ( tmp->getType() )
         {
         case cCast(ExpressionTypes::OpenParenthesis):
-            RPNStack.push('(');
+            RPNStack.push(Symbols::OpenParenthesis);
             break;
         case cCast(ExpressionTypes::And):
             while(
                 !RPNStack.empty() &&
-                RPNStack.top() != '(' )
+                RPNStack.top() != Symbols::OpenParenthesis )
             {
                 _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
                 RPNStack.pop();
             }
-            RPNStack.push('&');
+            RPNStack.push(Symbols::And);
             break;
         case cCast(ExpressionTypes::Or):
             while(
                 !RPNStack.empty() &&
-                RPNStack.top() != '(' )
+                RPNStack.top() != Symbols::OpenParenthesis )
             {
                 _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
                 RPNStack.pop();
             }
-            RPNStack.push('|');
+            RPNStack.push(Symbols::Or);
             break;
         case cCast(ExpressionTypes::Equal):
-            if ( !RPNStack.empty() && RPNStack.top() != '(' && RPNStack.top() != '&' && RPNStack.top() != '|' )
+            if ( !RPNStack.empty() && RPNStack.top() != Symbols::OpenParenthesis && RPNStack.top() != Symbols::And && RPNStack.top() != Symbols::Or && RPNStack.top() != Symbols::Negation )
             {
                 throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
+            }
+            if ( !RPNStack.empty() && RPNStack.top() == Symbols::Negation )
+            {
+                _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+                RPNStack.pop();
             }
             terminalExpressionsList->pop_front();
             tmp = terminalExpressionsList->front();
             if ( tmp->getType() == cCast(ExpressionTypes::Equal) )
             {
-                RPNStack.push('=');
+                RPNStack.push(Symbols::Equal);
             }
             else
             {
@@ -377,26 +386,42 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
             }
             break;
         case cCast(ExpressionTypes::Negation):
-            if ( !RPNStack.empty() && RPNStack.top() != '(' && RPNStack.top() != '&' && RPNStack.top() != '|' )
-            {
-                throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
-            }
-            terminalExpressionsList->pop_front();
-            tmp = terminalExpressionsList->front();
+        {
+            auto it = terminalExpressionsList->begin();
+            advance(it,1);
+            if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+            tmp = *it;
             if ( tmp->getType() == cCast(ExpressionTypes::Equal) )
             {
-                RPNStack.push('!');
+                if ( !RPNStack.empty() && RPNStack.top() != Symbols::OpenParenthesis && RPNStack.top() != Symbols::And && RPNStack.top() != Symbols::Or && RPNStack.top() != Symbols::Negation )
+                {
+                    throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
+                }
+                if ( !RPNStack.empty() && RPNStack.top() == Symbols::Negation )
+                {
+                    _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+                    RPNStack.pop();
+                }
+                terminalExpressionsList->pop_front();
+                RPNStack.push(Symbols::NotEqual);
             }
             else
             {
-                throw SyntaxException("Expected symbol !=",tmp->getCodeReference());
+                RPNStack.push(Symbols::Negation);
             }
+            tmp = terminalExpressionsList->front();
+        }
             break;
         case cCast(ExpressionTypes::GreaterThan):
         {
-            if ( !RPNStack.empty() && RPNStack.top() != '(' && RPNStack.top() != '&' && RPNStack.top() != '|' )
+            if ( !RPNStack.empty() && RPNStack.top() != Symbols::OpenParenthesis && RPNStack.top() != Symbols::And && RPNStack.top() != Symbols::Or && RPNStack.top() != Symbols::Negation )
             {
                 throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
+            }
+            if ( !RPNStack.empty() && RPNStack.top() == Symbols::Negation )
+            {
+                _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+                RPNStack.pop();
             }
             auto it = terminalExpressionsList->begin();
             advance(it,1);
@@ -405,19 +430,24 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
             if( tmp->getType() == cCast(ExpressionTypes::Equal) )
             {
                 terminalExpressionsList->pop_front();
-                RPNStack.push('g');
+                RPNStack.push(Symbols::GreaterEqual);
             }
             else
             {
-                RPNStack.push('>');
+                RPNStack.push(Symbols::Greater);
             }
         }
             break;
         case cCast(ExpressionTypes::LessThan):
         {
-            if ( !RPNStack.empty() && RPNStack.top() != '(' && RPNStack.top() != '&' && RPNStack.top() != '|' )
+            if ( !RPNStack.empty() && RPNStack.top() != Symbols::OpenParenthesis && RPNStack.top() != Symbols::And && RPNStack.top() != Symbols::Or && RPNStack.top() != Symbols::Negation )
             {
                 throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
+            }
+            if ( !RPNStack.empty() && RPNStack.top() == Symbols::Negation )
+            {
+                _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+                RPNStack.pop();
             }
             auto it = terminalExpressionsList->begin();
             advance(it,1);
@@ -426,11 +456,11 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
             if( tmp->getType() == cCast(ExpressionTypes::Equal) )
             {
                 terminalExpressionsList->pop_front();
-                RPNStack.push('l');
+                RPNStack.push(Symbols::LessEqual);
             }
             else
             {
-                RPNStack.push('<');
+                RPNStack.push(Symbols::Less);
             }
         }
             break;
@@ -440,6 +470,9 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
             break;
         case cCast(ExpressionTypes::Boolean):
             _linkedValuesList.push_back(new BooleanLinkedValue(((BooleanExpression*)tmp)->getValue()));
+            break;
+        case cCast(ExpressionTypes::Null):
+            _linkedValuesList.push_back(new NullLinkedValue(terminalExpressionsList));
             terminalExpressionsList->push_front(nullptr);
             break;
         case cCast(ExpressionTypes::Addition):
@@ -450,12 +483,12 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
             terminalExpressionsList->push_front(nullptr);
             break;
         case cCast(ExpressionTypes::CloseParenthesis):
-            while( !RPNStack.empty() && RPNStack.top() != '(' )
+            while( !RPNStack.empty() && RPNStack.top() != Symbols::OpenParenthesis )
             {
                 _linkedValuesList.push_back(new BooleanOperatorLinkedValue(RPNStack.top()));
                 RPNStack.pop();
             }
-            if ( !RPNStack.empty() && RPNStack.top() == '(')
+            if ( !RPNStack.empty() && RPNStack.top() == Symbols::OpenParenthesis)
             {
                 RPNStack.pop();
             }
@@ -474,19 +507,20 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
     while( !RPNStack.empty() ) // Insert all operands in the list
     {
         if (
-            RPNStack.top() == '=' ||
-            RPNStack.top() == '!' ||
-            RPNStack.top() == '>' ||
-            RPNStack.top() == 'g' ||
-            RPNStack.top() == 'l' ||
-            RPNStack.top() == '<' ||
-            RPNStack.top() == '&' ||
-            RPNStack.top() == '|' )
+            RPNStack.top() == Symbols::Equal ||
+            RPNStack.top() == Symbols::Negation ||
+            RPNStack.top() == Symbols::Greater ||
+            RPNStack.top() == Symbols::GreaterEqual ||
+            RPNStack.top() == Symbols::LessEqual ||
+            RPNStack.top() == Symbols::Less ||
+            RPNStack.top() == Symbols::And ||
+            RPNStack.top() == Symbols::NotEqual ||
+            RPNStack.top() == Symbols::Or )
         {
             _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
             RPNStack.pop();
         }
-        else if ( RPNStack.top() == '(' )
+        else if ( RPNStack.top() == Symbols::OpenParenthesis )
         {
             throw SyntaxException("Expected )",tmp->getCodeReference());
         }

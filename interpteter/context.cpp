@@ -200,6 +200,9 @@ bool Context::setVariableValue(string name,LiteralValue* value) {
         _contextStack.push(tmpStack.top());
         tmpStack.pop();
     }
+
+    // TODO: check dataTypes and casting
+
     if( get<1>(_variables.find(ctxIndex)->second.find(name)->second) )
         delete get<1>(_variables.find(ctxIndex)->second.find(name)->second);
     get<1>(_variables.find(ctxIndex)->second.find(name)->second) = value;

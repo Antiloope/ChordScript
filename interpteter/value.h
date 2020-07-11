@@ -56,6 +56,13 @@ public:
     MathOperationLinkedValue(list<TerminalExpression*>*);
     LiteralValue * getValue() const override;
 private:
+    enum Symbols: char {
+        OpenParenthesis = 'a',
+        Multiplication,
+        Divition,
+        Addition,
+        Substraction
+    };
     list<LinkedValue*> _linkedValuesList;
 };
 
@@ -64,6 +71,18 @@ public:
     BooleanOperationLinkedValue(list<TerminalExpression*>*);
     LiteralValue * getValue() const override;
 private:
+    enum Symbols: char {
+        OpenParenthesis = 'a',
+        And,
+        Or,
+        Equal,
+        Negation,
+        NotEqual,
+        Greater,
+        GreaterEqual,
+        Less,
+        LessEqual
+    };
     list<LinkedValue*> _linkedValuesList;
 };
 
