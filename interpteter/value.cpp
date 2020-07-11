@@ -349,6 +349,7 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
                 RPNStack.pop();
             }
             RPNStack.push('&');
+            break;
         case cCast(ExpressionTypes::Or):
             while(
                 !RPNStack.empty() &&

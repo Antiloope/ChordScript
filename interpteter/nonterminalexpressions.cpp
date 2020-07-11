@@ -39,7 +39,6 @@ void ProgramExpression::load(list<TerminalExpression*>* terminalExpressionsList)
 void ProgramExpression::interpret(list<TerminalExpression*> terminalExpressionsList) {
     while (!terminalExpressionsList.empty())
     {
-        Context::getInstance()->switchContext(GlobalContext);
         InstructionExpression tmp(terminalExpressionsList.front()->getCodeReference());
         tmp.load(&terminalExpressionsList);
         tmp.interpret();
@@ -48,6 +47,11 @@ void ProgramExpression::interpret(list<TerminalExpression*> terminalExpressionsL
 
 void ProgramExpression::interpret(){
     Context::getInstance()->setReturnValue(nullptr);
+    for( InstructionExpression* instruction : _instructionsList )
+    {
+        instruction->interpret();
+        if( Context::getInstance()->getReturnValue() ) break;
+    }
 }
 
 ProgramExpression::~ProgramExpression() {
@@ -189,8 +193,6 @@ void ForInstructionExpression::load(list<TerminalExpression*>* terminalExpressio
 
     Context* ctx = Context::getInstance();
 
-    size_t oldContext = ctx->getCurrentContext();
-
     _context = ctx->newContext();
 
     _assignation = new AssignationExpression(tmp->getCodeReference());
@@ -225,7 +227,7 @@ void ForInstructionExpression::load(list<TerminalExpression*>* terminalExpressio
 
     terminalExpressionsList->pop_front();
 
-    ctx->switchContext(oldContext);
+    ctx->returnContext();
 }
 
 ForInstructionExpression::~ForInstructionExpression(){
@@ -279,12 +281,12 @@ void IfInstructionExpression::load(list<TerminalExpression*>* terminalExpression
 
     Context* ctx = Context::getInstance();
 
-    size_t oldContext = ctx->getCurrentContext();
-
     _context = ctx->newContext();
 
     _function = new ProgramExpression(tmp->getCodeReference());
     _function->load(terminalExpressionsList);
+
+    ctx->returnContext();
 
     if( terminalExpressionsList->empty() ) throw SyntaxException("Expected }",tmp->getCodeReference() );
     tmp = terminalExpressionsList->front();
@@ -313,13 +315,13 @@ void IfInstructionExpression::load(list<TerminalExpression*>* terminalExpression
         _elseFunction = new ProgramExpression(tmp->getCodeReference());
         _elseFunction->load(terminalExpressionsList);
 
+        ctx->returnContext();
+
         if( terminalExpressionsList->empty() ) throw SyntaxException("Expected }",tmp->getCodeReference() );
         tmp = terminalExpressionsList->front();
         if( tmp->getType() != cCast(ExpressionTypes::CloseBrace) ) throw SyntaxException("Expected }",tmp->getCodeReference());
         terminalExpressionsList->pop_front();
     }
-
-    ctx->switchContext(oldContext);
 }
 
 IfInstructionExpression::~IfInstructionExpression(){
@@ -350,9 +352,8 @@ void BreakInstructionExpression::load(list<TerminalExpression*>* terminalExpress
 
 BreakInstructionExpression::~BreakInstructionExpression() {}
 
-/// TODO: Implement
 void BreakInstructionExpression::interpret() {
-
+    Context::getInstance()->setReturnValue(new LiteralValue("null",nullptr));
 }
 
 ////////////////////////////////////////
@@ -414,16 +415,20 @@ void AssignationExpression::load(list<TerminalExpression*>* terminalExpressionsL
     if( terminalExpressionsList->empty()) throw SyntaxException("Expected a value after = ",tmp->getCodeReference() );
     tmp = terminalExpressionsList->front();
 
-    LinkedValue* value = LinkedValue::generateLinkedValue(terminalExpressionsList);
+    _value = LinkedValue::generateLinkedValue(terminalExpressionsList);
     if ( terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",terminalExpressionsList->front()->getCodeReference());
 
-    Context::getInstance()->newVariable( _varName, dataType, value );
+    Context::getInstance()->newVariable( _varName, dataType);
 }
 
-AssignationExpression::~AssignationExpression() {}
+AssignationExpression::~AssignationExpression() {
+    if( _value ) delete _value;
+}
 
 /// TODO: Implement
-void AssignationExpression::interpret() {}
+void AssignationExpression::interpret() {
+
+}
 
 ////////////////////////////////////////
 ///     DefinitionExpression
@@ -462,7 +467,7 @@ void DefinitionExpression::load(list<TerminalExpression*>* terminalExpressionsLi
     if( tmp->getType() == cCast(ExpressionTypes::EOE) )
     {
         terminalExpressionsList->pop_front();
-        Context::getInstance()->newVariable(varName,dataType,nullptr);
+        Context::getInstance()->newVariable(varName,dataType);
     }
     else if ( tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) )
     {
@@ -514,8 +519,9 @@ ReturnInstructionExpression::~ReturnInstructionExpression() {
     if( _returnValue ) delete _returnValue;
 }
 
-// TODO: Implement
-void ReturnInstructionExpression::interpret() {}
+void ReturnInstructionExpression::interpret() {
+    Context::getInstance()->setReturnValue(_returnValue->getValue());
+}
 
 ////////////////////////////////////////
 ///     ExecutionExpression

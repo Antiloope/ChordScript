@@ -41,7 +41,7 @@ void FunctionDefinition::load(list<TerminalExpression*>* terminalExpressionsList
 
             if( !ctx->isValidName(((NameExpression*)tmp)->getName()) ) throw SyntaxException("Invalid name",tmp->getCodeReference());
 
-            ctx->newVariable(((NameExpression*)tmp)->getName(),dataType,nullptr);
+            ctx->newVariable(((NameExpression*)tmp)->getName(),dataType);
 
             _argumentsDefinitionList.push_back(ArgumentDefinition(dataType,((NameExpression*)tmp)->getName()));
 
@@ -107,7 +107,7 @@ void FunctionDefinition::load(list<TerminalExpression*>* terminalExpressionsList
 
     terminalExpressionsList->pop_front();
 
-    ctx->switchContext(GlobalContext);
+    ctx->returnContext();
 }
 
 void FunctionDefinition::interpret(LiteralValue*) {

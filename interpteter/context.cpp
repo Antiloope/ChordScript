@@ -43,61 +43,105 @@ Context::Context() {
     _functions = {
     };
 
-    _currentContext = GlobalContext;
+    _contextStack.push(GlobalContext);
 }
 
-size_t Context::newContext() {
-    static size_t counter;
-    _variables.insert(pair<size_t,variables_map>(++counter,variables_map()));
-    _currentContext = counter;
+context_index Context::newContext() {
+    static context_index counter;
+    _variables.insert(pair<context_index,variables_map>(++counter,variables_map()));
+    _contextStack.push(counter);
     return counter;
 }
 
-size_t Context::switchContext(size_t ctx) {
-    if ( _variables.find(ctx) == _variables.end() ) return 0;
-    _currentContext = ctx;
-    return ctx;
+void Context::returnContext() {
+    if ( _contextStack.top() ) _contextStack.pop();
 }
 
-size_t Context::getCurrentContext() const {
-    return _currentContext;
+context_index Context::getCurrentContext() const {
+    return _contextStack.top();
 }
 
-bool Context::isDataType(string name) {
+bool Context::isDataType(string name) const {
     return _dataTypes.find(name) != _dataTypes.end();
 }
 
-bool Context::isValidName(string name) {
+bool Context::isValidName(string name) const {
     return _reservedKeywords.find(name) == _reservedKeywords.end();
 }
 
 string Context::getDataTypeName(string name) {
-    if(_variables.find(_currentContext)->second.find(name) != _variables.find(_currentContext)->second.end())
+    stack<context_index> tmpStack;
+    while( !_contextStack.empty() )
     {
-        return get<1>(_variables.find(_currentContext)->second.find(name)->second)->getDataTypeName();
+        if( _variables.find(_contextStack.top())->second.find(name) == _variables.find(_contextStack.top())->second.end() )
+        {
+            tmpStack.push(_contextStack.top());
+            _contextStack.pop();
+        }
+        else break;
     }
-    return get<1>(_variables.find(GlobalContext)->second.find(name)->second)->getDataTypeName();
+    if( _contextStack.empty() )
+    {
+        while( !tmpStack.empty() )
+        {
+            _contextStack.push(tmpStack.top());
+            tmpStack.pop();
+        }
+        return "null";
+    }
+    context_index currentContext = _contextStack.top();
+    while( !tmpStack.empty() )
+    {
+        _contextStack.push(tmpStack.top());
+        tmpStack.pop();
+    }
+
+    if( get<1>(_variables.find(currentContext)->second.find(name)->second) )
+        return get<1>(_variables.find(currentContext)->second.find(name)->second)->getDataTypeName();
+    return "null";
 }
 
 bool Context::nameExist(string name) {
-    return
-        (_variables.find(_currentContext)->second.find(name) != _variables.find(_currentContext)->second.end() ||
-         _variables.find(GlobalContext)->second.find(name) != _variables.find(GlobalContext)->second.end() );
+    stack<context_index> tmpStack;
+    while( !_contextStack.empty() )
+    {
+        if( _variables.find(_contextStack.top())->second.find(name) == _variables.find(_contextStack.top())->second.end() )
+        {
+            tmpStack.push(_contextStack.top());
+            _contextStack.pop();
+        }
+        else break;
+    }
+    if( _contextStack.empty() )
+    {
+        while( !tmpStack.empty() )
+        {
+            _contextStack.push(tmpStack.top());
+            tmpStack.pop();
+        }
+        return false;
+    }
+    while( !tmpStack.empty() )
+    {
+        _contextStack.push(tmpStack.top());
+        tmpStack.pop();
+    }
+    return true;
 }
 
-bool Context::functionNameExist(string name) {
+bool Context::functionNameExist(string name) const {
     return _functions.find(name) != _functions.end();
 }
 
-void Context::newVariable(string name, string dataType, LinkedValue* value) {
-    auto tmp = _variables.find(_currentContext)->second.find(name);
-    if(tmp != _variables.find(_currentContext)->second.end())
+void Context::newVariable(string name, string dataType) {
+    context_index currentContext = _contextStack.top();
+    auto tmp = _variables.find(currentContext)->second.find(name);
+    if(tmp != _variables.find(currentContext)->second.end())
     {
         delete get<1>(tmp->second);
-        delete get<2>(tmp->second);
-        _variables.find(_currentContext)->second.erase(name);
+        _variables.find(currentContext)->second.erase(name);
     }
-    _variables.find(_currentContext)->second.insert({name,tuple<string,LinkedValue*,LiteralValue*>(dataType,value,nullptr)});
+    _variables.find(currentContext)->second.insert({name,tuple<string,LiteralValue*>(dataType,nullptr)});
 }
 
 #include "functiondefinition.h"
@@ -125,16 +169,47 @@ void Context::removeContext(context_index ctx) {
     for(auto it : variableMap)
     {
         if (get<1>(it.second)) delete get<1>(it.second);
-        if (get<2>(it.second)) delete get<2>(it.second);
     }
 
     _variables.erase(ctx);
 }
 
-void Context::setReturnValue(LinkedValue* value) {
+bool Context::setVariableValue(string name,LiteralValue* value) {
+    stack<context_index> tmpStack;
+    while( !_contextStack.empty() )
+    {
+        if( _variables.find(_contextStack.top())->second.find(name) == _variables.find(_contextStack.top())->second.end() )
+        {
+            tmpStack.push(_contextStack.top());
+            _contextStack.pop();
+        }
+        else break;
+    }
+    if( _contextStack.empty() )
+    {
+        while( !tmpStack.empty() )
+        {
+            _contextStack.push(tmpStack.top());
+            tmpStack.pop();
+        }
+        return false;
+    }
+    size_t ctxIndex = _contextStack.top();
+    while( !tmpStack.empty() )
+    {
+        _contextStack.push(tmpStack.top());
+        tmpStack.pop();
+    }
+    if( get<1>(_variables.find(ctxIndex)->second.find(name)->second) )
+        delete get<1>(_variables.find(ctxIndex)->second.find(name)->second);
+    get<1>(_variables.find(ctxIndex)->second.find(name)->second) = value;
+    return true;
+}
+
+void Context::setReturnValue(LiteralValue* value) {
     _returnValue = value;
 }
 
-LinkedValue* Context::getReturnValue() const {
+LiteralValue* Context::getReturnValue() const {
     return _returnValue;
 }

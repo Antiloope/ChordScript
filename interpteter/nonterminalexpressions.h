@@ -32,6 +32,7 @@ public:
     void interpret() override;
 private:
     string _varName;
+    LinkedValue* _value;
 };
 
 class ExecutionExpression : public NonTerminalExpression {
