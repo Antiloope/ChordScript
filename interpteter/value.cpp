@@ -24,7 +24,36 @@ DataTypesId Value::getDataTypeId() const {
 LiteralValue::LiteralValue(DataTypesId dataType, void* value) : Value(dataType), _value(value) {}
 
 // TODO: Implement deleting void* casting correctly
-LiteralValue::~LiteralValue(){
+LiteralValue::~LiteralValue() {
+    switch (_dataType) {
+    case DataTypesId::Null:
+        break;
+    case DataTypesId::Numeric:
+        delete (double*)_value;
+        break;
+    case DataTypesId::Array:
+        break;
+    case DataTypesId::Group:
+        break;
+    case DataTypesId::Sound:
+        break;
+    case DataTypesId::Buffer:
+        break;
+    case DataTypesId::Sample:
+        break;
+    case DataTypesId::String:
+        delete (string*)_value;
+        break;
+    case DataTypesId::Boolean:
+        break;
+    case DataTypesId::Argument:
+        break;
+    case DataTypesId::Function:
+        break;
+    case DataTypesId::Operator:
+        delete (char*)_value;
+        break;
+    }
 }
 
 ////////////////////////////////////////
@@ -133,7 +162,7 @@ StringLinkedValue::StringLinkedValue(list<TerminalExpression*>* terminalExpressi
 }
 
 LiteralValue* StringLinkedValue::getValue() const {
-    return new LiteralValue(DataTypesId::String,(void*)&_text);
+    return new LiteralValue(DataTypesId::String,(void*) new string(_text));
 }
 
 ////////////////////////////////////////
@@ -156,7 +185,7 @@ NullLinkedValue::NullLinkedValue(list<TerminalExpression*>* terminalExpressionsL
 NumericLinkedValue::NumericLinkedValue(double value) : LinkedValue(), _value(value) {}
 
 LiteralValue* NumericLinkedValue::getValue() const {
-    return new LiteralValue(DataTypesId::Numeric,(void*)&_value);
+    return new LiteralValue(DataTypesId::Numeric,(void*) new double(_value));
 }
 
 ////////////////////////////////////////
@@ -311,9 +340,73 @@ MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* te
     }
 }
 
-// TODO: Implement RPN reading
 LiteralValue* MathOperationLinkedValue::getValue() const {
-    return nullptr;
+    stack<double> RPNStack;
+    for( LinkedValue* linkedValue : _linkedValuesList )
+    {
+        LiteralValue* literalValue = linkedValue->getValue();
+
+        switch (literalValue->getDataTypeId()) {
+        case DataTypesId::Numeric:
+            RPNStack.push(*(double*)literalValue->getValue());
+            break;
+        case DataTypesId::Operator:
+        {
+            if( RPNStack.empty() )
+            {
+                delete literalValue;
+                throw SyntaxException("Invalid operation");
+            }
+            double op1 = RPNStack.top();
+            RPNStack.pop();
+            if( RPNStack.empty() )
+            {
+                delete literalValue;
+                throw SyntaxException("Invalid operation");
+            }
+
+            double op2 = RPNStack.top();
+            RPNStack.pop();
+            switch (*(char*)literalValue->getValue()) {
+            case Symbols::Multiplication:
+                RPNStack.push(op2 * op1);
+                break;
+            case Symbols::Divition:
+                if( op1 == 0 )
+                {
+                    delete literalValue;
+                    throw SemanticException("Dividing by zero");
+                }
+                RPNStack.push(op2 / op1);
+                break;
+            case Symbols::Addition:
+                RPNStack.push(op2 + op1);
+                break;
+            case Symbols::Substraction:
+                RPNStack.push(op2 - op1);
+                break;
+            default:
+                delete literalValue;
+                throw SyntaxException("Unknown operator");
+                break;
+            }
+        }
+            break;
+        default:
+            string errorDescription = "Invalid convertion from ";
+            errorDescription.append(DataType::getDataTypeString(literalValue->getDataTypeId()));
+            errorDescription.append(" to numeric");
+            delete literalValue;
+            throw SemanticException(errorDescription);
+            break;
+        }
+        delete literalValue;
+    }
+    if ( RPNStack.empty() ) throw SyntaxException("Invalid number of operands");
+    double* ret = new double(RPNStack.top());
+    RPNStack.pop();
+    if ( !RPNStack.empty() ) throw SyntaxException("Invalid number of operands");
+    return new LiteralValue(DataTypesId::Numeric,(void*)ret);
 }
 
 ////////////////////////////////////////
@@ -323,7 +416,7 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
 OperatorLinkedValue::OperatorLinkedValue(char op) : _operator(op) {}
 
 LiteralValue * OperatorLinkedValue::getValue() const {
-    return new LiteralValue(DataTypesId::Operator,(void*)&_operator);
+    return new LiteralValue(DataTypesId::Operator,(void*) new char(_operator));
 }
 
 ////////////////////////////////////////
