@@ -23,7 +23,6 @@ DataTypesId Value::getDataTypeId() const {
 
 LiteralValue::LiteralValue(DataTypesId dataType, void* value) : Value(dataType), _value(value) {}
 
-// TODO: Implement deleting void* casting correctly
 LiteralValue::~LiteralValue() {
     switch (_dataType) {
     case DataTypesId::Null:
@@ -149,6 +148,10 @@ LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* termina
     return ret;
 }
 
+size_t LinkedValue::getCodeReference() const {
+    return _codeReference;
+}
+
 ////////////////////////////////////////
 ///     String
 ////////////////////////////////////////
@@ -246,7 +249,7 @@ void MathOperationLinkedValue::load(list<TerminalExpression*>* terminalExpressio
             {
                 auto op = new OperatorLinkedValue(tmp->getCodeReference());
                 _linkedValuesList.push_back(op);
-                op->load((MathSymbols)RPNStack.top());
+                op->load(RPNStack.top());
                 RPNStack.pop();
             }
             RPNStack.push(cCast(MathSymbols::Addition));
@@ -261,7 +264,7 @@ void MathOperationLinkedValue::load(list<TerminalExpression*>* terminalExpressio
                 ){
                 auto op = new OperatorLinkedValue(tmp->getCodeReference());
                 _linkedValuesList.push_back(op);
-                op->load((MathSymbols)RPNStack.top());
+                op->load(RPNStack.top());
                 RPNStack.pop();
             }
             RPNStack.push(cCast(MathSymbols::Substraction));
@@ -274,7 +277,7 @@ void MathOperationLinkedValue::load(list<TerminalExpression*>* terminalExpressio
                 ){
                 auto op = new OperatorLinkedValue(tmp->getCodeReference());
                 _linkedValuesList.push_back(op);
-                op->load((MathSymbols)RPNStack.top());
+                op->load(RPNStack.top());
                 RPNStack.pop();
             }
             RPNStack.push(cCast(MathSymbols::Multiplication));
@@ -287,7 +290,7 @@ void MathOperationLinkedValue::load(list<TerminalExpression*>* terminalExpressio
                 ){
                 auto op = new OperatorLinkedValue(tmp->getCodeReference());
                 _linkedValuesList.push_back(op);
-                op->load((MathSymbols)RPNStack.top());
+                op->load(RPNStack.top());
                 RPNStack.pop();
             }
             RPNStack.push(cCast(MathSymbols::Divition));
@@ -302,7 +305,7 @@ void MathOperationLinkedValue::load(list<TerminalExpression*>* terminalExpressio
             {
                 auto op = new OperatorLinkedValue(tmp->getCodeReference());
                 _linkedValuesList.push_back(op);
-                op->load((MathSymbols)RPNStack.top());
+                op->load(RPNStack.top());
                 RPNStack.pop();
             }
             if ( !RPNStack.empty() && RPNStack.top() == cCast(MathSymbols::OpenParenthesis) )
@@ -361,7 +364,7 @@ void MathOperationLinkedValue::load(list<TerminalExpression*>* terminalExpressio
         {
             auto op = new OperatorLinkedValue(tmp->getCodeReference());
             _linkedValuesList.push_back(op);
-            op->load((MathSymbols)RPNStack.top());
+            op->load(RPNStack.top());
             RPNStack.pop();
         }
         else if ( RPNStack.top() == cCast(MathSymbols::OpenParenthesis) )
@@ -390,14 +393,14 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
             if( RPNStack.empty() )
             {
                 delete literalValue;
-                throw SyntaxException("Invalid operation");
+                throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
             }
             double op1 = RPNStack.top();
             RPNStack.pop();
             if( RPNStack.empty() )
             {
                 delete literalValue;
-                throw SyntaxException("Invalid operation");
+                throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
             }
 
             double op2 = RPNStack.top();
@@ -410,7 +413,7 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                 if( op1 == 0 )
                 {
                     delete literalValue;
-                    throw SemanticException("Dividing by zero");
+                    throw SemanticException("Dividing by zero",linkedValue->getCodeReference());
                 }
                 RPNStack.push(op2 / op1);
                 break;
@@ -422,7 +425,7 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                 break;
             default:
                 delete literalValue;
-                throw SyntaxException("Unknown operator");
+                throw SyntaxException("Unknown operator",linkedValue->getCodeReference());
                 break;
             }
         }
@@ -432,15 +435,15 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
             errorDescription.append(DataType::getDataTypeString(literalValue->getDataTypeId()));
             errorDescription.append(" to numeric");
             delete literalValue;
-            throw SemanticException(errorDescription);
+            throw SemanticException(errorDescription,linkedValue->getCodeReference());
             break;
         }
         delete literalValue;
     }
-    if ( RPNStack.empty() ) throw SyntaxException("Invalid number of operands");
+    if ( RPNStack.empty() ) throw SyntaxException("Invalid number of operands",this->getCodeReference());
     double* ret = new double(RPNStack.top());
     RPNStack.pop();
-    if ( !RPNStack.empty() ) throw SyntaxException("Invalid number of operands");
+    if ( !RPNStack.empty() ) throw SyntaxException("Invalid number of operands",this->getCodeReference());
     return new LiteralValue(DataTypesId::Numeric,(void*)ret);
 }
 
@@ -455,12 +458,8 @@ void OperatorLinkedValue::load(list<TerminalExpression*>* terminalExpressionsLis
     terminalExpressionsList->pop_front();
 }
 
-void OperatorLinkedValue::load(MathSymbols op) {
-    _operator = cCast(op);
-}
-
-void OperatorLinkedValue::load(BooleanSymbols op) {
-    _operator = cCast(op);
+void OperatorLinkedValue::load(char op) {
+    _operator = op;
 }
 
 LiteralValue * OperatorLinkedValue::getValue() const {
@@ -494,7 +493,7 @@ void BooleanOperationLinkedValue::load(list<TerminalExpression*>* terminalExpres
             {
                 auto op = new OperatorLinkedValue(tmp->getCodeReference());
                 _linkedValuesList.push_back(op);
-                op->load((BooleanSymbols)RPNStack.top());
+                op->load(RPNStack.top());
                 RPNStack.pop();
             }
             RPNStack.push(cCast(BooleanSymbols::And));
@@ -506,7 +505,7 @@ void BooleanOperationLinkedValue::load(list<TerminalExpression*>* terminalExpres
             {
                 auto op = new OperatorLinkedValue(tmp->getCodeReference());
                 _linkedValuesList.push_back(op);
-                op->load((BooleanSymbols)RPNStack.top());
+                op->load(RPNStack.top());
                 RPNStack.pop();
             }
             RPNStack.push(cCast(BooleanSymbols::Or));
@@ -520,7 +519,7 @@ void BooleanOperationLinkedValue::load(list<TerminalExpression*>* terminalExpres
             {
                 auto op = new OperatorLinkedValue(tmp->getCodeReference());
                 _linkedValuesList.push_back(op);
-                op->load((BooleanSymbols)RPNStack.top());
+                op->load(RPNStack.top());
                 RPNStack.pop();
             }
             terminalExpressionsList->pop_front();
@@ -550,7 +549,7 @@ void BooleanOperationLinkedValue::load(list<TerminalExpression*>* terminalExpres
                 {
                     auto op = new OperatorLinkedValue(tmp->getCodeReference());
                     _linkedValuesList.push_back(op);
-                    op->load((BooleanSymbols)RPNStack.top());
+                    op->load(RPNStack.top());
                     RPNStack.pop();
                 }
                 terminalExpressionsList->pop_front();
@@ -573,7 +572,7 @@ void BooleanOperationLinkedValue::load(list<TerminalExpression*>* terminalExpres
             {
                 auto op = new OperatorLinkedValue(tmp->getCodeReference());
                 _linkedValuesList.push_back(op);
-                op->load((BooleanSymbols)RPNStack.top());
+                op->load(RPNStack.top());
                 RPNStack.pop();
             }
             auto it = terminalExpressionsList->begin();
@@ -601,7 +600,7 @@ void BooleanOperationLinkedValue::load(list<TerminalExpression*>* terminalExpres
             {
                 auto op = new OperatorLinkedValue(tmp->getCodeReference());
                 _linkedValuesList.push_back(op);
-                op->load((BooleanSymbols)RPNStack.top());
+                op->load(RPNStack.top());
                 RPNStack.pop();
             }
             auto it = terminalExpressionsList->begin();
@@ -647,7 +646,7 @@ void BooleanOperationLinkedValue::load(list<TerminalExpression*>* terminalExpres
             {
                 auto op = new OperatorLinkedValue(tmp->getCodeReference());
                 _linkedValuesList.push_back(op);
-                op->load((BooleanSymbols)RPNStack.top());
+                op->load(RPNStack.top());
                 RPNStack.pop();
             }
             if ( !RPNStack.empty() && RPNStack.top() == cCast(BooleanSymbols::OpenParenthesis))
@@ -681,7 +680,7 @@ void BooleanOperationLinkedValue::load(list<TerminalExpression*>* terminalExpres
         {
             auto op = new OperatorLinkedValue(tmp->getCodeReference());
             _linkedValuesList.push_back(op);
-            op->load((BooleanSymbols)RPNStack.top());
+            op->load(RPNStack.top());
             RPNStack.pop();
         }
         else if ( RPNStack.top() == cCast(BooleanSymbols::OpenParenthesis) )

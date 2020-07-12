@@ -37,6 +37,7 @@ public:
     virtual void load(list<TerminalExpression*>*) = 0;
     virtual ~LinkedValue();
     static LinkedValue* generateLinkedValue(list<TerminalExpression*>*);
+    size_t getCodeReference() const;
 private:
     size_t _codeReference;
 };
@@ -139,8 +140,7 @@ class OperatorLinkedValue : public LinkedValue {
 public:
     OperatorLinkedValue(size_t);
     void load(list<TerminalExpression *> *) override;
-    void load(MathSymbols);
-    void load(BooleanSymbols);
+    void load(char);
     LiteralValue * getValue() const override;
 private:
     char _operator;
