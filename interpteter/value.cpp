@@ -60,7 +60,7 @@ LiteralValue::~LiteralValue() {
 ///     LinkedValue : Value
 ////////////////////////////////////////
 
-LinkedValue::LinkedValue() : Value(DataTypesId::Null) {}
+LinkedValue::LinkedValue(size_t codeReference) : Value(DataTypesId::Null), _codeReference(codeReference) {}
 
 LinkedValue::~LinkedValue() {}
 
@@ -74,22 +74,22 @@ LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* termina
     switch ( tmp->getType() )
     {
     case cCast(ExpressionTypes::String):
-        ret = new StringLinkedValue(terminalExpressionsList);
+        ret = new StringLinkedValue(tmp->getCodeReference());
         break;
     case cCast(ExpressionTypes::Null):
-        ret = new NullLinkedValue(terminalExpressionsList);
+        ret = new NullLinkedValue(tmp->getCodeReference());
         break;
     case cCast(ExpressionTypes::Addition):
     case cCast(ExpressionTypes::Substract):
-        ret = new MathOperationLinkedValue(terminalExpressionsList);
+        ret = new MathOperationLinkedValue(tmp->getCodeReference());
         break;
     case cCast(ExpressionTypes::OpenBracket):
     case cCast(ExpressionTypes::OpenParenthesis):
-        ret = new ArrayLinkedValue(terminalExpressionsList);
+        ret = new ArrayLinkedValue(tmp->getCodeReference());
         break;
     case cCast(ExpressionTypes::Boolean):
     case cCast(ExpressionTypes::Negation):
-        ret = new BooleanOperationLinkedValue(terminalExpressionsList);
+        ret = new BooleanOperationLinkedValue(tmp->getCodeReference());
         break;
     case cCast(ExpressionTypes::Name):
     {
@@ -100,22 +100,22 @@ LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* termina
         switch (tmp->getType()) {
         case cCast(ExpressionTypes::OpenParenthesis):
         case cCast(ExpressionTypes::MemberAccess):
-            ret = new ExecutionLinkedValue(terminalExpressionsList);
+            ret = new ExecutionLinkedValue(tmp->getCodeReference());
             break;
         case cCast(ExpressionTypes::Addition):
         case cCast(ExpressionTypes::Substract):
         case cCast(ExpressionTypes::Divition):
         case cCast(ExpressionTypes::Multiplication):
-            ret = new MathOperationLinkedValue(terminalExpressionsList);
+            ret = new MathOperationLinkedValue(tmp->getCodeReference());
             break;
         case cCast(ExpressionTypes::Equal):
         case cCast(ExpressionTypes::GreaterThan):
         case cCast(ExpressionTypes::LessThan):
         case cCast(ExpressionTypes::Negation):
-            ret = new BooleanOperationLinkedValue(terminalExpressionsList);
+            ret = new BooleanOperationLinkedValue(tmp->getCodeReference());
             break;
         default:
-            ret = new NameLinkedValue(terminalExpressionsList);
+            ret = new NameLinkedValue(tmp->getCodeReference());
             break;
         }
         break;
@@ -133,11 +133,11 @@ LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* termina
             tmp->getType() == cCast(ExpressionTypes::Negation)
             )
         {
-            ret = new BooleanOperationLinkedValue(terminalExpressionsList);
+            ret = new BooleanOperationLinkedValue(tmp->getCodeReference());
         }
         else
         {
-            ret = new MathOperationLinkedValue(terminalExpressionsList);
+            ret = new MathOperationLinkedValue(tmp->getCodeReference());
         }
         break;
     }
@@ -145,6 +145,7 @@ LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* termina
         throw SyntaxException("Expected a valid value",tmp->getCodeReference());
         break;
     }
+    ret->load(terminalExpressionsList);
     return ret;
 }
 
@@ -152,7 +153,9 @@ LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* termina
 ///     String
 ////////////////////////////////////////
 
-StringLinkedValue::StringLinkedValue(list<TerminalExpression*>* terminalExpressionsList) {
+StringLinkedValue::StringLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
+
+void StringLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
     TerminalExpression* tmp = terminalExpressionsList->front();
     if( tmp->getType() != cCast(ExpressionTypes::String) ) throw SyntaxException("Expected a string",tmp->getCodeReference());
 
@@ -169,11 +172,13 @@ LiteralValue* StringLinkedValue::getValue() const {
 ///     Null
 ////////////////////////////////////////
 
+NullLinkedValue::NullLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
+
 LiteralValue* NullLinkedValue::getValue() const {
     return new LiteralValue(DataTypesId::Null,nullptr);
 }
 
-NullLinkedValue::NullLinkedValue(list<TerminalExpression*>* terminalExpressionsList) {
+void NullLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
     if( terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::Null) ) throw SyntaxException("Expected null", terminalExpressionsList->front()->getCodeReference());
     terminalExpressionsList->pop_front();
 }
@@ -182,7 +187,16 @@ NullLinkedValue::NullLinkedValue(list<TerminalExpression*>* terminalExpressionsL
 ///     Numeric
 ////////////////////////////////////////
 
-NumericLinkedValue::NumericLinkedValue(double value) : LinkedValue(), _value(value) {}
+NumericLinkedValue::NumericLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
+
+void NumericLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
+    TerminalExpression* tmp = terminalExpressionsList->front();
+    if( tmp->getType() != cCast(ExpressionTypes::Numeric) ) throw SyntaxException("Expected a numeric value",tmp->getCodeReference());
+
+    _value = ((NumericExpression*)tmp)->getValue();
+
+    terminalExpressionsList->pop_front();
+}
 
 LiteralValue* NumericLinkedValue::getValue() const {
     return new LiteralValue(DataTypesId::Numeric,(void*) new double(_value));
@@ -192,7 +206,9 @@ LiteralValue* NumericLinkedValue::getValue() const {
 ///     MathOperation
 ////////////////////////////////////////
 
-MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* terminalExpressionsList) {
+MathOperationLinkedValue::MathOperationLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
+
+void MathOperationLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
     TerminalExpression* tmp = terminalExpressionsList->front();
 
     stack<char> RPNStack;
@@ -204,9 +220,12 @@ MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* te
     }
     else if ( tmp->getType() == cCast(ExpressionTypes::Substract) )
     {
-        _linkedValuesList.push_back(new NumericLinkedValue(-1));
-        RPNStack.push(Symbols::Multiplication);
-        terminalExpressionsList->pop_front();
+        _linkedValuesList.push_back(new NumericLinkedValue(tmp->getCodeReference()));
+        TerminalExpression* minus = new NumericExpression(tmp->getCodeReference(),cCast(ExpressionTypes::Numeric),-1);
+        terminalExpressionsList->push_front(minus);
+        _linkedValuesList.back()->load(terminalExpressionsList);
+        delete minus;
+        RPNStack.push(cCast(MathSymbols::Multiplication));
     }
     tmp = terminalExpressionsList->front();
 
@@ -215,66 +234,78 @@ MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* te
     {
         switch (tmp->getType()) {
         case cCast(ExpressionTypes::OpenParenthesis):
-            RPNStack.push(Symbols::OpenParenthesis);
+            RPNStack.push(cCast(MathSymbols::OpenParenthesis));
             break;
         case cCast(ExpressionTypes::Addition):
             while(
                 !RPNStack.empty() &&
-                (RPNStack.top() == Symbols::Divition ||
-                 RPNStack.top() == Symbols::Substraction ||
-                 RPNStack.top() == Symbols::Addition ||
-                 RPNStack.top() == Symbols::Multiplication) )
+                (RPNStack.top() == cCast(MathSymbols::Divition) ||
+                 RPNStack.top() == cCast(MathSymbols::Substraction) ||
+                 RPNStack.top() == cCast(MathSymbols::Addition) ||
+                 RPNStack.top() == cCast(MathSymbols::Multiplication)) )
             {
-                _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+                auto op = new OperatorLinkedValue(tmp->getCodeReference());
+                _linkedValuesList.push_back(op);
+                op->load((MathSymbols)RPNStack.top());
                 RPNStack.pop();
             }
-            RPNStack.push(Symbols::Addition);
+            RPNStack.push(cCast(MathSymbols::Addition));
             break;
         case cCast(ExpressionTypes::Substract):
             while(
                 !RPNStack.empty() &&
-                (RPNStack.top() == Symbols::Divition ||
-                 RPNStack.top() == Symbols::Substraction ||
-                 RPNStack.top() == Symbols::Addition ||
-                 RPNStack.top() == Symbols::Multiplication)
+                (RPNStack.top() == cCast(MathSymbols::Divition) ||
+                 RPNStack.top() == cCast(MathSymbols::Substraction) ||
+                 RPNStack.top() == cCast(MathSymbols::Addition) ||
+                 RPNStack.top() == cCast(MathSymbols::Multiplication))
                 ){
-                _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+                auto op = new OperatorLinkedValue(tmp->getCodeReference());
+                _linkedValuesList.push_back(op);
+                op->load((MathSymbols)RPNStack.top());
                 RPNStack.pop();
             }
-            RPNStack.push(Symbols::Substraction);
+            RPNStack.push(cCast(MathSymbols::Substraction));
             break;
         case cCast(ExpressionTypes::Multiplication):
             while(
                 !RPNStack.empty() &&
-                (RPNStack.top() == Symbols::Divition ||
-                 RPNStack.top() == Symbols::Multiplication)
+                (RPNStack.top() == cCast(MathSymbols::Divition) ||
+                 RPNStack.top() == cCast(MathSymbols::Multiplication))
                 ){
-                _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+                auto op = new OperatorLinkedValue(tmp->getCodeReference());
+                _linkedValuesList.push_back(op);
+                op->load((MathSymbols)RPNStack.top());
                 RPNStack.pop();
             }
-            RPNStack.push(Symbols::Multiplication);
+            RPNStack.push(cCast(MathSymbols::Multiplication));
             break;
         case cCast(ExpressionTypes::Divition):
             while(
                 !RPNStack.empty() &&
-                (RPNStack.top() == Symbols::Divition ||
-                 RPNStack.top() == Symbols::Multiplication)
+                (RPNStack.top() == cCast(MathSymbols::Divition) ||
+                 RPNStack.top() == cCast(MathSymbols::Multiplication))
                 ){
-                _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+                auto op = new OperatorLinkedValue(tmp->getCodeReference());
+                _linkedValuesList.push_back(op);
+                op->load((MathSymbols)RPNStack.top());
                 RPNStack.pop();
             }
-            RPNStack.push(Symbols::Divition);
+            RPNStack.push(cCast(MathSymbols::Divition));
             break;
         case cCast(ExpressionTypes::Numeric):
-            _linkedValuesList.push_back(new NumericLinkedValue(((NumericExpression*)tmp)->getValue()));
+            _linkedValuesList.push_back(new NumericLinkedValue(tmp->getCodeReference()));
+            _linkedValuesList.back()->load(terminalExpressionsList);
+            terminalExpressionsList->push_front(nullptr);
             break;
         case cCast(ExpressionTypes::CloseParenthesis):
-            while( !RPNStack.empty() && RPNStack.top() != Symbols::OpenParenthesis )
+            while( !RPNStack.empty() && RPNStack.top() != cCast(MathSymbols::OpenParenthesis) )
             {
-                _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+                auto op = new OperatorLinkedValue(tmp->getCodeReference());
+                _linkedValuesList.push_back(op);
+                op->load((MathSymbols)RPNStack.top());
                 RPNStack.pop();
             }
-            if ( !RPNStack.empty() && RPNStack.top() == Symbols::OpenParenthesis )
+            if ( !RPNStack.empty() && RPNStack.top() == cCast(MathSymbols::OpenParenthesis) )
             {
                 RPNStack.pop();
             }
@@ -290,7 +321,8 @@ MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* te
                 tmp->getType() == cCast(ExpressionTypes::MemberAccess) ||
                 tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) )
             {
-                _linkedValuesList.push_back(new ExecutionLinkedValue(terminalExpressionsList));
+                _linkedValuesList.push_back(new ExecutionLinkedValue(tmp->getCodeReference()));
+                _linkedValuesList.back()->load(terminalExpressionsList);
                 terminalExpressionsList->push_front(nullptr);
             }
             else
@@ -298,7 +330,8 @@ MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* te
                 tmp = terminalExpressionsList->front();
                 if ( Context::getInstance()->nameExist(((NameExpression*)tmp)->getName()) )
                 {
-                    _linkedValuesList.push_back(new NameLinkedValue(terminalExpressionsList));
+                    _linkedValuesList.push_back(new NameLinkedValue(tmp->getCodeReference()));
+                    _linkedValuesList.back()->load(terminalExpressionsList);
                     terminalExpressionsList->push_front(nullptr);
                 }
                 else
@@ -321,15 +354,17 @@ MathOperationLinkedValue::MathOperationLinkedValue(list<TerminalExpression*>* te
     while( !RPNStack.empty() ) // Insert all operands in the list
     {
         if (
-            RPNStack.top() == Symbols::Multiplication ||
-            RPNStack.top() == Symbols::Substraction ||
-            RPNStack.top() == Symbols::Addition ||
-            RPNStack.top() == Symbols::Divition )
+            RPNStack.top() == cCast(MathSymbols::Multiplication) ||
+            RPNStack.top() == cCast(MathSymbols::Substraction) ||
+            RPNStack.top() == cCast(MathSymbols::Addition) ||
+            RPNStack.top() == cCast(MathSymbols::Divition) )
         {
-            _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+            auto op = new OperatorLinkedValue(tmp->getCodeReference());
+            _linkedValuesList.push_back(op);
+            op->load((MathSymbols)RPNStack.top());
             RPNStack.pop();
         }
-        else if ( RPNStack.top() == Symbols::OpenParenthesis )
+        else if ( RPNStack.top() == cCast(MathSymbols::OpenParenthesis) )
         {
             throw SyntaxException("Expected )",tmp->getCodeReference());
         }
@@ -368,10 +403,10 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
             double op2 = RPNStack.top();
             RPNStack.pop();
             switch (*(char*)literalValue->getValue()) {
-            case Symbols::Multiplication:
+            case cCast(MathSymbols::Multiplication):
                 RPNStack.push(op2 * op1);
                 break;
-            case Symbols::Divition:
+            case cCast(MathSymbols::Divition):
                 if( op1 == 0 )
                 {
                     delete literalValue;
@@ -379,10 +414,10 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                 }
                 RPNStack.push(op2 / op1);
                 break;
-            case Symbols::Addition:
+            case cCast(MathSymbols::Addition):
                 RPNStack.push(op2 + op1);
                 break;
-            case Symbols::Substraction:
+            case cCast(MathSymbols::Substraction):
                 RPNStack.push(op2 - op1);
                 break;
             default:
@@ -413,7 +448,20 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
 ///     Operator
 ////////////////////////////////////////
 
-OperatorLinkedValue::OperatorLinkedValue(char op) : _operator(op) {}
+OperatorLinkedValue::OperatorLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
+
+void OperatorLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
+    // NOT IMPLEMENTED
+    terminalExpressionsList->pop_front();
+}
+
+void OperatorLinkedValue::load(MathSymbols op) {
+    _operator = cCast(op);
+}
+
+void OperatorLinkedValue::load(BooleanSymbols op) {
+    _operator = cCast(op);
+}
 
 LiteralValue * OperatorLinkedValue::getValue() const {
     return new LiteralValue(DataTypesId::Operator,(void*) new char(_operator));
@@ -423,7 +471,9 @@ LiteralValue * OperatorLinkedValue::getValue() const {
 ///     BooleanOperator
 ////////////////////////////////////////
 
-BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression*>* terminalExpressionsList) {
+BooleanOperationLinkedValue::BooleanOperationLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
+
+void BooleanOperationLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
     TerminalExpression* tmp = terminalExpressionsList->front();
 
     stack<char> RPNStack;
@@ -435,43 +485,49 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
         switch ( tmp->getType() )
         {
         case cCast(ExpressionTypes::OpenParenthesis):
-            RPNStack.push(Symbols::OpenParenthesis);
+            RPNStack.push(cCast(BooleanSymbols::OpenParenthesis));
             break;
         case cCast(ExpressionTypes::And):
             while(
                 !RPNStack.empty() &&
-                RPNStack.top() != Symbols::OpenParenthesis )
+                RPNStack.top() != cCast(BooleanSymbols::OpenParenthesis) )
             {
-                _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+                auto op = new OperatorLinkedValue(tmp->getCodeReference());
+                _linkedValuesList.push_back(op);
+                op->load((BooleanSymbols)RPNStack.top());
                 RPNStack.pop();
             }
-            RPNStack.push(Symbols::And);
+            RPNStack.push(cCast(BooleanSymbols::And));
             break;
         case cCast(ExpressionTypes::Or):
             while(
                 !RPNStack.empty() &&
-                RPNStack.top() != Symbols::OpenParenthesis )
+                RPNStack.top() != cCast(BooleanSymbols::OpenParenthesis) )
             {
-                _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+                auto op = new OperatorLinkedValue(tmp->getCodeReference());
+                _linkedValuesList.push_back(op);
+                op->load((BooleanSymbols)RPNStack.top());
                 RPNStack.pop();
             }
-            RPNStack.push(Symbols::Or);
+            RPNStack.push(cCast(BooleanSymbols::Or));
             break;
         case cCast(ExpressionTypes::Equal):
-            if ( !RPNStack.empty() && RPNStack.top() != Symbols::OpenParenthesis && RPNStack.top() != Symbols::And && RPNStack.top() != Symbols::Or && RPNStack.top() != Symbols::Negation )
+            if ( !RPNStack.empty() && RPNStack.top() != cCast(BooleanSymbols::OpenParenthesis) && RPNStack.top() != cCast(BooleanSymbols::And) && RPNStack.top() != cCast(BooleanSymbols::Or) && RPNStack.top() != cCast(BooleanSymbols::Negation) )
             {
                 throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
             }
-            if ( !RPNStack.empty() && RPNStack.top() == Symbols::Negation )
+            if ( !RPNStack.empty() && RPNStack.top() == cCast(BooleanSymbols::Negation) )
             {
-                _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+                auto op = new OperatorLinkedValue(tmp->getCodeReference());
+                _linkedValuesList.push_back(op);
+                op->load((BooleanSymbols)RPNStack.top());
                 RPNStack.pop();
             }
             terminalExpressionsList->pop_front();
             tmp = terminalExpressionsList->front();
             if ( tmp->getType() == cCast(ExpressionTypes::Equal) )
             {
-                RPNStack.push(Symbols::Equal);
+                RPNStack.push(cCast(BooleanSymbols::Equal));
             }
             else
             {
@@ -486,34 +542,38 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
             tmp = *it;
             if ( tmp->getType() == cCast(ExpressionTypes::Equal) )
             {
-                if ( !RPNStack.empty() && RPNStack.top() != Symbols::OpenParenthesis && RPNStack.top() != Symbols::And && RPNStack.top() != Symbols::Or && RPNStack.top() != Symbols::Negation )
+                if ( !RPNStack.empty() && RPNStack.top() != cCast(BooleanSymbols::OpenParenthesis) && RPNStack.top() != cCast(BooleanSymbols::And) && RPNStack.top() != cCast(BooleanSymbols::Or) && RPNStack.top() != cCast(BooleanSymbols::Negation) )
                 {
                     throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
                 }
-                if ( !RPNStack.empty() && RPNStack.top() == Symbols::Negation )
+                if ( !RPNStack.empty() && RPNStack.top() == cCast(BooleanSymbols::Negation) )
                 {
-                    _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+                    auto op = new OperatorLinkedValue(tmp->getCodeReference());
+                    _linkedValuesList.push_back(op);
+                    op->load((BooleanSymbols)RPNStack.top());
                     RPNStack.pop();
                 }
                 terminalExpressionsList->pop_front();
-                RPNStack.push(Symbols::NotEqual);
+                RPNStack.push(cCast(BooleanSymbols::NotEqual));
             }
             else
             {
-                RPNStack.push(Symbols::Negation);
+                RPNStack.push(cCast(BooleanSymbols::Negation));
             }
             tmp = terminalExpressionsList->front();
         }
             break;
         case cCast(ExpressionTypes::GreaterThan):
         {
-            if ( !RPNStack.empty() && RPNStack.top() != Symbols::OpenParenthesis && RPNStack.top() != Symbols::And && RPNStack.top() != Symbols::Or && RPNStack.top() != Symbols::Negation )
+            if ( !RPNStack.empty() && RPNStack.top() != cCast(BooleanSymbols::OpenParenthesis) && RPNStack.top() != cCast(BooleanSymbols::And) && RPNStack.top() != cCast(BooleanSymbols::Or) && RPNStack.top() != cCast(BooleanSymbols::Negation) )
             {
                 throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
             }
-            if ( !RPNStack.empty() && RPNStack.top() == Symbols::Negation )
+            if ( !RPNStack.empty() && RPNStack.top() == cCast(BooleanSymbols::Negation) )
             {
-                _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+                auto op = new OperatorLinkedValue(tmp->getCodeReference());
+                _linkedValuesList.push_back(op);
+                op->load((BooleanSymbols)RPNStack.top());
                 RPNStack.pop();
             }
             auto it = terminalExpressionsList->begin();
@@ -523,23 +583,25 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
             if( tmp->getType() == cCast(ExpressionTypes::Equal) )
             {
                 terminalExpressionsList->pop_front();
-                RPNStack.push(Symbols::GreaterEqual);
+                RPNStack.push(cCast(BooleanSymbols::GreaterEqual));
             }
             else
             {
-                RPNStack.push(Symbols::Greater);
+                RPNStack.push(cCast(BooleanSymbols::Greater));
             }
         }
             break;
         case cCast(ExpressionTypes::LessThan):
         {
-            if ( !RPNStack.empty() && RPNStack.top() != Symbols::OpenParenthesis && RPNStack.top() != Symbols::And && RPNStack.top() != Symbols::Or && RPNStack.top() != Symbols::Negation )
+            if ( !RPNStack.empty() && RPNStack.top() != cCast(BooleanSymbols::OpenParenthesis) && RPNStack.top() != cCast(BooleanSymbols::And) && RPNStack.top() != cCast(BooleanSymbols::Or) && RPNStack.top() != cCast(BooleanSymbols::Negation) )
             {
                 throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
             }
-            if ( !RPNStack.empty() && RPNStack.top() == Symbols::Negation )
+            if ( !RPNStack.empty() && RPNStack.top() == cCast(BooleanSymbols::Negation) )
             {
-                _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+                auto op = new OperatorLinkedValue(tmp->getCodeReference());
+                _linkedValuesList.push_back(op);
+                op->load((BooleanSymbols)RPNStack.top());
                 RPNStack.pop();
             }
             auto it = terminalExpressionsList->begin();
@@ -549,39 +611,46 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
             if( tmp->getType() == cCast(ExpressionTypes::Equal) )
             {
                 terminalExpressionsList->pop_front();
-                RPNStack.push(Symbols::LessEqual);
+                RPNStack.push(cCast(BooleanSymbols::LessEqual));
             }
             else
             {
-                RPNStack.push(Symbols::Less);
+                RPNStack.push(cCast(BooleanSymbols::Less));
             }
         }
             break;
         case cCast(ExpressionTypes::String):
-            _linkedValuesList.push_back(new StringLinkedValue(terminalExpressionsList));
+            _linkedValuesList.push_back(new StringLinkedValue(tmp->getCodeReference()));
+            _linkedValuesList.back()->load(terminalExpressionsList);
             terminalExpressionsList->push_front(nullptr);
             break;
         case cCast(ExpressionTypes::Boolean):
-            _linkedValuesList.push_back(new BooleanLinkedValue(((BooleanExpression*)tmp)->getValue()));
+            _linkedValuesList.push_back(new BooleanLinkedValue(tmp->getCodeReference()));
+            _linkedValuesList.back()->load(terminalExpressionsList);
+            terminalExpressionsList->push_front(nullptr);
             break;
         case cCast(ExpressionTypes::Null):
-            _linkedValuesList.push_back(new NullLinkedValue(terminalExpressionsList));
+            _linkedValuesList.push_back(new NullLinkedValue(tmp->getCodeReference()));
+            _linkedValuesList.back()->load(terminalExpressionsList);
             terminalExpressionsList->push_front(nullptr);
             break;
         case cCast(ExpressionTypes::Addition):
         case cCast(ExpressionTypes::Substract):
         case cCast(ExpressionTypes::Numeric):
         case cCast(ExpressionTypes::Name):
-            _linkedValuesList.push_back(new MathOperationLinkedValue(terminalExpressionsList));
+            _linkedValuesList.push_back(new MathOperationLinkedValue(tmp->getCodeReference()));
+            _linkedValuesList.back()->load(terminalExpressionsList);
             terminalExpressionsList->push_front(nullptr);
             break;
         case cCast(ExpressionTypes::CloseParenthesis):
-            while( !RPNStack.empty() && RPNStack.top() != Symbols::OpenParenthesis )
+            while( !RPNStack.empty() && RPNStack.top() != cCast(BooleanSymbols::OpenParenthesis) )
             {
-                _linkedValuesList.push_back(new BooleanOperatorLinkedValue(RPNStack.top()));
+                auto op = new OperatorLinkedValue(tmp->getCodeReference());
+                _linkedValuesList.push_back(op);
+                op->load((BooleanSymbols)RPNStack.top());
                 RPNStack.pop();
             }
-            if ( !RPNStack.empty() && RPNStack.top() == Symbols::OpenParenthesis)
+            if ( !RPNStack.empty() && RPNStack.top() == cCast(BooleanSymbols::OpenParenthesis))
             {
                 RPNStack.pop();
             }
@@ -600,20 +669,22 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
     while( !RPNStack.empty() ) // Insert all operands in the list
     {
         if (
-            RPNStack.top() == Symbols::Equal ||
-            RPNStack.top() == Symbols::Negation ||
-            RPNStack.top() == Symbols::Greater ||
-            RPNStack.top() == Symbols::GreaterEqual ||
-            RPNStack.top() == Symbols::LessEqual ||
-            RPNStack.top() == Symbols::Less ||
-            RPNStack.top() == Symbols::And ||
-            RPNStack.top() == Symbols::NotEqual ||
-            RPNStack.top() == Symbols::Or )
+            RPNStack.top() == cCast(BooleanSymbols::Equal) ||
+            RPNStack.top() == cCast(BooleanSymbols::Negation) ||
+            RPNStack.top() == cCast(BooleanSymbols::Greater) ||
+            RPNStack.top() == cCast(BooleanSymbols::GreaterEqual) ||
+            RPNStack.top() == cCast(BooleanSymbols::LessEqual) ||
+            RPNStack.top() == cCast(BooleanSymbols::Less) ||
+            RPNStack.top() == cCast(BooleanSymbols::And) ||
+            RPNStack.top() == cCast(BooleanSymbols::NotEqual) ||
+            RPNStack.top() == cCast(BooleanSymbols::Or) )
         {
-            _linkedValuesList.push_back(new OperatorLinkedValue(RPNStack.top()));
+            auto op = new OperatorLinkedValue(tmp->getCodeReference());
+            _linkedValuesList.push_back(op);
+            op->load((BooleanSymbols)RPNStack.top());
             RPNStack.pop();
         }
-        else if ( RPNStack.top() == Symbols::OpenParenthesis )
+        else if ( RPNStack.top() == cCast(BooleanSymbols::OpenParenthesis) )
         {
             throw SyntaxException("Expected )",tmp->getCodeReference());
         }
@@ -637,7 +708,9 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
 ///     Array
 ////////////////////////////////////////
 
-ArrayLinkedValue::ArrayLinkedValue(list<TerminalExpression*>* terminalExpressionsList) {
+ArrayLinkedValue::ArrayLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
+
+void ArrayLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
     TerminalExpression* tmp = terminalExpressionsList->front();
 
     if( tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) )
@@ -661,22 +734,27 @@ ArrayLinkedValue::ArrayLinkedValue(list<TerminalExpression*>* terminalExpression
         switch ( tmp->getType() )
         {
         case cCast(ExpressionTypes::String):
-            _linkedValuesList.push_back(new StringLinkedValue(terminalExpressionsList));
+            _linkedValuesList.push_back(new StringLinkedValue(tmp->getCodeReference()));
+            _linkedValuesList.back()->load(terminalExpressionsList);
             break;
         case cCast(ExpressionTypes::Null):
-            _linkedValuesList.push_back(new NullLinkedValue(terminalExpressionsList));
+            _linkedValuesList.push_back(new NullLinkedValue(tmp->getCodeReference()));
+            _linkedValuesList.back()->load(terminalExpressionsList);
             break;
         case cCast(ExpressionTypes::Addition):
         case cCast(ExpressionTypes::Substract):
-            _linkedValuesList.push_back(new MathOperationLinkedValue(terminalExpressionsList));
+            _linkedValuesList.push_back(new MathOperationLinkedValue(tmp->getCodeReference()));
+            _linkedValuesList.back()->load(terminalExpressionsList);
             break;
         case cCast(ExpressionTypes::Negation):
         case cCast(ExpressionTypes::Boolean):
-            _linkedValuesList.push_back(new BooleanOperationLinkedValue(terminalExpressionsList));
+            _linkedValuesList.push_back(new BooleanOperationLinkedValue(tmp->getCodeReference()));
+            _linkedValuesList.back()->load(terminalExpressionsList);
             break;
         case cCast(ExpressionTypes::OpenBracket):
         case cCast(ExpressionTypes::OpenParenthesis):
-            _linkedValuesList.push_back(new ArrayLinkedValue(terminalExpressionsList));
+            _linkedValuesList.push_back(new ArrayLinkedValue(tmp->getCodeReference()));
+            _linkedValuesList.back()->load(terminalExpressionsList);
             break;
         case cCast(ExpressionTypes::Name):
         {
@@ -688,22 +766,26 @@ ArrayLinkedValue::ArrayLinkedValue(list<TerminalExpression*>* terminalExpression
             {
             case cCast(ExpressionTypes::OpenParenthesis):
             case cCast(ExpressionTypes::MemberAccess):
-                _linkedValuesList.push_back(new ExecutionLinkedValue(terminalExpressionsList));
+                _linkedValuesList.push_back(new ExecutionLinkedValue(tmp->getCodeReference()));
+                _linkedValuesList.back()->load(terminalExpressionsList);
                 break;
             case cCast(ExpressionTypes::Addition):
             case cCast(ExpressionTypes::Substract):
             case cCast(ExpressionTypes::Divition):
             case cCast(ExpressionTypes::Multiplication):
-                _linkedValuesList.push_back(new MathOperationLinkedValue(terminalExpressionsList));
+                _linkedValuesList.push_back(new MathOperationLinkedValue(tmp->getCodeReference()));
+                _linkedValuesList.back()->load(terminalExpressionsList);
                 break;
             case cCast(ExpressionTypes::Equal):
             case cCast(ExpressionTypes::GreaterThan):
             case cCast(ExpressionTypes::LessThan):
             case cCast(ExpressionTypes::Negation):
-                _linkedValuesList.push_back(new BooleanOperationLinkedValue(terminalExpressionsList));
+                _linkedValuesList.push_back(new BooleanOperationLinkedValue(tmp->getCodeReference()));
+                _linkedValuesList.back()->load(terminalExpressionsList);
                 break;
             default:
-                _linkedValuesList.push_back(new NameLinkedValue(terminalExpressionsList));
+                _linkedValuesList.push_back(new NameLinkedValue(tmp->getCodeReference()));
+                _linkedValuesList.back()->load(terminalExpressionsList);
                 break;
             }
         }
@@ -720,11 +802,13 @@ ArrayLinkedValue::ArrayLinkedValue(list<TerminalExpression*>* terminalExpression
                 tmp->getType() == cCast(ExpressionTypes::LessThan) ||
                 tmp->getType() == cCast(ExpressionTypes::Negation) )
             {
-                _linkedValuesList.push_back(new BooleanOperationLinkedValue(terminalExpressionsList));
+                _linkedValuesList.push_back(new BooleanOperationLinkedValue(tmp->getCodeReference()));
+                _linkedValuesList.back()->load(terminalExpressionsList);
             }
             else
             {
-                _linkedValuesList.push_back(new MathOperationLinkedValue(terminalExpressionsList));
+                _linkedValuesList.push_back(new MathOperationLinkedValue(tmp->getCodeReference()));
+                _linkedValuesList.back()->load(terminalExpressionsList);
             }
         }
             break;
@@ -752,7 +836,9 @@ LiteralValue* ArrayLinkedValue::getValue() const {
 ///     Execution
 ////////////////////////////////////////
 
-ExecutionLinkedValue::ExecutionLinkedValue(list<TerminalExpression*>* terminalExpressionsList) {
+ExecutionLinkedValue::ExecutionLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
+
+void ExecutionLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
     TerminalExpression* tmp = terminalExpressionsList->front();
 
     if ( tmp->getType() != cCast(ExpressionTypes::Name) ) throw SyntaxException("Expected a name", tmp->getCodeReference());
@@ -767,7 +853,9 @@ ExecutionLinkedValue::ExecutionLinkedValue(list<TerminalExpression*>* terminalEx
 
     if ( tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) )
     {
-        _methodsList.push_back(tuple<string,ArrayLinkedValue*>(_name,new ArrayLinkedValue(terminalExpressionsList)));
+        ArrayLinkedValue* aux = new ArrayLinkedValue(tmp->getCodeReference());
+        _methodsList.push_back(tuple<string,ArrayLinkedValue*>(_name,aux));
+        aux->load(terminalExpressionsList);
     }
     bool isValidMethod = true;
     while(isValidMethod)
@@ -788,7 +876,9 @@ ExecutionLinkedValue::ExecutionLinkedValue(list<TerminalExpression*>* terminalEx
 
             if ( tmp->getType() != cCast(ExpressionTypes::OpenParenthesis) ) throw SyntaxException("Expected (",tmp->getCodeReference());
 
-            _methodsList.push_back(tuple<string,ArrayLinkedValue*>(name,new ArrayLinkedValue(terminalExpressionsList)));
+            ArrayLinkedValue* aux = new ArrayLinkedValue(tmp->getCodeReference());
+            _methodsList.push_back(tuple<string,ArrayLinkedValue*>(name,aux));
+            aux->load(terminalExpressionsList);
         }
         else
         {
@@ -806,7 +896,9 @@ LiteralValue* ExecutionLinkedValue::getValue() const {
 ///     Name
 ////////////////////////////////////////
 
-NameLinkedValue::NameLinkedValue(list<TerminalExpression*>* terminalExpressionsList){
+NameLinkedValue::NameLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
+
+void NameLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList){
     if ( terminalExpressionsList->empty() ) throw SyntaxException("Expected a name");
     NameExpression* nameExpression = (NameExpression*)terminalExpressionsList->front();
     _name = nameExpression->getName();
@@ -824,23 +916,17 @@ LiteralValue* NameLinkedValue::getValue() const {
 ///     BooleanValue
 ////////////////////////////////////////
 
-BooleanLinkedValue::BooleanLinkedValue(bool value) : _value(value){
+BooleanLinkedValue::BooleanLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
 
+void BooleanLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
+    TerminalExpression* tmp = terminalExpressionsList->front();
+    if( tmp->getType() != cCast(ExpressionTypes::Boolean) ) throw SyntaxException("Expected a boolean value",tmp->getCodeReference());
+
+    _value= ((BooleanExpression*)tmp)->getValue();
+
+    terminalExpressionsList->pop_front();
 }
 
 LiteralValue * BooleanLinkedValue::getValue() const {
     return new LiteralValue(DataTypesId::Boolean,(void*)&_value);
 }
-
-////////////////////////////////////////
-///     BooleanOperator
-////////////////////////////////////////
-
-BooleanOperatorLinkedValue::BooleanOperatorLinkedValue(char op) : _operator(op){
-
-}
-
-LiteralValue * BooleanOperatorLinkedValue::getValue() const {
-    return new LiteralValue(DataTypesId::Operator,(void*)&_operator);
-}
-

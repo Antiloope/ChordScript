@@ -32,15 +32,19 @@ private:
 
 class LinkedValue : public Value {
 public:
-    LinkedValue();
+    LinkedValue(size_t);
     virtual LiteralValue* getValue() const = 0;
+    virtual void load(list<TerminalExpression*>*) = 0;
     virtual ~LinkedValue();
     static LinkedValue* generateLinkedValue(list<TerminalExpression*>*);
+private:
+    size_t _codeReference;
 };
 
 class StringLinkedValue : public LinkedValue {
 public:
-    StringLinkedValue(list<TerminalExpression*>*);
+    StringLinkedValue(size_t);
+    void load(list<TerminalExpression *> *) override;
     LiteralValue * getValue() const override;
 private:
     string _text;
@@ -48,49 +52,55 @@ private:
 
 class NullLinkedValue : public LinkedValue {
 public:
-    NullLinkedValue(list<TerminalExpression*>*);
+    NullLinkedValue(size_t);
+    void load(list<TerminalExpression *> *) override;
     LiteralValue * getValue() const override;
+};
+
+enum class MathSymbols : char{
+    OpenParenthesis = 'a',
+    Multiplication,
+    Divition,
+    Addition,
+    Substraction
+};
+
+enum class BooleanSymbols : char {
+    OpenParenthesis = 'a',
+    And,
+    Or,
+    Equal,
+    Negation,
+    NotEqual,
+    Greater,
+    GreaterEqual,
+    Less,
+    LessEqual
 };
 
 class MathOperationLinkedValue : public LinkedValue {
 public:
-    MathOperationLinkedValue(list<TerminalExpression*>*);
+    MathOperationLinkedValue(size_t);
+    void load(list<TerminalExpression *> *) override;
     LiteralValue * getValue() const override;
 private:
-    enum Symbols: char {
-        OpenParenthesis = 'a',
-        Multiplication,
-        Divition,
-        Addition,
-        Substraction
-    };
     list<LinkedValue*> _linkedValuesList;
 };
 
 class BooleanOperationLinkedValue : public LinkedValue {
 public:
-    BooleanOperationLinkedValue(list<TerminalExpression*>*);
+    BooleanOperationLinkedValue(size_t);
     ~BooleanOperationLinkedValue();
+    void load(list<TerminalExpression *> *) override;
     LiteralValue * getValue() const override;
 private:
-    enum Symbols: char {
-        OpenParenthesis = 'a',
-        And,
-        Or,
-        Equal,
-        Negation,
-        NotEqual,
-        Greater,
-        GreaterEqual,
-        Less,
-        LessEqual
-    };
     list<LinkedValue*> _linkedValuesList;
 };
 
 class ArrayLinkedValue : public LinkedValue {
 public:
-    ArrayLinkedValue(list<TerminalExpression*>*);
+    ArrayLinkedValue(size_t);
+    void load(list<TerminalExpression *> *) override;
     LiteralValue * getValue() const override;
 private:
     list<LinkedValue*> _linkedValuesList;
@@ -99,7 +109,8 @@ private:
 
 class ExecutionLinkedValue : public LinkedValue {
 public:
-    ExecutionLinkedValue(list<TerminalExpression*>*);
+    ExecutionLinkedValue(size_t);
+    void load(list<TerminalExpression *> *) override;
     LiteralValue * getValue() const override;
 private:
     string _name;
@@ -108,7 +119,8 @@ private:
 
 class NameLinkedValue : public LinkedValue {
 public:
-    NameLinkedValue(list<TerminalExpression*>*);
+    NameLinkedValue(size_t);
+    void load(list<TerminalExpression *> *) override;
     LiteralValue * getValue() const override;
 private:
     string _name;
@@ -116,7 +128,8 @@ private:
 
 class NumericLinkedValue : public LinkedValue {
 public:
-    NumericLinkedValue(const double);
+    NumericLinkedValue(size_t);
+    void load(list<TerminalExpression *> *) override;
     LiteralValue * getValue() const override;
 private:
     double _value;
@@ -124,7 +137,10 @@ private:
 
 class OperatorLinkedValue : public LinkedValue {
 public:
-    OperatorLinkedValue(char);
+    OperatorLinkedValue(size_t);
+    void load(list<TerminalExpression *> *) override;
+    void load(MathSymbols);
+    void load(BooleanSymbols);
     LiteralValue * getValue() const override;
 private:
     char _operator;
@@ -132,19 +148,13 @@ private:
 
 class BooleanLinkedValue : public LinkedValue {
 public:
-    BooleanLinkedValue(bool);
+    BooleanLinkedValue(size_t);
+    void load(list<TerminalExpression *> *) override;
     LiteralValue * getValue() const override;
 private:
     bool _value;
 };
 
-class BooleanOperatorLinkedValue : public LinkedValue {
-public:
-    BooleanOperatorLinkedValue(char);
-    LiteralValue * getValue() const override;
-private:
-    char _operator;
-};
 }
 
 #endif // VALUE_H

@@ -30,8 +30,8 @@ void ProgramExpression::load(list<TerminalExpression*>* terminalExpressionsList)
         tmp->getType() != cCast(ExpressionTypes::CloseBrace) )
     {
         InstructionExpression* instruction = new InstructionExpression(tmp->getCodeReference());
-        instruction->load(terminalExpressionsList);
         _instructionsList.push_back(instruction);
+        instruction->load(terminalExpressionsList);
         tmp = terminalExpressionsList->front();
     }
 }
@@ -511,7 +511,8 @@ void ReturnInstructionExpression::load(list<TerminalExpression*>* terminalExpres
 
     if ( tmp->getType() == cCast(ExpressionTypes::EOE) )
     {
-        _returnValue = new NullLinkedValue(terminalExpressionsList);
+        _returnValue = new NullLinkedValue(tmp->getCodeReference());
+        _returnValue->load(terminalExpressionsList);
     }
     else
     {
@@ -550,7 +551,9 @@ void ExecutionExpression::load(list<TerminalExpression*>* terminalExpressionsLis
 
     if ( tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) )
     {
-        _methodsList.push_back(tuple<string,ArrayLinkedValue*>(_name,new ArrayLinkedValue(terminalExpressionsList)));
+        ArrayLinkedValue* aux = new ArrayLinkedValue(tmp->getCodeReference());
+        _methodsList.push_back(tuple<string,ArrayLinkedValue*>(_name,aux));
+        aux->load(terminalExpressionsList);
     }
     bool isValidMethod = true;
     while(isValidMethod)
@@ -571,7 +574,9 @@ void ExecutionExpression::load(list<TerminalExpression*>* terminalExpressionsLis
 
             if ( tmp->getType() != cCast(ExpressionTypes::OpenParenthesis) ) throw SyntaxException("Expected (",tmp->getCodeReference());
 
-            _methodsList.push_back(tuple<string,ArrayLinkedValue*>(name,new ArrayLinkedValue(terminalExpressionsList)));
+            ArrayLinkedValue* aux = new ArrayLinkedValue(tmp->getCodeReference());
+            _methodsList.push_back(tuple<string,ArrayLinkedValue*>(name,aux));
+            aux->load(terminalExpressionsList);
         }
         else
         {
