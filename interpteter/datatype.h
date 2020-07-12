@@ -1,11 +1,32 @@
 #ifndef DATATYPE_H
 #define DATATYPE_H
 
+#include <string>
+
+using namespace std;
+
 namespace CS {
+
+enum class DataTypesId {
+    Sample,
+    Sound,
+    Numeric,
+    Argument,
+    Operator,
+    Array,
+    Group,
+    Boolean,
+    Buffer,
+    String,
+    Null,
+    Function
+};
 
 class DataType
 {
 public:
+    static string getDataTypeString(DataTypesId);
+    static DataTypesId getDataTypeId(string);
     DataType();
 };
 

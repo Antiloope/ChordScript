@@ -9,11 +9,11 @@ using namespace std;
 ///     Value
 ////////////////////////////////////////
 
-Value::Value(string dataType) : _dataType(dataType) {}
+Value::Value(DataTypesId dataType) : _dataType(dataType) {}
 
 Value::~Value() {}
 
-string Value::getDataTypeName() const {
+DataTypesId Value::getDataTypeId() const {
     return _dataType;
 }
 
@@ -21,7 +21,7 @@ string Value::getDataTypeName() const {
 ///     LiteralValue : Value
 ////////////////////////////////////////
 
-LiteralValue::LiteralValue(string dataType, void* value) : Value(dataType), _value(value) {}
+LiteralValue::LiteralValue(DataTypesId dataType, void* value) : Value(dataType), _value(value) {}
 
 // TODO: Implement deleting void* casting correctly
 LiteralValue::~LiteralValue(){
@@ -31,7 +31,7 @@ LiteralValue::~LiteralValue(){
 ///     LinkedValue : Value
 ////////////////////////////////////////
 
-LinkedValue::LinkedValue() : Value("null") {}
+LinkedValue::LinkedValue() : Value(DataTypesId::Null) {}
 
 LinkedValue::~LinkedValue() {}
 
@@ -133,7 +133,7 @@ StringLinkedValue::StringLinkedValue(list<TerminalExpression*>* terminalExpressi
 }
 
 LiteralValue* StringLinkedValue::getValue() const {
-    return new LiteralValue("string",(void*)&_text);
+    return new LiteralValue(DataTypesId::String,(void*)&_text);
 }
 
 ////////////////////////////////////////
@@ -141,7 +141,7 @@ LiteralValue* StringLinkedValue::getValue() const {
 ////////////////////////////////////////
 
 LiteralValue* NullLinkedValue::getValue() const {
-    return new LiteralValue("null",nullptr);
+    return new LiteralValue(DataTypesId::Null,nullptr);
 }
 
 NullLinkedValue::NullLinkedValue(list<TerminalExpression*>* terminalExpressionsList) {
@@ -156,7 +156,7 @@ NullLinkedValue::NullLinkedValue(list<TerminalExpression*>* terminalExpressionsL
 NumericLinkedValue::NumericLinkedValue(double value) : LinkedValue(), _value(value) {}
 
 LiteralValue* NumericLinkedValue::getValue() const {
-    return new LiteralValue("numeric",(void*)&_value);
+    return new LiteralValue(DataTypesId::Numeric,(void*)&_value);
 }
 
 ////////////////////////////////////////
@@ -323,7 +323,7 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
 OperatorLinkedValue::OperatorLinkedValue(char op) : _operator(op) {}
 
 LiteralValue * OperatorLinkedValue::getValue() const {
-    return new LiteralValue("operator",(void*)&_operator);
+    return new LiteralValue(DataTypesId::Operator,(void*)&_operator);
 }
 
 ////////////////////////////////////////
@@ -531,6 +531,10 @@ BooleanOperationLinkedValue::BooleanOperationLinkedValue(list<TerminalExpression
     }
 }
 
+BooleanOperationLinkedValue::~BooleanOperationLinkedValue() {
+
+}
+
 // TODO: Implement similar to MathOperation
 LiteralValue* BooleanOperationLinkedValue::getValue() const {
     return nullptr;
@@ -545,11 +549,11 @@ ArrayLinkedValue::ArrayLinkedValue(list<TerminalExpression*>* terminalExpression
 
     if( tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) )
     {
-        _type = "argument";
+        _type = DataTypesId::Argument;
     }
     else if ( tmp->getType() == cCast(ExpressionTypes::OpenBracket) )
     {
-        _type = "array";
+        _type = DataTypesId::Array;
     }
     else
     {
@@ -732,7 +736,7 @@ BooleanLinkedValue::BooleanLinkedValue(bool value) : _value(value){
 }
 
 LiteralValue * BooleanLinkedValue::getValue() const {
-    return new LiteralValue("boolean",(void*)&_value);
+    return new LiteralValue(DataTypesId::Boolean,(void*)&_value);
 }
 
 ////////////////////////////////////////
@@ -744,6 +748,6 @@ BooleanOperatorLinkedValue::BooleanOperatorLinkedValue(char op) : _operator(op){
 }
 
 LiteralValue * BooleanOperatorLinkedValue::getValue() const {
-    return new LiteralValue("operator",(void*)&_operator);
+    return new LiteralValue(DataTypesId::Operator,(void*)&_operator);
 }
 

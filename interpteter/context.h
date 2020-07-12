@@ -16,10 +16,10 @@ namespace CS {
 
 class FunctionDefinition;
 
-typedef unordered_map<string,tuple<string,LiteralValue*>> variables_map;
+typedef unordered_map<string,tuple<DataTypesId,LiteralValue*>> variables_map;
 typedef map<size_t,variables_map> context_map;
-typedef unordered_map<string,tuple<string,FunctionDefinition*>> functions_map;
-typedef unordered_map<string,DataType*> data_types_map;
+typedef unordered_map<string,tuple<DataTypesId,FunctionDefinition*>> functions_map;
+typedef unordered_map<DataTypesId,DataType*> data_types_map;
 typedef unordered_set<string> reserved_keywords_map;
 typedef size_t context_index;
 
@@ -31,15 +31,15 @@ class Context
 public:
     static Context* getInstance();
 
-    bool isDataType(string) const;
+    bool isDataType(DataTypesId) const;
     bool nameExist(string);
     bool functionNameExist(string) const;
     bool isValidName(string) const;
-    string getDataTypeName(string);
+    DataTypesId getDataTypeId(string);
 
-    void newVariable(string,string);
+    void newVariable(string,DataTypesId);
     bool setVariableValue(string,LiteralValue*);
-    void newFunction(string,string,FunctionDefinition*);
+    void newFunction(string,DataTypesId,FunctionDefinition*);
 
     context_index newContext();
     void returnContext();

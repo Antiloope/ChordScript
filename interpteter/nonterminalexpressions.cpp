@@ -96,7 +96,7 @@ void InstructionExpression::load(list<TerminalExpression*>* terminalExpressionsL
     case cCast(ExpressionTypes::Name):
     {
         NameExpression* nameExpression = (NameExpression*)tmp;
-        if ( Context::getInstance()->isDataType(nameExpression->getName()) )
+        if ( Context::getInstance()->isDataType(DataType::getDataTypeId(nameExpression->getName())) )
         {
             auto it = terminalExpressionsList->begin();
             advance(it,1);
@@ -353,7 +353,7 @@ void BreakInstructionExpression::load(list<TerminalExpression*>* terminalExpress
 BreakInstructionExpression::~BreakInstructionExpression() {}
 
 void BreakInstructionExpression::interpret() {
-    Context::getInstance()->setReturnValue(new LiteralValue("null",nullptr));
+    Context::getInstance()->setReturnValue(new LiteralValue(DataTypesId::Null,nullptr));
 }
 
 ////////////////////////////////////////
@@ -378,11 +378,11 @@ AssignationExpression::AssignationExpression(size_t codeReference) : NonTerminal
 
 void AssignationExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
     TerminalExpression* tmp = terminalExpressionsList->front();
-    string dataType;
+    DataTypesId dataType;
 
     if(
         tmp->getType() == cCast(ExpressionTypes::Name) &&
-        Context::getInstance()->isDataType(((NameExpression*)tmp)->getName()) )
+        Context::getInstance()->isDataType(DataType::getDataTypeId(((NameExpression*)tmp)->getName())) )
     {
         string dataType = ((NameExpression*)tmp)->getName();
 
@@ -394,7 +394,7 @@ void AssignationExpression::load(list<TerminalExpression*>* terminalExpressionsL
     }
     else if( Context::getInstance()->nameExist(((NameExpression*)tmp)->getName()) )
     {
-        dataType = Context::getInstance()->getDataTypeName(((NameExpression*)tmp)->getName());
+        dataType = Context::getInstance()->getDataTypeId(((NameExpression*)tmp)->getName());
     }
     else
     {
@@ -429,9 +429,9 @@ void AssignationExpression::interpret() {
     if( !Context::getInstance()->setVariableValue(_varName,_value->getValue()) )
     {
         string errorDescription = "Invalid conversion from ";
-        errorDescription.append(_value->getDataTypeName());
+        errorDescription.append(DataType::getDataTypeString(_value->getDataTypeId()));
         errorDescription.append(" to ");
-        errorDescription.append(Context::getInstance()->getDataTypeName(_varName));
+        errorDescription.append(DataType::getDataTypeString(Context::getInstance()->getDataTypeId(_varName)));
         throw SemanticException(errorDescription,this->getCodeReference());
     }
 }
@@ -449,12 +449,12 @@ void DefinitionExpression::load(list<TerminalExpression*>* terminalExpressionsLi
 
     if(
         tmp->getType() != cCast(ExpressionTypes::Name) ||
-        !Context::getInstance()->isDataType(((NameExpression*)tmp)->getName()) )
+        !Context::getInstance()->isDataType(DataType::getDataTypeId(((NameExpression*)tmp)->getName())) )
     {
         throw SyntaxException("Expected data type",tmp->getCodeReference());
     }
 
-    string dataType = ((NameExpression*)tmp)->getName();
+    DataTypesId dataType = DataType::getDataTypeId(((NameExpression*)tmp)->getName());
 
     terminalExpressionsList->pop_front();
     if( terminalExpressionsList->empty()) throw SyntaxException("Expected a name",tmp->getCodeReference() );

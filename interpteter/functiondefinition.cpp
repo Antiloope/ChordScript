@@ -3,7 +3,7 @@
 
 using namespace CS;
 
-ArgumentDefinition::ArgumentDefinition(string dataType, string name) : _dataType(dataType),_name(name) {}
+ArgumentDefinition::ArgumentDefinition(DataTypesId dataType, string name) : _dataType(dataType),_name(name) {}
 
 FunctionDefinition::FunctionDefinition() {}
 
@@ -22,16 +22,16 @@ void FunctionDefinition::load(list<TerminalExpression*>* terminalExpressionsList
     if( terminalExpressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
     tmp = terminalExpressionsList->front();
 
-    string dataType;
+    DataTypesId dataType;
 
     bool isValidArgument = true;
     while( isValidArgument )
     {
         if ( tmp->getType() == cCast(ExpressionTypes::Name) )
         {
-            if ( !ctx->isDataType(((NameExpression*)tmp)->getName()) ) throw SyntaxException("Expected data type", tmp->getCodeReference());
+            if ( !ctx->isDataType(DataType::getDataTypeId(((NameExpression*)tmp)->getName())) ) throw SyntaxException("Expected data type", tmp->getCodeReference());
 
-            dataType = ((NameExpression*)tmp)->getName();
+            dataType = DataType::getDataTypeId(((NameExpression*)tmp)->getName());
 
             terminalExpressionsList->pop_front();
             if( terminalExpressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );

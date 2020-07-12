@@ -6,16 +6,15 @@ Context* Context::_instance = nullptr;
 
 Context::Context() {
     _dataTypes = {
-        {"sample",      new SampleDataType()},
-        {"sound",       new SoundDataType()},
-        {"numeric",     new NumericDataType()},
-        {"argument",    new ArgumentDataType()},
-        {"group",       new GroupDataType()},
-        {"boolean",     new BooleanDataType()},
-        {"buffer",      new BufferDataType()},
-        {"string",      new StringDataType()},
-        {"null",        new NullDataType()},
-        {"function",    new FunctionDataType()},
+        {DataTypesId::Sample,      new SampleDataType()},
+        {DataTypesId::Sound,       new SoundDataType()},
+        {DataTypesId::Numeric,     new NumericDataType()},
+        {DataTypesId::Argument,    new ArgumentDataType()},
+        {DataTypesId::Group,       new GroupDataType()},
+        {DataTypesId::Boolean,     new BooleanDataType()},
+        {DataTypesId::Buffer,      new BufferDataType()},
+        {DataTypesId::String,      new StringDataType()},
+        {DataTypesId::Function,    new FunctionDataType()},
     };
 
     _reservedKeywords = {
@@ -61,15 +60,15 @@ context_index Context::getCurrentContext() const {
     return _contextStack.top();
 }
 
-bool Context::isDataType(string name) const {
-    return _dataTypes.find(name) != _dataTypes.end();
+bool Context::isDataType(DataTypesId dataType) const {
+    return _dataTypes.find(dataType) != _dataTypes.end();
 }
 
 bool Context::isValidName(string name) const {
     return _reservedKeywords.find(name) == _reservedKeywords.end();
 }
 
-string Context::getDataTypeName(string name) {
+DataTypesId Context::getDataTypeId(string name) {
     stack<context_index> tmpStack;
     while( !_contextStack.empty() )
     {
@@ -87,7 +86,7 @@ string Context::getDataTypeName(string name) {
             _contextStack.push(tmpStack.top());
             tmpStack.pop();
         }
-        return "null";
+        return DataTypesId::Null;
     }
     context_index currentContext = _contextStack.top();
     while( !tmpStack.empty() )
@@ -97,8 +96,8 @@ string Context::getDataTypeName(string name) {
     }
 
     if( get<1>(_variables.find(currentContext)->second.find(name)->second) )
-        return get<1>(_variables.find(currentContext)->second.find(name)->second)->getDataTypeName();
-    return "null";
+        return get<1>(_variables.find(currentContext)->second.find(name)->second)->getDataTypeId();
+    return DataTypesId::Null;
 }
 
 bool Context::nameExist(string name) {
@@ -133,7 +132,7 @@ bool Context::functionNameExist(string name) const {
     return _functions.find(name) != _functions.end();
 }
 
-void Context::newVariable(string name, string dataType) {
+void Context::newVariable(string name, DataTypesId dataType) {
     context_index currentContext = _contextStack.top();
     auto tmp = _variables.find(currentContext)->second.find(name);
     if(tmp != _variables.find(currentContext)->second.end())
@@ -141,19 +140,19 @@ void Context::newVariable(string name, string dataType) {
         delete get<1>(tmp->second);
         _variables.find(currentContext)->second.erase(name);
     }
-    _variables.find(currentContext)->second.insert({name,tuple<string,LiteralValue*>(dataType,nullptr)});
+    _variables.find(currentContext)->second.insert({name,tuple<DataTypesId,LiteralValue*>(dataType,nullptr)});
 }
 
 #include "functiondefinition.h"
 
-void Context::newFunction(string name, string dataType ,FunctionDefinition* function) {
+void Context::newFunction(string name, DataTypesId dataType ,FunctionDefinition* function) {
     auto tmp = _functions.find(name);
     if(tmp != _functions.end())
     {
         delete get<1>(tmp->second);
         _functions.erase(name);
     }
-    _functions.insert({name,tuple<string,FunctionDefinition*>(dataType,function)});
+    _functions.insert({name,tuple<DataTypesId,FunctionDefinition*>(dataType,function)});
 }
 
 Context* Context::getInstance() {

@@ -10,9 +10,9 @@ namespace CS {
 
 class ArgumentDefinition {
 public:
-    ArgumentDefinition(string,string);
+    ArgumentDefinition(DataTypesId,string);
 private:
-    string _dataType;
+    DataTypesId _dataType;
     string _name;
 };
 

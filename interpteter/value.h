@@ -4,6 +4,7 @@
 #include <string>
 #include "terminalexpressions.h"
 #include "utils/Exceptions/exception.h"
+#include "datatype.h"
 #include <tuple>
 
 using namespace std;
@@ -13,16 +14,16 @@ namespace CS {
 class Value
 {
 public:
-    Value(string);
+    Value(DataTypesId);
     ~Value();
-    string getDataTypeName() const;
+    DataTypesId getDataTypeId() const;
 protected:
-    string _dataType;
+    DataTypesId _dataType;
 };
 
 class LiteralValue : public Value {
 public:
-    LiteralValue(string,void*);
+    LiteralValue(DataTypesId,void*);
     ~LiteralValue();
     void* getValue() const {return _value;}
 private:
@@ -69,6 +70,7 @@ private:
 class BooleanOperationLinkedValue : public LinkedValue {
 public:
     BooleanOperationLinkedValue(list<TerminalExpression*>*);
+    ~BooleanOperationLinkedValue();
     LiteralValue * getValue() const override;
 private:
     enum Symbols: char {
@@ -92,7 +94,7 @@ public:
     LiteralValue * getValue() const override;
 private:
     list<LinkedValue*> _linkedValuesList;
-    string _type;
+    DataTypesId _type;
 };
 
 class ExecutionLinkedValue : public LinkedValue {
