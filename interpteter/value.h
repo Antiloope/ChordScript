@@ -23,11 +23,50 @@ protected:
 
 class LiteralValue : public Value {
 public:
-    LiteralValue(DataTypesId,void*);
-    ~LiteralValue();
+    LiteralValue(DataTypesId);
+    LiteralValue(const LiteralValue&);
+    virtual ~LiteralValue();
     void* getValue() const {return _value;}
-private:
+protected:
     void* _value;
+};
+
+class StringLiteralValue : public LiteralValue {
+public:
+    StringLiteralValue(string);
+    ~StringLiteralValue();
+private:
+    string _text;
+};
+
+class NumericLiteralValue : public LiteralValue {
+public:
+    NumericLiteralValue(double);
+    ~NumericLiteralValue();
+private:
+    double _number;
+};
+
+class BooleanLiteralValue : public LiteralValue {
+public:
+    BooleanLiteralValue(bool);
+    ~BooleanLiteralValue();
+private:
+    bool _boolean;
+};
+
+class NullLiteralValue : public LiteralValue {
+public:
+    NullLiteralValue();
+    ~NullLiteralValue();
+};
+
+class OperatorLiteralValue : public LiteralValue {
+public:
+    OperatorLiteralValue(char);
+    ~OperatorLiteralValue();
+private:
+    char _operator;
 };
 
 class LinkedValue : public Value {

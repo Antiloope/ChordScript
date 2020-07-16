@@ -353,7 +353,7 @@ void BreakInstructionExpression::load(list<TerminalExpression*>* terminalExpress
 BreakInstructionExpression::~BreakInstructionExpression() {}
 
 void BreakInstructionExpression::interpret() {
-    Context::getInstance()->setReturnValue(new LiteralValue(DataTypesId::Null,nullptr));
+    Context::getInstance()->setReturnValue(new NullLiteralValue());
 }
 
 ////////////////////////////////////////

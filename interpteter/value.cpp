@@ -21,39 +21,45 @@ DataTypesId Value::getDataTypeId() const {
 ///     LiteralValue : Value
 ////////////////////////////////////////
 
-LiteralValue::LiteralValue(DataTypesId dataType, void* value) : Value(dataType), _value(value) {}
+LiteralValue::LiteralValue(DataTypesId dataType) : Value(dataType) {}
 
-LiteralValue::~LiteralValue() {
-    switch (_dataType) {
-    case DataTypesId::Null:
-        break;
-    case DataTypesId::Numeric:
-        delete (double*)_value;
-        break;
-    case DataTypesId::Array:
-        break;
-    case DataTypesId::Group:
-        break;
-    case DataTypesId::Sound:
-        break;
-    case DataTypesId::Buffer:
-        break;
-    case DataTypesId::Sample:
-        break;
-    case DataTypesId::String:
-        delete (string*)_value;
-        break;
-    case DataTypesId::Boolean:
-        break;
-    case DataTypesId::Argument:
-        break;
-    case DataTypesId::Function:
-        break;
-    case DataTypesId::Operator:
-        delete (char*)_value;
-        break;
-    }
+LiteralValue::LiteralValue(const LiteralValue& e) : Value(e._dataType),_value(e._value) {}
+
+LiteralValue::~LiteralValue() {}
+
+StringLiteralValue::StringLiteralValue(string text) : LiteralValue(DataTypesId::String) {
+    _text = text;
+    _value = &_text;
 }
+
+StringLiteralValue::~StringLiteralValue() {}
+
+NumericLiteralValue::NumericLiteralValue(double number) : LiteralValue(DataTypesId::Numeric) {
+    _number = number;
+    _value = &_number;
+}
+
+NumericLiteralValue::~NumericLiteralValue() {}
+
+BooleanLiteralValue::BooleanLiteralValue(bool boolean) : LiteralValue(DataTypesId::Boolean) {
+    _boolean = boolean;
+    _value = &_boolean;
+}
+
+BooleanLiteralValue::~BooleanLiteralValue() {}
+
+NullLiteralValue::NullLiteralValue() : LiteralValue(DataTypesId::Null) {
+    _value = nullptr;
+}
+
+NullLiteralValue::~NullLiteralValue() {}
+
+OperatorLiteralValue::OperatorLiteralValue(char op) : LiteralValue(DataTypesId::Operator) {
+    _operator = op;
+    _value = &_operator;
+}
+
+OperatorLiteralValue::~OperatorLiteralValue() {}
 
 ////////////////////////////////////////
 ///     LinkedValue : Value
@@ -168,7 +174,7 @@ void StringLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList)
 }
 
 LiteralValue* StringLinkedValue::getValue() const {
-    return new LiteralValue(DataTypesId::String,(void*) new string(_text));
+    return new StringLiteralValue(_text);
 }
 
 ////////////////////////////////////////
@@ -178,7 +184,7 @@ LiteralValue* StringLinkedValue::getValue() const {
 NullLinkedValue::NullLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
 
 LiteralValue* NullLinkedValue::getValue() const {
-    return new LiteralValue(DataTypesId::Null,nullptr);
+    return new NullLiteralValue();
 }
 
 void NullLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
@@ -202,7 +208,7 @@ void NumericLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList
 }
 
 LiteralValue* NumericLinkedValue::getValue() const {
-    return new LiteralValue(DataTypesId::Numeric,(void*) new double(_value));
+    return new NumericLiteralValue(_value);
 }
 
 ////////////////////////////////////////
@@ -441,10 +447,10 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
         delete literalValue;
     }
     if ( RPNStack.empty() ) throw SyntaxException("Invalid number of operands",this->getCodeReference());
-    double* ret = new double(RPNStack.top());
+    double ret = RPNStack.top();
     RPNStack.pop();
     if ( !RPNStack.empty() ) throw SyntaxException("Invalid number of operands",this->getCodeReference());
-    return new LiteralValue(DataTypesId::Numeric,(void*)ret);
+    return new NumericLiteralValue(ret);
 }
 
 ////////////////////////////////////////
@@ -463,7 +469,7 @@ void OperatorLinkedValue::load(char op) {
 }
 
 LiteralValue * OperatorLinkedValue::getValue() const {
-    return new LiteralValue(DataTypesId::Operator,(void*) new char(_operator));
+    return new OperatorLiteralValue(_operator);
 }
 
 ////////////////////////////////////////
@@ -698,9 +704,330 @@ BooleanOperationLinkedValue::~BooleanOperationLinkedValue() {
 
 }
 
-// TODO: Implement similar to MathOperation
 LiteralValue* BooleanOperationLinkedValue::getValue() const {
-    return nullptr;
+    stack<LiteralValue*> RPNStack;
+    for( LinkedValue* linkedValue : _linkedValuesList )
+    {
+        LiteralValue* literalValue = linkedValue->getValue();
+
+        switch (literalValue->getDataTypeId()) {
+        case DataTypesId::Numeric:
+        case DataTypesId::String:
+        case DataTypesId::Null:
+        case DataTypesId::Boolean:
+            RPNStack.push(literalValue);
+            break;
+        case DataTypesId::Operator:
+        {
+            if( RPNStack.empty() )
+            {
+                delete literalValue;
+                throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+            }
+            if( *(char*)literalValue->getValue() == cCast(BooleanSymbols::Negation) )
+            {
+                if( RPNStack.top()->getDataTypeId() == DataTypesId::Boolean )
+                {
+                    bool* tmp = (bool*)RPNStack.top()->getValue();
+                    *tmp = !*tmp;
+                }
+                else if( RPNStack.top()->getDataTypeId() == DataTypesId::Numeric )
+                {
+                    double tmp = (*(double*)RPNStack.top()->getValue());
+                    delete RPNStack.top();
+                    RPNStack.pop();
+                    RPNStack.push(new BooleanLiteralValue(tmp==0));
+                }
+                else if( RPNStack.top()->getDataTypeId() == DataTypesId::String )
+                {
+                    string tmp = (*(string*)RPNStack.top()->getValue());
+                    delete RPNStack.top();
+                    RPNStack.pop();
+                    RPNStack.push(new BooleanLiteralValue(tmp.empty()));
+                }
+                else
+                {
+                    while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                    delete literalValue;
+                    throw SemanticException("Invalid conversion to boolean",linkedValue->getCodeReference());
+                }
+            }
+            else
+            {
+                switch ( RPNStack.top()->getDataTypeId() ) {
+                case DataTypesId::Numeric:
+                {
+                    double op1, op2 = *(double*)RPNStack.top()->getValue();
+                    bool isBoolean = false,bop1, bop2 = op2;
+                    delete RPNStack.top();
+                    RPNStack.pop();
+                    if( RPNStack.empty() )
+                    {
+                        delete literalValue;
+                        throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+                    }
+                    switch ( RPNStack.top()->getDataTypeId() ) {
+                    case DataTypesId::Numeric:
+                        op1 = *(double*)RPNStack.top()->getValue();
+                        break;
+                    case DataTypesId::Boolean:
+                        isBoolean = true;
+                        bop1 = *(bool*)RPNStack.top()->getValue();
+                        break;
+                    default:
+                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                        delete literalValue;
+                        throw SyntaxException("Invalid conversion",linkedValue->getCodeReference());
+                        break;
+                    }
+                    delete RPNStack.top();
+                    RPNStack.pop();
+                    switch ( *(char*)literalValue->getValue() )
+                    {
+                    case cCast(BooleanSymbols::Or):
+                        RPNStack.push(new BooleanLiteralValue(!isBoolean?op1||op2:bop1||bop2));
+                        break;
+                    case cCast(BooleanSymbols::And):
+                        RPNStack.push(new BooleanLiteralValue(!isBoolean?op1&&op2:bop1&&bop2));
+                        break;
+                    case cCast(BooleanSymbols::Equal):
+                        RPNStack.push(new BooleanLiteralValue(!isBoolean?op1==op2:bop1==bop2));
+                        break;
+                    case cCast(BooleanSymbols::NotEqual):
+                        RPNStack.push(new BooleanLiteralValue(!isBoolean?op1!=op2:bop1!=bop2));
+                        break;
+                    case cCast(BooleanSymbols::Greater):
+                        if( isBoolean )
+                        {
+                            while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                            delete literalValue;
+                            throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+                        }
+                        RPNStack.push(new BooleanLiteralValue(op1>op2));
+                        break;
+                    case cCast(BooleanSymbols::GreaterEqual):
+                        if( isBoolean )
+                        {
+                            while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                            delete literalValue;
+                            throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+                        }
+                        RPNStack.push(new BooleanLiteralValue(op1>=op2));
+                        break;
+                    case cCast(BooleanSymbols::Less):
+                        if( isBoolean )
+                        {
+                            while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                            delete literalValue;
+                            throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+                        }
+                        RPNStack.push(new BooleanLiteralValue(op1<op2));
+                        break;
+                    case cCast(BooleanSymbols::LessEqual):
+                        if( isBoolean )
+                        {
+                            while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                            delete literalValue;
+                            throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+                        }
+                        RPNStack.push(new BooleanLiteralValue(op1<=op2));
+                        break;
+                    default:
+                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                        delete literalValue;
+                        throw SyntaxException("Unknown operator",linkedValue->getCodeReference());
+                        break;
+                    }
+                }
+                    break;
+                case DataTypesId::String:
+                {
+                    string op1, op2 = *(string*)RPNStack.top()->getValue();
+                    bool isBoolean = false,bop1, bop2 = !op2.empty();
+                    delete RPNStack.top();
+                    RPNStack.pop();
+                    if( RPNStack.empty() )
+                    {
+                        delete literalValue;
+                        throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+                    }
+                    switch ( RPNStack.top()->getDataTypeId() ) {
+                    case DataTypesId::String:
+                        op1 = *(string*)RPNStack.top()->getValue();
+                        break;
+                    case DataTypesId::Boolean:
+                        isBoolean = true;
+                        bop1 = *(bool*)RPNStack.top()->getValue();
+                        break;
+                    case DataTypesId::Null:
+                        isBoolean = true;
+                        bop1 = false;
+                        break;
+                    default:
+                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                        delete literalValue;
+                        throw SyntaxException("Invalid conversion",linkedValue->getCodeReference());
+                        break;
+                    }
+                    delete RPNStack.top();
+                    RPNStack.pop();
+                    switch ( *(char*)literalValue->getValue() )
+                    {
+                    case cCast(BooleanSymbols::Or):
+                        RPNStack.push(new BooleanLiteralValue(!isBoolean?op1.empty()||op2.empty():bop2||bop2));
+                        break;
+                    case cCast(BooleanSymbols::And):
+                        RPNStack.push(new BooleanLiteralValue(!isBoolean?op1.empty()&&op2.empty():bop2&&bop2));
+                        break;
+                    case cCast(BooleanSymbols::Equal):
+                        RPNStack.push(new BooleanLiteralValue(!isBoolean?op1==op2:bop1==bop2));
+                        break;
+                    case cCast(BooleanSymbols::NotEqual):
+                        RPNStack.push(new BooleanLiteralValue(!isBoolean?op1!=op2:bop1!=bop2));
+                        break;
+                    default:
+                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                        delete literalValue;
+                        throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+                        break;
+                    }
+                }
+                    break;
+                case DataTypesId::Null:
+                {
+                    bool bop1, bop2 = false;
+                    delete RPNStack.top();
+                    RPNStack.pop();
+                    if( RPNStack.empty() )
+                    {
+                        delete literalValue;
+                        throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+                    }
+                    switch ( RPNStack.top()->getDataTypeId() ) {
+                    case DataTypesId::String:
+                        bop1 = !(*(string*)RPNStack.top()->getValue()).empty();
+                        break;
+                    case DataTypesId::Boolean:
+                        bop1 = *(bool*)RPNStack.top()->getValue();
+                        break;
+                    case DataTypesId::Null:
+                        bop1 = false;
+                        break;
+                    case DataTypesId::Numeric:
+                        bop1 = *(double*)RPNStack.top()->getValue();
+                        break;
+                    default:
+                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                        delete literalValue;
+                        throw SyntaxException("Invalid conversion",linkedValue->getCodeReference());
+                        break;
+                    }
+                    delete RPNStack.top();
+                    RPNStack.pop();
+                    switch ( *(char*)literalValue->getValue() )
+                    {
+                    case cCast(BooleanSymbols::Or):
+                        RPNStack.push(new BooleanLiteralValue(bop2||bop2));
+                        break;
+                    case cCast(BooleanSymbols::And):
+                        RPNStack.push(new BooleanLiteralValue(bop2&&bop2));
+                        break;
+                    case cCast(BooleanSymbols::Equal):
+                        RPNStack.push(new BooleanLiteralValue(bop1==bop2));
+                        break;
+                    case cCast(BooleanSymbols::NotEqual):
+                        RPNStack.push(new BooleanLiteralValue(bop1!=bop2));
+                        break;
+                    default:
+                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                        delete literalValue;
+                        throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+                        break;
+                    }
+                }
+                    break;
+                case DataTypesId::Boolean:
+                {
+                    bool bop1, bop2 = *(bool*)RPNStack.top()->getValue();
+                    delete RPNStack.top();
+                    RPNStack.pop();
+                    if( RPNStack.empty() )
+                    {
+                        delete literalValue;
+                        throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+                    }
+                    switch ( RPNStack.top()->getDataTypeId() ) {
+                    case DataTypesId::String:
+                        bop1 = !(*(string*)RPNStack.top()->getValue()).empty();
+                        break;
+                    case DataTypesId::Boolean:
+                        bop1 = *(bool*)RPNStack.top()->getValue();
+                        break;
+                    case DataTypesId::Null:
+                        bop1 = false;
+                        break;
+                    case DataTypesId::Numeric:
+                        bop1 = *(double*)RPNStack.top()->getValue();
+                        break;
+                    default:
+                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                        delete literalValue;
+                        throw SyntaxException("Invalid conversion",linkedValue->getCodeReference());
+                        break;
+                    }
+                    delete RPNStack.top();
+                    RPNStack.pop();
+                    switch ( *(char*)literalValue->getValue() )
+                    {
+                    case cCast(BooleanSymbols::Or):
+                        RPNStack.push(new BooleanLiteralValue(bop2||bop2));
+                        break;
+                    case cCast(BooleanSymbols::And):
+                        RPNStack.push(new BooleanLiteralValue(bop2&&bop2));
+                        break;
+                    case cCast(BooleanSymbols::Equal):
+                        RPNStack.push(new BooleanLiteralValue(bop1==bop2));
+                        break;
+                    case cCast(BooleanSymbols::NotEqual):
+                        RPNStack.push(new BooleanLiteralValue(bop1!=bop2));
+                        break;
+                    default:
+                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                        delete literalValue;
+                        throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+                        break;
+                    }
+                }
+                    break;
+                default:
+                    while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                    delete literalValue;
+                    throw SyntaxException("Unknown literal value",linkedValue->getCodeReference());
+                    break;
+                }
+            }
+        }
+        break;
+        default:
+            string errorDescription = "Invalid convertion from ";
+            errorDescription.append(DataType::getDataTypeString(literalValue->getDataTypeId()));
+            errorDescription.append(" to boolean");
+            while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+            delete literalValue;
+            throw SemanticException(errorDescription,linkedValue->getCodeReference());
+            break;
+        }
+    }
+    if ( RPNStack.empty() ) throw SyntaxException("Invalid number of operands",this->getCodeReference());
+    bool ret = *(bool*)RPNStack.top()->getValue();
+    delete RPNStack.top();
+    RPNStack.pop();
+    if ( !RPNStack.empty() )
+    {
+        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+        throw SyntaxException("Invalid number of operands",this->getCodeReference());
+    }
+    return new BooleanLiteralValue(ret);
 }
 
 ////////////////////////////////////////
@@ -927,5 +1254,5 @@ void BooleanLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList
 }
 
 LiteralValue * BooleanLinkedValue::getValue() const {
-    return new LiteralValue(DataTypesId::Boolean,(void*)&_value);
+    return new BooleanLiteralValue(_value);
 }
