@@ -69,6 +69,22 @@ private:
     char _operator;
 };
 
+class ArrayLiteralValue : public LiteralValue {
+public:
+    ArrayLiteralValue(list<LiteralValue*>);
+    ~ArrayLiteralValue();
+private:
+    list<LiteralValue*> _literalValuesList;
+};
+
+class ArgumentLiteralValue : public LiteralValue {
+public:
+    ArgumentLiteralValue(list<LiteralValue*>);
+    ~ArgumentLiteralValue();
+private:
+    list<LiteralValue*> _literalValuesList;
+};
+
 class LinkedValue : public Value {
 public:
     LinkedValue(size_t);
@@ -121,6 +137,7 @@ enum class BooleanSymbols : char {
 class MathOperationLinkedValue : public LinkedValue {
 public:
     MathOperationLinkedValue(size_t);
+    ~MathOperationLinkedValue();
     void load(list<TerminalExpression *> *) override;
     LiteralValue * getValue() const override;
 private:
@@ -140,6 +157,7 @@ private:
 class ArrayLinkedValue : public LinkedValue {
 public:
     ArrayLinkedValue(size_t);
+    ~ArrayLinkedValue();
     void load(list<TerminalExpression *> *) override;
     LiteralValue * getValue() const override;
 private:
@@ -150,6 +168,7 @@ private:
 class ExecutionLinkedValue : public LinkedValue {
 public:
     ExecutionLinkedValue(size_t);
+    ~ExecutionLinkedValue();
     void load(list<TerminalExpression *> *) override;
     LiteralValue * getValue() const override;
 private:

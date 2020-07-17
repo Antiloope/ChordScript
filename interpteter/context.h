@@ -40,6 +40,8 @@ public:
     void newVariable(string,DataTypesId);
     bool setVariableValue(string,LiteralValue*);
     void newFunction(string,DataTypesId,FunctionDefinition*);
+    FunctionDefinition* getFunction(string);
+    bool executeMethod(string,string,LiteralValue*);
 
     context_index newContext();
     void returnContext();

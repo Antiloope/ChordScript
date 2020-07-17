@@ -35,7 +35,75 @@ DataTypesId DataType::getDataTypeId(string dataType) {
     return DataTypesId::Null;
 }
 
-DataType::DataType()
-{
 
-}
+DataType::DataType() {}
+
+DataType::~DataType() {}
+
+bool DataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
+
+SampleDataType::SampleDataType() {}
+
+SampleDataType::~SampleDataType() {}
+
+bool SampleDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
+
+SoundDataType::SoundDataType() {}
+
+SoundDataType::~SoundDataType() {}
+
+bool SoundDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
+
+RealDataType::RealDataType() {}
+
+RealDataType::~RealDataType() {}
+
+bool RealDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
+
+NumericDataType::NumericDataType() {}
+
+NumericDataType::~NumericDataType() {}
+
+bool NumericDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
+
+ArgumentDataType::ArgumentDataType() {}
+
+ArgumentDataType::~ArgumentDataType() {}
+
+bool ArgumentDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
+
+GroupDataType::GroupDataType() {}
+
+GroupDataType::~GroupDataType() {}
+
+bool GroupDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
+
+BooleanDataType::BooleanDataType() {}
+
+BooleanDataType::~BooleanDataType() {}
+
+bool BooleanDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
+
+BufferDataType::BufferDataType() {}
+
+BufferDataType::~BufferDataType() {}
+
+bool BufferDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
+
+StringDataType::StringDataType() {}
+
+StringDataType::~StringDataType() {}
+
+bool StringDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
+
+NullDataType::NullDataType() {}
+
+NullDataType::~NullDataType() {}
+
+bool NullDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
+
+FunctionDataType::FunctionDataType() {}
+
+FunctionDataType::~FunctionDataType() {}
+
+bool FunctionDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}

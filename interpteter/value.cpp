@@ -61,6 +61,30 @@ OperatorLiteralValue::OperatorLiteralValue(char op) : LiteralValue(DataTypesId::
 
 OperatorLiteralValue::~OperatorLiteralValue() {}
 
+ArrayLiteralValue::ArrayLiteralValue(list<LiteralValue*> literalValuesList) : LiteralValue(DataTypesId::Array) {
+    _literalValuesList = literalValuesList;
+    _value = &_literalValuesList;
+}
+
+ArrayLiteralValue::~ArrayLiteralValue() {
+    while ( !_literalValuesList.empty() ) {
+        delete _literalValuesList.front();
+        _literalValuesList.pop_front();
+    }
+}
+
+ArgumentLiteralValue::ArgumentLiteralValue(list<LiteralValue*> literalValuesList) : LiteralValue(DataTypesId::Argument) {
+    _literalValuesList = literalValuesList;
+    _value = &_literalValuesList;
+}
+
+ArgumentLiteralValue::~ArgumentLiteralValue() {
+    while ( !_literalValuesList.empty() ) {
+        delete _literalValuesList.front();
+        _literalValuesList.pop_front();
+    }
+}
+
 ////////////////////////////////////////
 ///     LinkedValue : Value
 ////////////////////////////////////////
@@ -384,6 +408,13 @@ void MathOperationLinkedValue::load(list<TerminalExpression*>* terminalExpressio
     }
 }
 
+MathOperationLinkedValue::~MathOperationLinkedValue() {
+    while( !_linkedValuesList.empty() ) {
+        delete _linkedValuesList.front();
+        _linkedValuesList.pop_front();
+    }
+}
+
 LiteralValue* MathOperationLinkedValue::getValue() const {
     stack<double> RPNStack;
     for( LinkedValue* linkedValue : _linkedValuesList )
@@ -701,7 +732,11 @@ void BooleanOperationLinkedValue::load(list<TerminalExpression*>* terminalExpres
 }
 
 BooleanOperationLinkedValue::~BooleanOperationLinkedValue() {
-
+    while( !_linkedValuesList.empty() )
+    {
+        delete _linkedValuesList.front();
+        _linkedValuesList.pop_front();
+    }
 }
 
 LiteralValue* BooleanOperationLinkedValue::getValue() const {
@@ -1153,10 +1188,23 @@ void ArrayLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) 
     }
 }
 
-// TODO: Return argument or array type
-LiteralValue* ArrayLinkedValue::getValue() const {
-    return nullptr;
+ArrayLinkedValue::~ArrayLinkedValue() {
+    while ( !_linkedValuesList.empty() ) {
+        delete _linkedValuesList.front();
+        _linkedValuesList.pop_front();
+    }
 }
+
+LiteralValue* ArrayLinkedValue::getValue() const {
+    list<LiteralValue*> literalValuesList;
+    for( LinkedValue* linkedValue : _linkedValuesList ) {
+        literalValuesList.push_back(linkedValue->getValue());
+    }
+    if( _type == DataTypesId::Array ) return new ArrayLiteralValue(literalValuesList);
+    return new ArgumentLiteralValue(literalValuesList);
+}
+
+#include "functiondefinition.h"
 
 ////////////////////////////////////////
 ///     Execution
@@ -1213,9 +1261,31 @@ void ExecutionLinkedValue::load(list<TerminalExpression*>* terminalExpressionsLi
     }
 }
 
-// TODO: Return numeric value result
+ExecutionLinkedValue::~ExecutionLinkedValue() {
+    while( !_methodsList.empty() )
+    {
+        delete get<1>(_methodsList.front());
+        _methodsList.pop_front();
+    }
+}
+
 LiteralValue* ExecutionLinkedValue::getValue() const {
-    return nullptr;
+    auto method = _methodsList.front();
+    Context::getInstance()->setReturnValue(nullptr);
+
+    if( _name == get<0>(method) )
+    {
+        FunctionDefinition* function = Context::getInstance()->getFunction(_name);
+        if( !function ) throw SemanticException("Unknown function name", this->getCodeReference());
+        function->interpret(get<1>(method)->getValue());
+    }
+    else
+    {
+        Context::getInstance()->executeMethod(_name,get<0>(method),get<1>(method)->getValue());
+
+    }
+
+    return Context::getInstance()->getReturnValue();
 }
 
 ////////////////////////////////////////

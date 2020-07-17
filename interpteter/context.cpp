@@ -155,6 +155,47 @@ void Context::newFunction(string name, DataTypesId dataType ,FunctionDefinition*
     _functions.insert({name,tuple<DataTypesId,FunctionDefinition*>(dataType,function)});
 }
 
+bool Context::executeMethod(string variableName,string methodName,LiteralValue* arguments) {
+    stack<context_index> tmpStack;
+    while( !_contextStack.empty() )
+    {
+        if( _variables.find(_contextStack.top())->second.find(variableName) == _variables.find(_contextStack.top())->second.end() )
+        {
+            tmpStack.push(_contextStack.top());
+            _contextStack.pop();
+        }
+        else break;
+    }
+    if( _contextStack.empty() )
+    {
+        while( !tmpStack.empty() )
+        {
+            _contextStack.push(tmpStack.top());
+            tmpStack.pop();
+        }
+        return false;
+    }
+    DataTypesId dataTypeId = get<0>(_variables.find(_contextStack.top())->second.find(variableName)->second);
+    LiteralValue* literalValue = get<1>(_variables.find(_contextStack.top())->second.find(variableName)->second);
+    while( !tmpStack.empty() )
+    {
+        _contextStack.push(tmpStack.top());
+        tmpStack.pop();
+    }
+
+    DataType* dataType = _dataTypes.find(dataTypeId)->second;
+
+    dataType->executeMethod(methodName,literalValue,arguments);
+
+    return true;
+}
+
+FunctionDefinition* Context::getFunction(string name) {
+    auto tmp = _functions.find(name);
+    if( tmp == _functions.end() ) return nullptr;
+    return get<1>(_functions.find(name)->second);
+}
+
 Context* Context::getInstance() {
     if ( !_instance ) _instance = new Context();
     return _instance;
