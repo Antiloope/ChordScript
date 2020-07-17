@@ -11,6 +11,7 @@ namespace CS {
 class ArgumentDefinition {
 public:
     ArgumentDefinition(DataTypesId,string);
+    string getName() const;
 private:
     DataTypesId _dataType;
     string _name;

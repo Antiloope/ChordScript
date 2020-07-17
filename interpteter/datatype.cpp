@@ -41,27 +41,45 @@ DataType::DataType() {}
 
 DataType::~DataType() {}
 
+bool DataType::executeMethod(string,LiteralValue*,LiteralValue*) {
+    return true;
+}
+
 SampleDataType::SampleDataType() {}
 
 SampleDataType::~SampleDataType() {}
 
-bool SampleDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
-
-LiteralValue* SampleDataType::cast(LiteralValue *) const {}
+LiteralValue* SampleDataType::cast(LiteralValue* value) const {
+    switch ( value->getDataTypeId() )
+    {
+    case DataTypesId::Sample:
+        return value;
+        break;
+    default:
+        return nullptr;
+        break;
+    }
+}
 
 SoundDataType::SoundDataType() {}
 
 SoundDataType::~SoundDataType() {}
 
-bool SoundDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
-
-LiteralValue* SoundDataType::cast(LiteralValue*) const {}
+LiteralValue* SoundDataType::cast(LiteralValue* value) const {
+    switch ( value->getDataTypeId() )
+    {
+    case DataTypesId::Sound:
+        return value;
+        break;
+    default:
+        return nullptr;
+        break;
+    }
+}
 
 NumericDataType::NumericDataType() {}
 
 NumericDataType::~NumericDataType() {}
-
-bool NumericDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
 
 LiteralValue* NumericDataType::cast(LiteralValue* value) const {
     switch ( value->getDataTypeId() )
@@ -86,54 +104,136 @@ ArgumentDataType::ArgumentDataType() {}
 
 ArgumentDataType::~ArgumentDataType() {}
 
-bool ArgumentDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
-
-LiteralValue* ArgumentDataType::cast(LiteralValue *) const {}
+LiteralValue* ArgumentDataType::cast(LiteralValue* value) const {
+    switch ( value->getDataTypeId() )
+    {
+    case DataTypesId::Argument:
+        return value;
+        break;
+    default:
+        return nullptr;
+        break;
+    }
+}
 
 GroupDataType::GroupDataType() {}
 
 GroupDataType::~GroupDataType() {}
 
-bool GroupDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
-
-LiteralValue* GroupDataType::cast(LiteralValue *) const {}
+LiteralValue* GroupDataType::cast(LiteralValue* value) const {
+    switch ( value->getDataTypeId() )
+    {
+    case DataTypesId::Group:
+        return value;
+        break;
+    default:
+        return nullptr;
+        break;
+    }
+}
 
 BooleanDataType::BooleanDataType() {}
 
 BooleanDataType::~BooleanDataType() {}
 
-bool BooleanDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
-
-LiteralValue* BooleanDataType::cast(LiteralValue *) const {}
+LiteralValue* BooleanDataType::cast(LiteralValue* value) const {
+    switch ( value->getDataTypeId() )
+    {
+    case DataTypesId::Boolean:
+        return value;
+        break;
+    case DataTypesId::Numeric:
+    {
+        bool returnValue = *(double*)value->getValue();
+        delete value;
+        return new BooleanLiteralValue(returnValue);
+    }
+    case DataTypesId::Null:
+    {
+        delete value;
+        return new BooleanLiteralValue(false);
+    }
+    case DataTypesId::String:
+    {
+        string returnValue = *(string*)value->getValue();
+        bool tmp;
+        if( returnValue.length() )
+        {
+            tmp = true;
+        }
+        else
+        {
+            tmp = false;
+        }
+        delete value;
+        return new BooleanLiteralValue(tmp);
+    }
+    default:
+        return nullptr;
+        break;
+    }
+}
 
 BufferDataType::BufferDataType() {}
 
 BufferDataType::~BufferDataType() {}
 
-bool BufferDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
-
-LiteralValue* BufferDataType::cast(LiteralValue *) const {}
+LiteralValue* BufferDataType::cast(LiteralValue* value) const {
+    switch ( value->getDataTypeId() )
+    {
+    case DataTypesId::Buffer:
+        return value;
+        break;
+    default:
+        return nullptr;
+        break;
+    }
+}
 
 StringDataType::StringDataType() {}
 
 StringDataType::~StringDataType() {}
 
-bool StringDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
-
-LiteralValue* StringDataType::cast(LiteralValue *) const {}
+LiteralValue* StringDataType::cast(LiteralValue* value) const {
+    switch ( value->getDataTypeId() )
+    {
+    case DataTypesId::String:
+        return value;
+        break;
+    default:
+        return nullptr;
+        break;
+    }
+}
 
 NullDataType::NullDataType() {}
 
 NullDataType::~NullDataType() {}
 
-bool NullDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
-
-LiteralValue* NullDataType::cast(LiteralValue *) const {}
+LiteralValue* NullDataType::cast(LiteralValue* value) const {
+    switch ( value->getDataTypeId() )
+    {
+    case DataTypesId::Null:
+        return value;
+        break;
+    default:
+        return nullptr;
+        break;
+    }
+}
 
 FunctionDataType::FunctionDataType() {}
 
 FunctionDataType::~FunctionDataType() {}
 
-bool FunctionDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
-
-LiteralValue* FunctionDataType::cast(LiteralValue *) const {}
+LiteralValue* FunctionDataType::cast(LiteralValue* value) const {
+    switch ( value->getDataTypeId() )
+    {
+    case DataTypesId::Function:
+        return value;
+        break;
+    default:
+        return nullptr;
+        break;
+    }
+}

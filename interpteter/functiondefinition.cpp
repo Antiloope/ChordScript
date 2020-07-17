@@ -5,6 +5,10 @@ using namespace CS;
 
 ArgumentDefinition::ArgumentDefinition(DataTypesId dataType, string name) : _dataType(dataType),_name(name) {}
 
+string ArgumentDefinition::getName() const {
+    return _name;
+}
+
 FunctionDefinition::FunctionDefinition() {}
 
 void FunctionDefinition::load(list<TerminalExpression*>* terminalExpressionsList) {
@@ -110,8 +114,26 @@ void FunctionDefinition::load(list<TerminalExpression*>* terminalExpressionsList
     ctx->returnContext();
 }
 
-void FunctionDefinition::interpret(LiteralValue*) {
+void FunctionDefinition::interpret(LiteralValue* literalArgs) {
+    if( literalArgs->getDataTypeId() != DataTypesId::Argument ) throw SyntaxException("Invalid arguments");
 
+    list<LiteralValue*> args = *(list<LiteralValue*>*)literalArgs->getValue();
+
+    if( args.size() != _argumentsDefinitionList.size() ) throw SyntaxException("Invalid number of arguments");
+
+    Context* ctx = Context::getInstance();
+    ctx->switchContext(_context);
+
+    for( auto argumentDefinition : _argumentsDefinitionList )
+    {
+        ctx->setVariableValue(argumentDefinition.getName(),args.front());
+        args.pop_front();
+    }
+
+    _function->interpret();
+
+    if( !ctx->getReturnValue() ) ctx->setReturnValue(new NullLiteralValue());
+    ctx->returnContext();
 }
 
 FunctionDefinition::~FunctionDefinition() {
