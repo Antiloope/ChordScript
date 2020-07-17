@@ -223,7 +223,7 @@ LiteralValue* Context::getVariableValue(string name) {
         tmpStack.pop();
     }
 
-    return get<1>(_variables.find(ctx)->second.find(name)->second);
+    return get<1>(_variables.find(ctx)->second.find(name)->second)->clone();
 }
 
 FunctionDefinition* Context::getFunction(string name) {
@@ -288,6 +288,7 @@ bool Context::setVariableValue(string name,LiteralValue* value) {
 }
 
 void Context::setReturnValue(LiteralValue* value) {
+    if( _returnValue ) delete _returnValue;
     _returnValue = value;
 }
 

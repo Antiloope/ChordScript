@@ -43,6 +43,7 @@ void ProgramExpression::interpret(list<TerminalExpression*> terminalExpressionsL
         tmp.load(&terminalExpressionsList);
         tmp.interpret();
     }
+    auto inspector = Context::getInstance()->getReturnValue();
 }
 
 void ProgramExpression::interpret(){
@@ -399,18 +400,19 @@ AssignationExpression::AssignationExpression(size_t codeReference) : NonTerminal
 void AssignationExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
     TerminalExpression* tmp = terminalExpressionsList->front();
     DataTypesId dataType;
-
+    bool isDataTypeDefinition = false;
     if(
         tmp->getType() == cCast(ExpressionTypes::Name) &&
         Context::getInstance()->isDataType(DataType::getDataTypeId(((NameExpression*)tmp)->getName())) )
     {
-        string dataType = ((NameExpression*)tmp)->getName();
+        dataType = DataType::getDataTypeId(((NameExpression*)tmp)->getName());
 
         terminalExpressionsList->pop_front();
         if( terminalExpressionsList->empty()) throw SyntaxException("Expected variable name",tmp->getCodeReference() );
         tmp = terminalExpressionsList->front();
 
         if( tmp->getType() != cCast(ExpressionTypes::Name) ) throw SyntaxException("Expected variable name",tmp->getCodeReference());
+        isDataTypeDefinition = true;
     }
     else if( Context::getInstance()->nameExist(((NameExpression*)tmp)->getName()) )
     {
@@ -438,7 +440,10 @@ void AssignationExpression::load(list<TerminalExpression*>* terminalExpressionsL
     _value = LinkedValue::generateLinkedValue(terminalExpressionsList);
     if ( terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",terminalExpressionsList->front()->getCodeReference());
 
-    Context::getInstance()->newVariable( _varName, dataType);
+    if( isDataTypeDefinition )
+    {
+        Context::getInstance()->newVariable( _varName, dataType);
+    }
 }
 
 AssignationExpression::~AssignationExpression() {

@@ -34,12 +34,20 @@ StringLiteralValue::StringLiteralValue(string text) : LiteralValue(DataTypesId::
 
 StringLiteralValue::~StringLiteralValue() {}
 
+LiteralValue* StringLiteralValue::clone() {
+    return new StringLiteralValue(_text);
+}
+
 NumericLiteralValue::NumericLiteralValue(double number) : LiteralValue(DataTypesId::Numeric) {
     _number = number;
     _value = &_number;
 }
 
 NumericLiteralValue::~NumericLiteralValue() {}
+
+LiteralValue* NumericLiteralValue::clone() {
+    return new NumericLiteralValue(_number);
+}
 
 BooleanLiteralValue::BooleanLiteralValue(bool boolean) : LiteralValue(DataTypesId::Boolean) {
     _boolean = boolean;
@@ -48,11 +56,19 @@ BooleanLiteralValue::BooleanLiteralValue(bool boolean) : LiteralValue(DataTypesI
 
 BooleanLiteralValue::~BooleanLiteralValue() {}
 
+LiteralValue* BooleanLiteralValue::clone() {
+    return new BooleanLiteralValue(_boolean);
+}
+
 NullLiteralValue::NullLiteralValue() : LiteralValue(DataTypesId::Null) {
     _value = nullptr;
 }
 
 NullLiteralValue::~NullLiteralValue() {}
+
+LiteralValue* NullLiteralValue::clone() {
+    return new NullLiteralValue();
+}
 
 OperatorLiteralValue::OperatorLiteralValue(char op) : LiteralValue(DataTypesId::Operator) {
     _operator = op;
@@ -60,6 +76,10 @@ OperatorLiteralValue::OperatorLiteralValue(char op) : LiteralValue(DataTypesId::
 }
 
 OperatorLiteralValue::~OperatorLiteralValue() {}
+
+LiteralValue* OperatorLiteralValue::clone() {
+    return new OperatorLiteralValue(_operator);
+}
 
 ArrayLiteralValue::ArrayLiteralValue(list<LiteralValue*> literalValuesList) : LiteralValue(DataTypesId::Array) {
     _literalValuesList = literalValuesList;
@@ -73,6 +93,15 @@ ArrayLiteralValue::~ArrayLiteralValue() {
     }
 }
 
+LiteralValue* ArrayLiteralValue::clone() {
+    list<LiteralValue*> tmp;
+    for( auto literalValue : _literalValuesList )
+    {
+        tmp.push_back(literalValue->clone());
+    }
+    return new ArrayLiteralValue(tmp);
+}
+
 ArgumentLiteralValue::ArgumentLiteralValue(list<LiteralValue*> literalValuesList) : LiteralValue(DataTypesId::Argument) {
     _literalValuesList = literalValuesList;
     _value = &_literalValuesList;
@@ -83,6 +112,15 @@ ArgumentLiteralValue::~ArgumentLiteralValue() {
         delete _literalValuesList.front();
         _literalValuesList.pop_front();
     }
+}
+
+LiteralValue* ArgumentLiteralValue::clone() {
+    list<LiteralValue*> tmp;
+    for( auto literalValue : _literalValuesList )
+    {
+        tmp.push_back(literalValue->clone());
+    }
+    return new ArgumentLiteralValue(tmp);
 }
 
 ////////////////////////////////////////

@@ -27,6 +27,7 @@ public:
     LiteralValue(const LiteralValue&);
     virtual ~LiteralValue();
     void* getValue() const {return _value;}
+    virtual LiteralValue* clone() = 0;
 protected:
     void* _value;
 };
@@ -34,6 +35,7 @@ protected:
 class StringLiteralValue : public LiteralValue {
 public:
     StringLiteralValue(string);
+    LiteralValue* clone();
     ~StringLiteralValue();
 private:
     string _text;
@@ -42,6 +44,7 @@ private:
 class NumericLiteralValue : public LiteralValue {
 public:
     NumericLiteralValue(double);
+    LiteralValue* clone();
     ~NumericLiteralValue();
 private:
     double _number;
@@ -50,6 +53,7 @@ private:
 class BooleanLiteralValue : public LiteralValue {
 public:
     BooleanLiteralValue(bool);
+    LiteralValue* clone();
     ~BooleanLiteralValue();
 private:
     bool _boolean;
@@ -58,12 +62,14 @@ private:
 class NullLiteralValue : public LiteralValue {
 public:
     NullLiteralValue();
+    LiteralValue* clone();
     ~NullLiteralValue();
 };
 
 class OperatorLiteralValue : public LiteralValue {
 public:
     OperatorLiteralValue(char);
+    LiteralValue* clone();
     ~OperatorLiteralValue();
 private:
     char _operator;
@@ -72,6 +78,7 @@ private:
 class ArrayLiteralValue : public LiteralValue {
 public:
     ArrayLiteralValue(list<LiteralValue*>);
+    LiteralValue* clone();
     ~ArrayLiteralValue();
 private:
     list<LiteralValue*> _literalValuesList;
@@ -80,6 +87,7 @@ private:
 class ArgumentLiteralValue : public LiteralValue {
 public:
     ArgumentLiteralValue(list<LiteralValue*>);
+    LiteralValue* clone();
     ~ArgumentLiteralValue();
 private:
     list<LiteralValue*> _literalValuesList;
