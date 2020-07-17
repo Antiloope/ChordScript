@@ -455,6 +455,7 @@ MathOperationLinkedValue::~MathOperationLinkedValue() {
 
 LiteralValue* MathOperationLinkedValue::getValue() const {
     stack<double> RPNStack;
+    bool isFirstElement = true;
     for( LinkedValue* linkedValue : _linkedValuesList )
     {
         LiteralValue* literalValue = linkedValue->getValue();
@@ -506,14 +507,22 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
         }
             break;
         default:
-            string errorDescription = "Invalid convertion from ";
-            errorDescription.append(DataType::getDataTypeString(literalValue->getDataTypeId()));
-            errorDescription.append(" to numeric");
-            delete literalValue;
-            throw SemanticException(errorDescription,linkedValue->getCodeReference());
+            if( isFirstElement && RPNStack.empty() )
+            {
+                return literalValue;
+            }
+            else
+            {
+                string errorDescription = "Invalid convertion from ";
+                errorDescription.append(DataType::getDataTypeString(literalValue->getDataTypeId()));
+                errorDescription.append(" to numeric");
+                delete literalValue;
+                throw SemanticException(errorDescription,linkedValue->getCodeReference());
+            }
             break;
         }
         delete literalValue;
+        isFirstElement = false;
     }
     if ( RPNStack.empty() ) throw SyntaxException("Invalid number of operands",this->getCodeReference());
     double ret = RPNStack.top();
