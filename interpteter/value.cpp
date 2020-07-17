@@ -1270,19 +1270,23 @@ ExecutionLinkedValue::~ExecutionLinkedValue() {
 }
 
 LiteralValue* ExecutionLinkedValue::getValue() const {
-    auto method = _methodsList.front();
     Context::getInstance()->setReturnValue(nullptr);
 
-    if( _name == get<0>(method) )
+    if( _name == get<0>(_methodsList.front()) )
     {
         FunctionDefinition* function = Context::getInstance()->getFunction(_name);
         if( !function ) throw SemanticException("Unknown function name", this->getCodeReference());
-        function->interpret(get<1>(method)->getValue());
+        function->interpret(get<1>(_methodsList.front())->getValue());
     }
     else
     {
-        Context::getInstance()->executeMethod(_name,get<0>(method),get<1>(method)->getValue());
-
+        for( auto method : _methodsList )
+        {
+            if( !Context::getInstance()->executeMethod(_name,get<0>(method),get<1>(method)->getValue()) )
+            {
+                throw SyntaxException("Unknown method name",get<1>(method)->getCodeReference());
+            }
+        }
     }
 
     return Context::getInstance()->getReturnValue();

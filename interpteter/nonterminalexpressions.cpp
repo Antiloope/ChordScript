@@ -595,5 +595,21 @@ ExecutionExpression::~ExecutionExpression(){
     }
 }
 
-/// TODO: Implement
-void ExecutionExpression::interpret(){}
+void ExecutionExpression::interpret() {
+    if( _name == get<0>(_methodsList.front()) )
+    {
+        FunctionDefinition* function = Context::getInstance()->getFunction(_name);
+        if( !function ) throw SemanticException("Unknown function name", this->getCodeReference());
+        function->interpret(get<1>(_methodsList.front())->getValue());
+    }
+    else
+    {
+        for( auto method : _methodsList )
+        {
+            if( !Context::getInstance()->executeMethod(_name,get<0>(method),get<1>(method)->getValue()) )
+            {
+                throw SyntaxException("Unknown method name",get<1>(method)->getCodeReference());
+            }
+        }
+    }
+}

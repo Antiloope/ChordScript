@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     Interpreter interpreter;
 
     string testCode;
-    ifstream source("source.txt",ifstream::in);
+    ifstream source("/home/antiloope/Documents/tesis/build-ChordScript-Desktop_Qt_5_14_2_GCC_64bit-Debug/source.txt",ifstream::in);
     char c;
     while(source.get(c))
         testCode.push_back(c);
