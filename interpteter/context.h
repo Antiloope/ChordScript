@@ -47,6 +47,7 @@ public:
     context_index newContext();
     void returnContext();
     context_index getCurrentContext() const;
+    bool switchContext(context_index);
 
     void removeContext(context_index);
 

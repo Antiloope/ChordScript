@@ -56,6 +56,12 @@ void Context::returnContext() {
     if ( _contextStack.top() ) _contextStack.pop();
 }
 
+bool Context::switchContext(context_index contextIndex) {
+    if( _variables.find(contextIndex) == _variables.end() ) return false;
+    _contextStack.push(contextIndex);
+    return true;
+}
+
 context_index Context::getCurrentContext() const {
     return _contextStack.top();
 }
@@ -273,7 +279,7 @@ bool Context::setVariableValue(string name,LiteralValue* value) {
 
     DataTypesId dataType = get<0>(_variables.find(ctxIndex)->second.find(name)->second);
 
-    LiteralValue* castedValue =  _dataTypes.find(dataType)->second->cast(value);
+    LiteralValue* castedValue = _dataTypes.find(dataType)->second->cast(value);
 
     if( get<1>(_variables.find(ctxIndex)->second.find(name)->second) )
         delete get<1>(_variables.find(ctxIndex)->second.find(name)->second);
