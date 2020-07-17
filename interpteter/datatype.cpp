@@ -35,12 +35,11 @@ DataTypesId DataType::getDataTypeId(string dataType) {
     return DataTypesId::Null;
 }
 
+#include "value.h"
 
 DataType::DataType() {}
 
 DataType::~DataType() {}
-
-bool DataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
 
 SampleDataType::SampleDataType() {}
 
@@ -48,17 +47,15 @@ SampleDataType::~SampleDataType() {}
 
 bool SampleDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
 
+LiteralValue* SampleDataType::cast(LiteralValue *) const {}
+
 SoundDataType::SoundDataType() {}
 
 SoundDataType::~SoundDataType() {}
 
 bool SoundDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
 
-RealDataType::RealDataType() {}
-
-RealDataType::~RealDataType() {}
-
-bool RealDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
+LiteralValue* SoundDataType::cast(LiteralValue*) const {}
 
 NumericDataType::NumericDataType() {}
 
@@ -66,11 +63,32 @@ NumericDataType::~NumericDataType() {}
 
 bool NumericDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
 
+LiteralValue* NumericDataType::cast(LiteralValue* value) const {
+    switch ( value->getDataTypeId() )
+    {
+    case DataTypesId::Numeric:
+        return value;
+        break;
+    case DataTypesId::Boolean:
+    {
+        int returnValue = *(bool*)value->getValue();
+        delete value;
+        return new NumericLiteralValue(returnValue);
+    }
+        break;
+    default:
+        return nullptr;
+        break;
+    }
+}
+
 ArgumentDataType::ArgumentDataType() {}
 
 ArgumentDataType::~ArgumentDataType() {}
 
 bool ArgumentDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
+
+LiteralValue* ArgumentDataType::cast(LiteralValue *) const {}
 
 GroupDataType::GroupDataType() {}
 
@@ -78,11 +96,15 @@ GroupDataType::~GroupDataType() {}
 
 bool GroupDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
 
+LiteralValue* GroupDataType::cast(LiteralValue *) const {}
+
 BooleanDataType::BooleanDataType() {}
 
 BooleanDataType::~BooleanDataType() {}
 
 bool BooleanDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
+
+LiteralValue* BooleanDataType::cast(LiteralValue *) const {}
 
 BufferDataType::BufferDataType() {}
 
@@ -90,11 +112,15 @@ BufferDataType::~BufferDataType() {}
 
 bool BufferDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
 
+LiteralValue* BufferDataType::cast(LiteralValue *) const {}
+
 StringDataType::StringDataType() {}
 
 StringDataType::~StringDataType() {}
 
 bool StringDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
+
+LiteralValue* StringDataType::cast(LiteralValue *) const {}
 
 NullDataType::NullDataType() {}
 
@@ -102,8 +128,12 @@ NullDataType::~NullDataType() {}
 
 bool NullDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
 
+LiteralValue* NullDataType::cast(LiteralValue *) const {}
+
 FunctionDataType::FunctionDataType() {}
 
 FunctionDataType::~FunctionDataType() {}
 
 bool FunctionDataType::executeMethod(string,LiteralValue*,LiteralValue*) {}
+
+LiteralValue* FunctionDataType::cast(LiteralValue *) const {}

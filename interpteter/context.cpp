@@ -271,11 +271,13 @@ bool Context::setVariableValue(string name,LiteralValue* value) {
         tmpStack.pop();
     }
 
-    // TODO: check dataTypes and casting
+    DataTypesId dataType = get<0>(_variables.find(ctxIndex)->second.find(name)->second);
+
+    LiteralValue* castedValue =  _dataTypes.find(dataType)->second->cast(value);
 
     if( get<1>(_variables.find(ctxIndex)->second.find(name)->second) )
         delete get<1>(_variables.find(ctxIndex)->second.find(name)->second);
-    get<1>(_variables.find(ctxIndex)->second.find(name)->second) = value;
+    get<1>(_variables.find(ctxIndex)->second.find(name)->second) = castedValue;
     return true;
 }
 
