@@ -42,6 +42,7 @@ public:
     void newFunction(string,DataTypesId,FunctionDefinition*);
     FunctionDefinition* getFunction(string);
     bool executeMethod(string,string,LiteralValue*);
+    LiteralValue* getVariableValue(string);
 
     context_index newContext();
     void returnContext();

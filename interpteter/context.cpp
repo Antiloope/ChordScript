@@ -190,6 +190,36 @@ bool Context::executeMethod(string variableName,string methodName,LiteralValue* 
     return true;
 }
 
+LiteralValue* Context::getVariableValue(string name) {
+    stack<context_index> tmpStack;
+    while( !_contextStack.empty() )
+    {
+        if( _variables.find(_contextStack.top())->second.find(name) == _variables.find(_contextStack.top())->second.end() )
+        {
+            tmpStack.push(_contextStack.top());
+            _contextStack.pop();
+        }
+        else break;
+    }
+    if( _contextStack.empty() )
+    {
+        while( !tmpStack.empty() )
+        {
+            _contextStack.push(tmpStack.top());
+            tmpStack.pop();
+        }
+        return nullptr;
+    }
+    size_t ctx = _contextStack.top();
+    while( !tmpStack.empty() )
+    {
+        _contextStack.push(tmpStack.top());
+        tmpStack.pop();
+    }
+
+    return get<1>(_variables.find(ctx)->second.find(name)->second);
+}
+
 FunctionDefinition* Context::getFunction(string name) {
     auto tmp = _functions.find(name);
     if( tmp == _functions.end() ) return nullptr;

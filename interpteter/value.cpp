@@ -1307,9 +1307,8 @@ void NameLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList){
     terminalExpressionsList->pop_front();
 }
 
-// TODO: Implement return the value finding in context
 LiteralValue* NameLinkedValue::getValue() const {
-    return nullptr;
+    return Context::getInstance()->getVariableValue(_name);
 }
 
 ////////////////////////////////////////
