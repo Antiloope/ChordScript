@@ -32,7 +32,7 @@ public:
     void interpret() override;
 private:
     string _varName;
-    LinkedValue* _value;
+    LinkedValue* _value = nullptr;
 };
 
 class ExecutionExpression : public NonTerminalExpression {
@@ -56,10 +56,10 @@ public:
     void interpret() override;
 private:
     size_t _context;
-    AssignationExpression* _assignation;
-    LinkedValue* _booleanOperation;
-    AssignationExpression* _endAssignation;
-    ProgramExpression* _function;
+    AssignationExpression* _assignation = nullptr;
+    LinkedValue* _booleanOperation = nullptr;
+    AssignationExpression* _endAssignation = nullptr;
+    ProgramExpression* _function = nullptr;
 };
 
 class IfInstructionExpression : public NonTerminalExpression {
@@ -71,9 +71,9 @@ public:
 private:
     size_t _context;
     size_t _elseContext;
-    LinkedValue* _condition;
-    ProgramExpression* _function;
-    ProgramExpression* _elseFunction;
+    LinkedValue* _condition = nullptr;
+    ProgramExpression* _function = nullptr;
+    ProgramExpression* _elseFunction = nullptr;
 };
 
 class BreakInstructionExpression : public NonTerminalExpression {

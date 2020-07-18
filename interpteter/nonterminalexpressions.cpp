@@ -203,7 +203,8 @@ void ForInstructionExpression::load(list<TerminalExpression*>* terminalExpressio
     terminalExpressionsList->pop_front();
     tmp = terminalExpressionsList->front();
 
-    _booleanOperation = LinkedValue::generateLinkedValue(terminalExpressionsList);
+    _booleanOperation = new BooleanOperationLinkedValue(tmp->getCodeReference());
+    _booleanOperation->load(terminalExpressionsList);
 
     if( terminalExpressionsList->empty() || terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",tmp->getCodeReference() );
     terminalExpressionsList->pop_front();
@@ -216,7 +217,8 @@ void ForInstructionExpression::load(list<TerminalExpression*>* terminalExpressio
     terminalExpressionsList->pop_front();
     tmp = terminalExpressionsList->front();
 
-    if( terminalExpressionsList->empty()) throw SyntaxException("Expected {",tmp->getCodeReference() );
+    if( terminalExpressionsList->empty() || terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::OpenBrace) ) throw SyntaxException("Expected {",tmp->getCodeReference() );
+    terminalExpressionsList->pop_front();
     tmp = terminalExpressionsList->front();
 
     _function = new ProgramExpression(tmp->getCodeReference());
@@ -275,7 +277,8 @@ void IfInstructionExpression::load(list<TerminalExpression*>* terminalExpression
     if( terminalExpressionsList->empty()) throw SyntaxException("Expected if arguments",tmp->getCodeReference() );
     tmp = terminalExpressionsList->front();
 
-    _condition = LinkedValue::generateLinkedValue(terminalExpressionsList);
+    _condition = new BooleanOperationLinkedValue(tmp->getCodeReference());
+    _condition->load(terminalExpressionsList);
 
     if( terminalExpressionsList->empty()) throw SyntaxException("Expected )",tmp->getCodeReference() );
     tmp = terminalExpressionsList->front();
@@ -350,13 +353,16 @@ void IfInstructionExpression::interpret(){
     {
         if( !Context::getInstance()->switchContext(_context) ) throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
         _function->interpret();
+        Context::getInstance()->returnContext();
     }
     else
     {
-        if( !Context::getInstance()->switchContext(_elseContext) ) throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
-        _elseFunction->interpret();
+        if( _elseFunction ) {
+            if( !Context::getInstance()->switchContext(_elseContext) ) throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
+            _elseFunction->interpret();
+            Context::getInstance()->returnContext();
+        }
     }
-    Context::getInstance()->returnContext();
 }
 
 ////////////////////////////////////////
@@ -438,7 +444,10 @@ void AssignationExpression::load(list<TerminalExpression*>* terminalExpressionsL
     tmp = terminalExpressionsList->front();
 
     _value = LinkedValue::generateLinkedValue(terminalExpressionsList);
-    if ( terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",terminalExpressionsList->front()->getCodeReference());
+    if (
+        terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::EOE) &&
+        terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::CloseParenthesis) )
+        throw SyntaxException("Expected ;",terminalExpressionsList->front()->getCodeReference());
 
     if( isDataTypeDefinition )
     {

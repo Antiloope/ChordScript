@@ -43,6 +43,8 @@ Context::Context() {
     };
 
     _contextStack.push(GlobalContext);
+
+    _returnValue = nullptr;
 }
 
 context_index Context::newContext() {
