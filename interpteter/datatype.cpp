@@ -1,37 +1,39 @@
 #include "datatype.h"
+#include "languageConstants.h"
 
 using namespace CS;
+using namespace CS::constants;
 
 string DataType::getDataTypeString(DataTypesId dataType) {
     switch (dataType) {
-    case DataTypesId::Null: return "null";
-    case DataTypesId::Numeric: return "numeric";
-    case DataTypesId::Argument: return "argument";
-    case DataTypesId::Sample: return "sample";
+    case DataTypesId::Null: return sNull;
+    case DataTypesId::Numeric: return sNumber;
+    case DataTypesId::Argument: return sArgument;
+    case DataTypesId::Sample: return sSample;
     case DataTypesId::Operator: return "operator";
     case DataTypesId::Array: return "array";
-    case DataTypesId::Group: return "group";
-    case DataTypesId::Boolean: return "boolean";
-    case DataTypesId::Buffer: return "buffer";
-    case DataTypesId::String: return "string";
-    case DataTypesId::Function: return "function";
-    case DataTypesId::Sound: return "sound";
+    case DataTypesId::Group: return sGroup;
+    case DataTypesId::Boolean: return sBoolean;
+    case DataTypesId::Buffer: return sBuffer;
+    case DataTypesId::String: return sString;
+    case DataTypesId::Function: return sFunction;
+    case DataTypesId::Sound: return sSound;
     default: return "unknown";
     }
 }
 
 DataTypesId DataType::getDataTypeId(string dataType) {
-    if ( !dataType.compare("numeric") ) return DataTypesId::Numeric;
-    if ( !dataType.compare("argument") ) return DataTypesId::Argument;
-    if ( !dataType.compare("sample") ) return DataTypesId::Sample;
+    if ( !dataType.compare(sNumber) ) return DataTypesId::Numeric;
+    if ( !dataType.compare(sArgument) ) return DataTypesId::Argument;
+    if ( !dataType.compare(sSample) ) return DataTypesId::Sample;
     if ( !dataType.compare("operator") ) return DataTypesId::Operator;
     if ( !dataType.compare("array") ) return DataTypesId::Array;
-    if ( !dataType.compare("group") ) return DataTypesId::Group;
-    if ( !dataType.compare("boolean") ) return DataTypesId::Boolean;
-    if ( !dataType.compare("buffer") ) return DataTypesId::Buffer;
-    if ( !dataType.compare("string") ) return DataTypesId::String;
-    if ( !dataType.compare("function") ) return DataTypesId::Function;
-    if ( !dataType.compare("sound") ) return DataTypesId::Sound;
+    if ( !dataType.compare(sGroup) ) return DataTypesId::Group;
+    if ( !dataType.compare(sBoolean) ) return DataTypesId::Boolean;
+    if ( !dataType.compare(sBuffer) ) return DataTypesId::Buffer;
+    if ( !dataType.compare(sString) ) return DataTypesId::String;
+    if ( !dataType.compare(sFunction) ) return DataTypesId::Function;
+    if ( !dataType.compare(sSound) ) return DataTypesId::Sound;
     return DataTypesId::Null;
 }
 
