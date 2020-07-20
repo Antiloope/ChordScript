@@ -1,5 +1,5 @@
 #include "context.h"
-
+using namespace std;
 using namespace CS;
 
 Context* Context::_instance = nullptr;
@@ -15,26 +15,6 @@ Context::Context() {
         {DataTypesId::Buffer,      new BufferDataType()},
         {DataTypesId::String,      new StringDataType()},
         {DataTypesId::Function,    new FunctionDataType()},
-    };
-
-    _reservedKeywords = {
-        "null",
-        "sample",
-        "sound",
-        "numeric",
-        "argument",
-        "group",
-        "boolean",
-        "buffer",
-        "string",
-        "function",
-        "for",
-        "if",
-        "break",
-        "return",
-        "else",
-        "true",
-        "false",
     };
 
     _variables.insert( pair<size_t,variables_map>(GlobalContext,variables_map()) );
@@ -73,7 +53,7 @@ bool Context::isDataType(DataTypesId dataType) const {
 }
 
 bool Context::isValidName(string name) const {
-    return _reservedKeywords.find(name) == _reservedKeywords.end();
+    return constants::isValidName(name);
 }
 
 DataTypesId Context::getDataTypeId(string name) {

@@ -10,6 +10,7 @@
 
 #include "value.h"
 #include "datatype.h"
+#include "languageConstants.h"
 
 using namespace std;
 namespace CS {
@@ -20,7 +21,6 @@ typedef unordered_map<string,tuple<DataTypesId,LiteralValue*>> variables_map;
 typedef map<size_t,variables_map> context_map;
 typedef unordered_map<string,tuple<DataTypesId,FunctionDefinition*>> functions_map;
 typedef unordered_map<DataTypesId,DataType*> data_types_map;
-typedef unordered_set<string> reserved_keywords_map;
 typedef size_t context_index;
 
 const context_index GlobalContext = 0;
@@ -58,7 +58,6 @@ private:
     Context();
     stack<context_index> _contextStack;
     data_types_map _dataTypes;
-    reserved_keywords_map _reservedKeywords;
     context_map _variables;
     functions_map _functions;
     LiteralValue* _returnValue;

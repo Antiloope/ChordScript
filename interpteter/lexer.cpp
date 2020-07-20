@@ -3,41 +3,11 @@
 #include "utils/log.h"
 
 #include <stack>
+#include "languageConstants.h"
 
 using namespace std;
 using namespace CS;
-
-const char cEqual               = '=';
-const char cSubstraction        = '-';
-const char cAddition            = '+';
-const char cMultiplication      = '*';
-const char cDivition            = '/';
-const char cNegation            = '!';
-const char cGreaterThan         = '>';
-const char cLessThan            = '<';
-const char cOr                  = '|';
-const char cAnd                 = '&';
-const char cMemberAccess        = '.';
-const char cOpenParenthesis     = '(';
-const char cCloseParenthesis    = ')';
-const char cOpenBracket         = '[';
-const char cCloseBracket        = ']';
-const char cOpenBrace           = '{';
-const char cCloseBrace          = '}';
-const char cEndOfExpression     = ';';
-const char cSeparator           = ',';
-const char cStringDelimitator   = '"';
-const char cStartComment        = '#';
-const char cEndOfLine           = 0x0A;
-const char cSpace               = ' ';
-const string sForStatement      = "for";
-const string sIfStatement       = "if";
-const string sElseStatement     = "else";
-const string sBreakStatement    = "break";
-const string sReturnStatement   = "return";
-const string sTrueStatement     = "true";
-const string sFalseStatement    = "false";
-const string sNullValue         = "null";
+using namespace CS::constants;
 
 list<TerminalExpression*> Lexer::tokenize(string sourceCode){
     list<TerminalExpression*> tokens;
@@ -173,14 +143,14 @@ list<TerminalExpression*> Lexer::tokenize(string sourceCode){
                         i++;
                     }
                     // Check for reseved keywords
-                    if (tmp == sForStatement) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::For)));
-                    else if (tmp == sIfStatement) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::If)));
-                    else if (tmp == sElseStatement) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Else)));
-                    else if (tmp == sBreakStatement) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Break)));
-                    else if (tmp == sReturnStatement) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Return)));
-                    else if (tmp == sTrueStatement) tokens.push_back(new BooleanExpression(codeRef,cCast(ExpressionTypes::Boolean),true));
-                    else if (tmp == sFalseStatement) tokens.push_back(new BooleanExpression(codeRef,cCast(ExpressionTypes::Boolean),false));
-                    else if (tmp == sNullValue) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Null)));
+                    if (tmp == sFor) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::For)));
+                    else if (tmp == sIf) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::If)));
+                    else if (tmp == sElse) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Else)));
+                    else if (tmp == sBreak) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Break)));
+                    else if (tmp == sReturn) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Return)));
+                    else if (tmp == sTrue) tokens.push_back(new BooleanExpression(codeRef,cCast(ExpressionTypes::Boolean),true));
+                    else if (tmp == sFalse) tokens.push_back(new BooleanExpression(codeRef,cCast(ExpressionTypes::Boolean),false));
+                    else if (tmp == sNull) tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Null)));
                     else tokens.push_back(new NameExpression(codeRef,cCast(ExpressionTypes::Name),tmp));
                 }
                 else if (sourceCode[i] >= '0' && sourceCode[i] <= '9'){

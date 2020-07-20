@@ -53,6 +53,7 @@ HEADERS += \
     interpteter/expression.h \
     interpteter/functiondefinition.h \
     interpteter/interpreter.h \
+    interpteter/languageConstants.h \
     interpteter/lexer.h \
     interpteter/nonterminalexpressions.h \
     interpteter/terminalexpressions.h \
