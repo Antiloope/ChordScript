@@ -128,7 +128,7 @@ void Context::newVariable(string name, DataTypesId dataType) {
         delete get<1>(tmp->second);
         _variables.find(currentContext)->second.erase(name);
     }
-    _variables.find(currentContext)->second.insert({name,tuple<DataTypesId,LiteralValue*>(dataType,nullptr)});
+    _variables.find(currentContext)->second.insert({name,tuple<DataTypesId,LiteralValue*>(dataType,new NullLiteralValue())});
 }
 
 #include "functiondefinition.h"
