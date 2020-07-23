@@ -25,23 +25,40 @@ Context::Context() {
     _contextStack.push(GlobalContext);
 
     _returnValue = nullptr;
+
+    for(context_index i = MaxContextCount ; i != 0 ; i--)
+    {
+        _freeContextIndexes.push(i);
+    }
 }
 
 context_index Context::newContext() {
-    static context_index counter;
-    _variables.insert(pair<context_index,variables_map>(++counter,variables_map()));
-    _contextStack.push(counter);
-    return counter;
+    context_index ctxId = _freeContextIndexes.top();
+    _freeContextIndexes.pop();
+    _variables.insert(pair<context_index,variables_map>(ctxId,variables_map()));
+    _contextStack.push(ctxId);
+    return ctxId;
 }
 
 void Context::returnContext() {
     if ( _contextStack.top() ) _contextStack.pop();
 }
 
-bool Context::switchContext(context_index contextIndex) {
-    if( _variables.find(contextIndex) == _variables.end() ) return false;
-    _contextStack.push(contextIndex);
-    return true;
+context_index Context::switchContext(context_index contextIndex) {
+    if( _variables.find(contextIndex) == _variables.end() ) return GlobalContext;
+    context_index returnContextId = _freeContextIndexes.top();
+    _freeContextIndexes.pop();
+    _variables.insert(pair<context_index,variables_map>(returnContextId,variables_map()));
+
+    auto newContext = &_variables.find(returnContextId)->second;
+
+    for( auto var : _variables.find(contextIndex)->second ) {
+        get<1>(get<1>(var)) = get<1>(get<1>(var))->clone();
+        newContext->insert(var);
+    }
+
+    _contextStack.push(returnContextId);
+    return returnContextId;
 }
 
 context_index Context::getCurrentContext() const {
@@ -220,6 +237,7 @@ Context* Context::getInstance() {
 }
 
 void Context::removeContext(context_index ctx) {
+    if( ctx == GlobalContext ) return;
     auto tmp = _variables.find(ctx);
     if( tmp == _variables.end() ) return;
 
@@ -230,6 +248,12 @@ void Context::removeContext(context_index ctx) {
     }
 
     _variables.erase(ctx);
+
+    if( _contextStack.top() == ctx )
+    {
+        _contextStack.pop();
+        _freeContextIndexes.push(ctx);
+    }
 }
 
 bool Context::setVariableValue(string name,LiteralValue* value) {
@@ -270,6 +294,7 @@ bool Context::setVariableValue(string name,LiteralValue* value) {
 }
 
 void Context::setReturnValue(LiteralValue* value) {
+    if( value == _returnValue ) return;
     if( _returnValue ) delete _returnValue;
     _returnValue = value;
 }

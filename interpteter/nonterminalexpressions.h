@@ -56,6 +56,7 @@ public:
     void interpret() override;
 private:
     size_t _context;
+    size_t _runningContext;
     AssignationExpression* _assignation = nullptr;
     LinkedValue* _booleanOperation = nullptr;
     AssignationExpression* _endAssignation = nullptr;
@@ -70,7 +71,9 @@ public:
     void interpret() override;
 private:
     size_t _context;
+    size_t _runningContext;
     size_t _elseContext;
+    size_t _runningElseContext;
     LinkedValue* _condition = nullptr;
     ProgramExpression* _function = nullptr;
     ProgramExpression* _elseFunction = nullptr;

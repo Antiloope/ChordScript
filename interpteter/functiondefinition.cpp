@@ -122,7 +122,7 @@ void FunctionDefinition::interpret(LiteralValue* literalArgs) {
     if( args.size() != _argumentsDefinitionList.size() ) throw SyntaxException("Invalid number of arguments");
 
     Context* ctx = Context::getInstance();
-    ctx->switchContext(_context);
+    _runningContext = ctx->switchContext(_context);
 
     for( auto argumentDefinition : _argumentsDefinitionList )
     {
@@ -133,11 +133,12 @@ void FunctionDefinition::interpret(LiteralValue* literalArgs) {
     _function->interpret();
 
     if( !ctx->getReturnValue() ) ctx->setReturnValue(new NullLiteralValue());
-    ctx->returnContext();
+    ctx->removeContext(_runningContext);
 }
 
 FunctionDefinition::~FunctionDefinition() {
     if( _function ) delete _function;
 
+    Context::getInstance()->removeContext(_runningContext);
     Context::getInstance()->removeContext(_context);
 }

@@ -1317,8 +1317,6 @@ ExecutionLinkedValue::~ExecutionLinkedValue() {
 }
 
 LiteralValue* ExecutionLinkedValue::getValue() const {
-    Context::getInstance()->setReturnValue(nullptr);
-
     if( _name == get<0>(_methodsList.front()) )
     {
         FunctionDefinition* function = Context::getInstance()->getFunction(_name);

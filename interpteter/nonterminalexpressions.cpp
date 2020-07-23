@@ -239,11 +239,13 @@ ForInstructionExpression::~ForInstructionExpression(){
     if( _assignation ) delete _assignation;
     if( _booleanOperation ) delete _booleanOperation;
 
+    Context::getInstance()->removeContext(_runningContext);
     Context::getInstance()->removeContext(_context);
 }
 
 void ForInstructionExpression::interpret(){
-    if( !Context::getInstance()->switchContext(_context) ) throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
+    _runningContext = Context::getInstance()->switchContext(_context);
+    if( !_runningContext ) throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
 
     Context::getInstance()->setReturnValue(nullptr);
     _assignation->interpret();
@@ -254,7 +256,7 @@ void ForInstructionExpression::interpret(){
         _function->interpret();
         _endAssignation->interpret();
     }
-    Context::getInstance()->returnContext();
+    Context::getInstance()->removeContext(_runningContext);
 }
 
 ////////////////////////////////////////
@@ -343,6 +345,8 @@ IfInstructionExpression::~IfInstructionExpression(){
     if( _elseFunction ) delete _elseFunction;
     if( _condition ) delete _condition;
 
+    if( _runningContext ) Context::getInstance()->removeContext(_runningContext);
+    if( _runningElseContext ) Context::getInstance()->removeContext(_runningElseContext);
     if( _context ) Context::getInstance()->removeContext(_context);
     if( _elseContext ) Context::getInstance()->removeContext(_elseContext);
 }
@@ -351,16 +355,18 @@ void IfInstructionExpression::interpret(){
     Context::getInstance()->setReturnValue(nullptr);
     if( *(bool*)_condition->getValue()->getValue() )
     {
-        if( !Context::getInstance()->switchContext(_context) ) throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
+        _runningContext = Context::getInstance()->switchContext(_context);
+        if( !_runningContext ) throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
         _function->interpret();
-        Context::getInstance()->returnContext();
+        Context::getInstance()->removeContext(_runningContext);
     }
     else
     {
         if( _elseFunction ) {
-            if( !Context::getInstance()->switchContext(_elseContext) ) throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
+            _runningElseContext = Context::getInstance()->switchContext(_elseContext);
+            if( !_runningElseContext ) throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
             _elseFunction->interpret();
-            Context::getInstance()->returnContext();
+            Context::getInstance()->removeContext(_runningElseContext);
         }
     }
 }
@@ -512,8 +518,8 @@ void DefinitionExpression::load(list<TerminalExpression*>* terminalExpressionsLi
     else if ( tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) )
     {
         FunctionDefinition* function = new FunctionDefinition();
-        function->load(terminalExpressionsList);
         Context::getInstance()->newFunction(varName,dataType,function);
+        function->load(terminalExpressionsList);
     }
     else
     {

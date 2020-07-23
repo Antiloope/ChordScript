@@ -24,7 +24,7 @@ typedef unordered_map<DataTypesId,DataType*> data_types_map;
 typedef size_t context_index;
 
 const context_index GlobalContext = 0;
-const context_index UnknownContext = 4294967295;
+const context_index MaxContextCount = 1000;
 
 class Context
 {
@@ -47,7 +47,7 @@ public:
     context_index newContext();
     void returnContext();
     context_index getCurrentContext() const;
-    bool switchContext(context_index);
+    context_index switchContext(context_index);
 
     void removeContext(context_index);
 
@@ -56,6 +56,7 @@ public:
 private:
     static Context* _instance;
     Context();
+    stack<context_index> _freeContextIndexes;
     stack<context_index> _contextStack;
     data_types_map _dataTypes;
     context_map _variables;
