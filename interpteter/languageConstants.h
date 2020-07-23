@@ -56,6 +56,11 @@ namespace constants {
     const string sTrue              = "true";
     const string sFalse             = "false";
 
+    /**
+     * @brief Check if str is different from all reserved keywords
+     * @param str string value to evaluate
+     * @return true if str is different from all reserved keywords
+     */
     inline bool isValidName(const string str)
     {
         switch (getHash(str.c_str())) {
