@@ -1319,9 +1319,10 @@ ExecutionLinkedValue::~ExecutionLinkedValue() {
 LiteralValue* ExecutionLinkedValue::getValue() const {
     if( _name == get<0>(_methodsList.front()) )
     {
-        FunctionDefinition* function = Context::getInstance()->getFunction(_name);
-        if( !function ) throw SemanticException("Unknown function name", this->getCodeReference());
-        function->interpret(get<1>(_methodsList.front())->getValue());
+        if( !Context::getInstance()->executeFunction(_name,get<1>(_methodsList.front())->getValue()) )
+        {
+            throw SemanticException("Unknown function name", this->getCodeReference());
+        }
     }
     else
     {

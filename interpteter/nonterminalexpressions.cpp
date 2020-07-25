@@ -194,7 +194,7 @@ void ForInstructionExpression::load(list<TerminalExpression*>* terminalExpressio
 
     Context* ctx = Context::getInstance();
 
-    _context = ctx->newContext();
+    _context = ctx->newScope();
 
     _assignation = new AssignationExpression(tmp->getCodeReference());
     _assignation->load(terminalExpressionsList);
@@ -230,7 +230,7 @@ void ForInstructionExpression::load(list<TerminalExpression*>* terminalExpressio
 
     terminalExpressionsList->pop_front();
 
-    ctx->returnContext();
+    ctx->returnScope();
 }
 
 ForInstructionExpression::~ForInstructionExpression(){
@@ -239,12 +239,12 @@ ForInstructionExpression::~ForInstructionExpression(){
     if( _assignation ) delete _assignation;
     if( _booleanOperation ) delete _booleanOperation;
 
-    Context::getInstance()->removeContext(_runningContext);
-    Context::getInstance()->removeContext(_context);
+    Context::getInstance()->removeScope(_runningContext);
+    Context::getInstance()->removeScope(_context);
 }
 
 void ForInstructionExpression::interpret(){
-    _runningContext = Context::getInstance()->switchContext(_context);
+    _runningContext = Context::getInstance()->switchScope(_context);
     if( !_runningContext ) throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
 
     Context::getInstance()->setReturnValue(nullptr);
@@ -256,7 +256,7 @@ void ForInstructionExpression::interpret(){
         _function->interpret();
         _endAssignation->interpret();
     }
-    Context::getInstance()->removeContext(_runningContext);
+    Context::getInstance()->removeScope(_runningContext);
 }
 
 ////////////////////////////////////////
@@ -297,12 +297,12 @@ void IfInstructionExpression::load(list<TerminalExpression*>* terminalExpression
 
     Context* ctx = Context::getInstance();
 
-    _context = ctx->newContext();
+    _context = ctx->newScope();
 
     _function = new ProgramExpression(tmp->getCodeReference());
     _function->load(terminalExpressionsList);
 
-    ctx->returnContext();
+    ctx->returnScope();
 
     if( terminalExpressionsList->empty() ) throw SyntaxException("Expected }",tmp->getCodeReference() );
     tmp = terminalExpressionsList->front();
@@ -326,12 +326,12 @@ void IfInstructionExpression::load(list<TerminalExpression*>* terminalExpression
         if( terminalExpressionsList->empty()) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
         tmp = terminalExpressionsList->front();
 
-        _elseContext = ctx->newContext();
+        _elseContext = ctx->newScope();
 
         _elseFunction = new ProgramExpression(tmp->getCodeReference());
         _elseFunction->load(terminalExpressionsList);
 
-        ctx->returnContext();
+        ctx->returnScope();
 
         if( terminalExpressionsList->empty() ) throw SyntaxException("Expected }",tmp->getCodeReference() );
         tmp = terminalExpressionsList->front();
@@ -345,28 +345,28 @@ IfInstructionExpression::~IfInstructionExpression(){
     if( _elseFunction ) delete _elseFunction;
     if( _condition ) delete _condition;
 
-    if( _runningContext ) Context::getInstance()->removeContext(_runningContext);
-    if( _runningElseContext ) Context::getInstance()->removeContext(_runningElseContext);
-    if( _context ) Context::getInstance()->removeContext(_context);
-    if( _elseContext ) Context::getInstance()->removeContext(_elseContext);
+    if( _runningContext ) Context::getInstance()->removeScope(_runningContext);
+    if( _runningElseContext ) Context::getInstance()->removeScope(_runningElseContext);
+    if( _context ) Context::getInstance()->removeScope(_context);
+    if( _elseContext ) Context::getInstance()->removeScope(_elseContext);
 }
 
 void IfInstructionExpression::interpret(){
     Context::getInstance()->setReturnValue(nullptr);
     if( *(bool*)_condition->getValue()->getValue() )
     {
-        _runningContext = Context::getInstance()->switchContext(_context);
+        _runningContext = Context::getInstance()->switchScope(_context);
         if( !_runningContext ) throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
         _function->interpret();
-        Context::getInstance()->removeContext(_runningContext);
+        Context::getInstance()->removeScope(_runningContext);
     }
     else
     {
         if( _elseFunction ) {
-            _runningElseContext = Context::getInstance()->switchContext(_elseContext);
+            _runningElseContext = Context::getInstance()->switchScope(_elseContext);
             if( !_runningElseContext ) throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
             _elseFunction->interpret();
-            Context::getInstance()->removeContext(_runningElseContext);
+            Context::getInstance()->removeScope(_runningElseContext);
         }
     }
 }
@@ -378,7 +378,7 @@ void IfInstructionExpression::interpret(){
 BreakInstructionExpression::BreakInstructionExpression(size_t codeReference) : NonTerminalExpression(codeReference) {}
 
 void BreakInstructionExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
-    if(Context::getInstance()->getCurrentContext() == GlobalContext) throw SyntaxException("Break is not valid in global scope",terminalExpressionsList->front()->getCodeReference());
+    if(Context::getInstance()->getCurrentScope() == GlobalScope) throw SyntaxException("Break is not valid in global scope",terminalExpressionsList->front()->getCodeReference());
     terminalExpressionsList->pop_front();
     if( terminalExpressionsList->empty() || terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",terminalExpressionsList->front()->getCodeReference());
 }
@@ -428,7 +428,7 @@ void AssignationExpression::load(list<TerminalExpression*>* terminalExpressionsL
     }
     else if( Context::getInstance()->nameExist(((NameExpression*)tmp)->getName()) )
     {
-        dataType = Context::getInstance()->getDataTypeId(((NameExpression*)tmp)->getName());
+        dataType = Context::getInstance()->getVariableDataType(((NameExpression*)tmp)->getName());
     }
     else
     {
@@ -471,7 +471,7 @@ void AssignationExpression::interpret() {
         string errorDescription = "Invalid conversion from ";
         errorDescription.append(DataType::getDataTypeString(_value->getDataTypeId()));
         errorDescription.append(" to ");
-        errorDescription.append(DataType::getDataTypeString(Context::getInstance()->getDataTypeId(_varName)));
+        errorDescription.append(DataType::getDataTypeString(Context::getInstance()->getVariableDataType(_varName)));
         throw SemanticException(errorDescription,this->getCodeReference());
     }
 }
@@ -517,8 +517,7 @@ void DefinitionExpression::load(list<TerminalExpression*>* terminalExpressionsLi
     }
     else if ( tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) )
     {
-        FunctionDefinition* function = new FunctionDefinition();
-        Context::getInstance()->newFunction(varName,dataType,function);
+        FunctionDefinition* function = Context::getInstance()->newFunction(varName,dataType);
         function->load(terminalExpressionsList);
     }
     else
@@ -542,7 +541,7 @@ void ReturnInstructionExpression::load(list<TerminalExpression*>* terminalExpres
 
     if( tmp->getType() != cCast(ExpressionTypes::Return) ) throw SyntaxException("Expected return", tmp->getCodeReference());
 
-    if( Context::getInstance()->getCurrentContext() == GlobalContext ) throw SyntaxException("Return is not valid in global scope",tmp->getCodeReference());
+    if( Context::getInstance()->getCurrentScope() == GlobalScope ) throw SyntaxException("Return is not valid in global scope",tmp->getCodeReference());
 
     terminalExpressionsList->pop_front();
     if ( terminalExpressionsList->empty() ) throw SyntaxException("Expected a return value or end of line",tmp->getCodeReference());
@@ -637,9 +636,10 @@ ExecutionExpression::~ExecutionExpression(){
 void ExecutionExpression::interpret() {
     if( _name == get<0>(_methodsList.front()) )
     {
-        FunctionDefinition* function = Context::getInstance()->getFunction(_name);
-        if( !function ) throw SemanticException("Unknown function name", this->getCodeReference());
-        function->interpret(get<1>(_methodsList.front())->getValue());
+        if( !Context::getInstance()->executeFunction(_name,get<1>(_methodsList.front())->getValue()) )
+        {
+            throw SemanticException("Unknown function name", this->getCodeReference());
+        }
     }
     else
     {
