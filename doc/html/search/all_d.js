@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['realdatatype_62',['RealDataType',['../classCS_1_1RealDataType.html',1,'CS']]],
-  ['returninstructionexpression_63',['ReturnInstructionExpression',['../classCS_1_1ReturnInstructionExpression.html',1,'CS::ReturnInstructionExpression'],['../classCS_1_1ReturnInstructionExpression.html#aa48db4d762b7a96182c66b120d11726a',1,'CS::ReturnInstructionExpression::ReturnInstructionExpression()']]]
+  ['removescope_79',['removeScope',['../classCS_1_1Context.html#a6c0bcb77a2abaf48e8b30a55283e70b0',1,'CS::Context']]],
+  ['returninstructionexpression_80',['ReturnInstructionExpression',['../classCS_1_1ReturnInstructionExpression.html',1,'CS::ReturnInstructionExpression'],['../classCS_1_1ReturnInstructionExpression.html#a8ba6a8c67bd272f59d796dc1354125a2',1,'CS::ReturnInstructionExpression::ReturnInstructionExpression()']]],
+  ['returnscope_81',['returnScope',['../classCS_1_1Context.html#a0d05bebc4ca5b8c04774561ce750c07f',1,'CS::Context']]]
 ];

@@ -1,8 +1,9 @@
 var searchData=
 [
-  ['ifinstructionexpression_166',['IfInstructionExpression',['../classCS_1_1IfInstructionExpression.html#afd446d6423335aa9074ff633f595c3f5',1,'CS::IfInstructionExpression']]],
-  ['instructionexpression_167',['InstructionExpression',['../classCS_1_1InstructionExpression.html#aa357fad7b658f07bca3eda917c83c09e',1,'CS::InstructionExpression']]],
-  ['interpret_168',['interpret',['../classCS_1_1DefinitionExpression.html#afa168383a0914a167546d8cd945409f9',1,'CS::DefinitionExpression::interpret()'],['../classCS_1_1AssignationExpression.html#a509638dc7d1d2982c98e61a03ede77ef',1,'CS::AssignationExpression::interpret()'],['../classCS_1_1ExecutionExpression.html#a2e43de66702372478c6305a1badf1ebb',1,'CS::ExecutionExpression::interpret()'],['../classCS_1_1ForInstructionExpression.html#a4a08069e786f8589f6cc4408eaaef461',1,'CS::ForInstructionExpression::interpret()'],['../classCS_1_1IfInstructionExpression.html#a1c6ac130b59abd7a94bd617c218a0403',1,'CS::IfInstructionExpression::interpret()'],['../classCS_1_1BreakInstructionExpression.html#ac3310f9553ea452faa8edb0294181579',1,'CS::BreakInstructionExpression::interpret()'],['../classCS_1_1EOEInstructionExpression.html#a49250a1da01881edd648a402c63f1712',1,'CS::EOEInstructionExpression::interpret()'],['../classCS_1_1InstructionExpression.html#a58ec6df19557a5e8d05f14b53b285387',1,'CS::InstructionExpression::interpret()'],['../classCS_1_1ProgramExpression.html#ac67170256d1cc8adf67ea03c27affbda',1,'CS::ProgramExpression::interpret()']]],
-  ['ismono_169',['isMono',['../classAudioFile.html#a1057326fd2c2eca7cc7937f811868cf1',1,'AudioFile']]],
-  ['isstereo_170',['isStereo',['../classAudioFile.html#a380a188d95f8f23b7622dfe222a7e8f6',1,'AudioFile']]]
+  ['ifinstructionexpression_200',['IfInstructionExpression',['../classCS_1_1IfInstructionExpression.html#aa460a50e7ae30ba3d26890a5e986aebe',1,'CS::IfInstructionExpression']]],
+  ['instructionexpression_201',['InstructionExpression',['../classCS_1_1InstructionExpression.html#aa15a5b108f06e50cb8ddd982e3026e6e',1,'CS::InstructionExpression']]],
+  ['isdatatype_202',['isDataType',['../classCS_1_1Context.html#af175b6ac8bd54176d21b96da582e1a7e',1,'CS::Context']]],
+  ['ismono_203',['isMono',['../classAudioFile.html#a1057326fd2c2eca7cc7937f811868cf1',1,'AudioFile']]],
+  ['isstereo_204',['isStereo',['../classAudioFile.html#a380a188d95f8f23b7622dfe222a7e8f6',1,'AudioFile']]],
+  ['isvalidname_205',['isValidName',['../classCS_1_1Context.html#ad9a1dd88cb84311a219e02cd606d3625',1,'CS::Context']]]
 ];

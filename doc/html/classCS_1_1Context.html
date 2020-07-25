@@ -73,39 +73,69 @@ $(function() {
 <div class="title">CS::Context Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Singleton class to sotre all values needed to be non volatile on sucesive interpreter instances.  
+ <a href="classCS_1_1Context.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="context_8h_source.html">context.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:adac1fede06f458cce09ded7bc5c442fb"><td class="memItemLeft" align="right" valign="top"><a id="adac1fede06f458cce09ded7bc5c442fb"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isDataType</b> (string)</td></tr>
-<tr class="separator:adac1fede06f458cce09ded7bc5c442fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac5959e0ec8068af2fc933c844f1af251"><td class="memItemLeft" align="right" valign="top"><a id="ac5959e0ec8068af2fc933c844f1af251"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>nameExist</b> (string)</td></tr>
+<tr class="memitem:af175b6ac8bd54176d21b96da582e1a7e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1Context.html#af175b6ac8bd54176d21b96da582e1a7e">isDataType</a> (DataTypesId) const</td></tr>
+<tr class="memdesc:af175b6ac8bd54176d21b96da582e1a7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">isDataType  <a href="classCS_1_1Context.html#af175b6ac8bd54176d21b96da582e1a7e">More...</a><br /></td></tr>
+<tr class="separator:af175b6ac8bd54176d21b96da582e1a7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5959e0ec8068af2fc933c844f1af251"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1Context.html#ac5959e0ec8068af2fc933c844f1af251">nameExist</a> (string)</td></tr>
+<tr class="memdesc:ac5959e0ec8068af2fc933c844f1af251"><td class="mdescLeft">&#160;</td><td class="mdescRight">nameExist  <a href="classCS_1_1Context.html#ac5959e0ec8068af2fc933c844f1af251">More...</a><br /></td></tr>
 <tr class="separator:ac5959e0ec8068af2fc933c844f1af251"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a044ea005a837faff516c309e1ebbb539"><td class="memItemLeft" align="right" valign="top"><a id="a044ea005a837faff516c309e1ebbb539"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>functionNameExist</b> (string)</td></tr>
-<tr class="separator:a044ea005a837faff516c309e1ebbb539"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd640d0f27869ace48b62b8cd2f24f04"><td class="memItemLeft" align="right" valign="top"><a id="afd640d0f27869ace48b62b8cd2f24f04"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isValidName</b> (string)</td></tr>
-<tr class="separator:afd640d0f27869ace48b62b8cd2f24f04"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a1137fed97cecd81431e1b97d5995d9"><td class="memItemLeft" align="right" valign="top"><a id="a4a1137fed97cecd81431e1b97d5995d9"></a>
-string&#160;</td><td class="memItemRight" valign="bottom"><b>getDataTypeName</b> (string)</td></tr>
-<tr class="separator:a4a1137fed97cecd81431e1b97d5995d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a290874cee15da6acb47fd663532a457b"><td class="memItemLeft" align="right" valign="top"><a id="a290874cee15da6acb47fd663532a457b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>newVariable</b> (string, string, <a class="el" href="classCS_1_1LinkedValue.html">LinkedValue</a> *)</td></tr>
-<tr class="separator:a290874cee15da6acb47fd663532a457b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a392a5d8bb04463d4d1cd46a0be1dcab6"><td class="memItemLeft" align="right" valign="top"><a id="a392a5d8bb04463d4d1cd46a0be1dcab6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>newFunction</b> (string, string, <a class="el" href="classCS_1_1FunctionDefinition.html">FunctionDefinition</a> *)</td></tr>
-<tr class="separator:a392a5d8bb04463d4d1cd46a0be1dcab6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a5ee954fd97b8d5b3ff3d01bce6599b"><td class="memItemLeft" align="right" valign="top"><a id="a1a5ee954fd97b8d5b3ff3d01bce6599b"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>newContext</b> ()</td></tr>
-<tr class="separator:a1a5ee954fd97b8d5b3ff3d01bce6599b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ccd925a6eb789b584e95058dda44f5e"><td class="memItemLeft" align="right" valign="top"><a id="a1ccd925a6eb789b584e95058dda44f5e"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>switchContext</b> (size_t)</td></tr>
-<tr class="separator:a1ccd925a6eb789b584e95058dda44f5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1e5a4ee674dd004ec634b859c1bddc78"><td class="memItemLeft" align="right" valign="top"><a id="a1e5a4ee674dd004ec634b859c1bddc78"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getCurrentContext</b> () const</td></tr>
-<tr class="separator:a1e5a4ee674dd004ec634b859c1bddc78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b078cec6486cb28728bc4af0260aa56"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1Context.html#a4b078cec6486cb28728bc4af0260aa56">functionNameExist</a> (string) const</td></tr>
+<tr class="memdesc:a4b078cec6486cb28728bc4af0260aa56"><td class="mdescLeft">&#160;</td><td class="mdescRight">functionNameExist  <a href="classCS_1_1Context.html#a4b078cec6486cb28728bc4af0260aa56">More...</a><br /></td></tr>
+<tr class="separator:a4b078cec6486cb28728bc4af0260aa56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9a1dd88cb84311a219e02cd606d3625"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1Context.html#ad9a1dd88cb84311a219e02cd606d3625">isValidName</a> (string) const</td></tr>
+<tr class="memdesc:ad9a1dd88cb84311a219e02cd606d3625"><td class="mdescLeft">&#160;</td><td class="mdescRight">isValidName  <a href="classCS_1_1Context.html#ad9a1dd88cb84311a219e02cd606d3625">More...</a><br /></td></tr>
+<tr class="separator:ad9a1dd88cb84311a219e02cd606d3625"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a611495d64b4ff815e9d0f37fd1306b06"><td class="memItemLeft" align="right" valign="top">DataTypesId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1Context.html#a611495d64b4ff815e9d0f37fd1306b06">getVariableDataType</a> (string)</td></tr>
+<tr class="memdesc:a611495d64b4ff815e9d0f37fd1306b06"><td class="mdescLeft">&#160;</td><td class="mdescRight">getVariableDataType  <a href="classCS_1_1Context.html#a611495d64b4ff815e9d0f37fd1306b06">More...</a><br /></td></tr>
+<tr class="separator:a611495d64b4ff815e9d0f37fd1306b06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd8b3b527dce2c338de5ee91869ccb46"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1Context.html#afd8b3b527dce2c338de5ee91869ccb46">newVariable</a> (string, DataTypesId)</td></tr>
+<tr class="memdesc:afd8b3b527dce2c338de5ee91869ccb46"><td class="mdescLeft">&#160;</td><td class="mdescRight">newVariable  <a href="classCS_1_1Context.html#afd8b3b527dce2c338de5ee91869ccb46">More...</a><br /></td></tr>
+<tr class="separator:afd8b3b527dce2c338de5ee91869ccb46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3be2efd29b1fe1c8ec53266d8be2aae9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1Context.html#a3be2efd29b1fe1c8ec53266d8be2aae9">setVariableValue</a> (string, <a class="el" href="classCS_1_1LiteralValue.html">LiteralValue</a> *)</td></tr>
+<tr class="memdesc:a3be2efd29b1fe1c8ec53266d8be2aae9"><td class="mdescLeft">&#160;</td><td class="mdescRight">setVariableValue  <a href="classCS_1_1Context.html#a3be2efd29b1fe1c8ec53266d8be2aae9">More...</a><br /></td></tr>
+<tr class="separator:a3be2efd29b1fe1c8ec53266d8be2aae9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaff3b6527f36728879d44b4f0301f320"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classCS_1_1LiteralValue.html">LiteralValue</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1Context.html#aaff3b6527f36728879d44b4f0301f320">getVariableValue</a> (string)</td></tr>
+<tr class="memdesc:aaff3b6527f36728879d44b4f0301f320"><td class="mdescLeft">&#160;</td><td class="mdescRight">getVariableValue  <a href="classCS_1_1Context.html#aaff3b6527f36728879d44b4f0301f320">More...</a><br /></td></tr>
+<tr class="separator:aaff3b6527f36728879d44b4f0301f320"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d5a283f31a9ba7e62b23b9c0238aff5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classCS_1_1FunctionDefinition.html">FunctionDefinition</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1Context.html#a5d5a283f31a9ba7e62b23b9c0238aff5">newFunction</a> (string, DataTypesId)</td></tr>
+<tr class="memdesc:a5d5a283f31a9ba7e62b23b9c0238aff5"><td class="mdescLeft">&#160;</td><td class="mdescRight">newFunction  <a href="classCS_1_1Context.html#a5d5a283f31a9ba7e62b23b9c0238aff5">More...</a><br /></td></tr>
+<tr class="separator:a5d5a283f31a9ba7e62b23b9c0238aff5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accf6c3e524baf7ca97555220c1bdd59a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1Context.html#accf6c3e524baf7ca97555220c1bdd59a">executeFunction</a> (string, <a class="el" href="classCS_1_1LiteralValue.html">LiteralValue</a> *)</td></tr>
+<tr class="memdesc:accf6c3e524baf7ca97555220c1bdd59a"><td class="mdescLeft">&#160;</td><td class="mdescRight">executeFunction  <a href="classCS_1_1Context.html#accf6c3e524baf7ca97555220c1bdd59a">More...</a><br /></td></tr>
+<tr class="separator:accf6c3e524baf7ca97555220c1bdd59a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18b40d5132d50016a630e2db836abc84"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1Context.html#a18b40d5132d50016a630e2db836abc84">executeMethod</a> (string, string, <a class="el" href="classCS_1_1LiteralValue.html">LiteralValue</a> *)</td></tr>
+<tr class="memdesc:a18b40d5132d50016a630e2db836abc84"><td class="mdescLeft">&#160;</td><td class="mdescRight">executeMethod  <a href="classCS_1_1Context.html#a18b40d5132d50016a630e2db836abc84">More...</a><br /></td></tr>
+<tr class="separator:a18b40d5132d50016a630e2db836abc84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab224e2cfc8057b600438ca277b059fd2"><td class="memItemLeft" align="right" valign="top">scope_index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1Context.html#ab224e2cfc8057b600438ca277b059fd2">newScope</a> ()</td></tr>
+<tr class="memdesc:ab224e2cfc8057b600438ca277b059fd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">newScope  <a href="classCS_1_1Context.html#ab224e2cfc8057b600438ca277b059fd2">More...</a><br /></td></tr>
+<tr class="separator:ab224e2cfc8057b600438ca277b059fd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d05bebc4ca5b8c04774561ce750c07f"><td class="memItemLeft" align="right" valign="top"><a id="a0d05bebc4ca5b8c04774561ce750c07f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1Context.html#a0d05bebc4ca5b8c04774561ce750c07f">returnScope</a> ()</td></tr>
+<tr class="memdesc:a0d05bebc4ca5b8c04774561ce750c07f"><td class="mdescLeft">&#160;</td><td class="mdescRight">returnScope Used to return to previous scope in definitions. <br /></td></tr>
+<tr class="separator:a0d05bebc4ca5b8c04774561ce750c07f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a44fe0819838229ae27dbfbf3c750bc"><td class="memItemLeft" align="right" valign="top">scope_index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1Context.html#a7a44fe0819838229ae27dbfbf3c750bc">getCurrentScope</a> () const</td></tr>
+<tr class="memdesc:a7a44fe0819838229ae27dbfbf3c750bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">getCurrentScope  <a href="classCS_1_1Context.html#a7a44fe0819838229ae27dbfbf3c750bc">More...</a><br /></td></tr>
+<tr class="separator:a7a44fe0819838229ae27dbfbf3c750bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a338b8a3c7e3c0b574b5b466d50eea97e"><td class="memItemLeft" align="right" valign="top">scope_index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1Context.html#a338b8a3c7e3c0b574b5b466d50eea97e">switchScope</a> (scope_index)</td></tr>
+<tr class="memdesc:a338b8a3c7e3c0b574b5b466d50eea97e"><td class="mdescLeft">&#160;</td><td class="mdescRight">switchScope Creates a new scope as a copy of the scope passed as argument and set current scope tho this  <a href="classCS_1_1Context.html#a338b8a3c7e3c0b574b5b466d50eea97e">More...</a><br /></td></tr>
+<tr class="separator:a338b8a3c7e3c0b574b5b466d50eea97e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c0bcb77a2abaf48e8b30a55283e70b0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1Context.html#a6c0bcb77a2abaf48e8b30a55283e70b0">removeScope</a> (scope_index)</td></tr>
+<tr class="memdesc:a6c0bcb77a2abaf48e8b30a55283e70b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">removeScope remove scope and all definitions inside it.  <a href="classCS_1_1Context.html#a6c0bcb77a2abaf48e8b30a55283e70b0">More...</a><br /></td></tr>
+<tr class="separator:a6c0bcb77a2abaf48e8b30a55283e70b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecff5cdb3823491cbf518056f393f7a9"><td class="memItemLeft" align="right" valign="top"><a id="aecff5cdb3823491cbf518056f393f7a9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setReturnValue</b> (<a class="el" href="classCS_1_1LiteralValue.html">LiteralValue</a> *)</td></tr>
+<tr class="separator:aecff5cdb3823491cbf518056f393f7a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fc08114cc1269a2ababafb2e1e8e59b"><td class="memItemLeft" align="right" valign="top"><a id="a8fc08114cc1269a2ababafb2e1e8e59b"></a>
+<a class="el" href="classCS_1_1LiteralValue.html">LiteralValue</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getReturnValue</b> () const</td></tr>
+<tr class="separator:a8fc08114cc1269a2ababafb2e1e8e59b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -113,6 +143,454 @@ Static Public Member Functions</h2></td></tr>
 static <a class="el" href="classCS_1_1Context.html">Context</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getInstance</b> ()</td></tr>
 <tr class="separator:ad0c275450890b2a68186ad6d0095874b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Singleton class to sotre all values needed to be non volatile on sucesive interpreter instances. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="accf6c3e524baf7ca97555220c1bdd59a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accf6c3e524baf7ca97555220c1bdd59a">&#9670;&nbsp;</a></span>executeFunction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Context::executeFunction </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classCS_1_1LiteralValue.html">LiteralValue</a> *&#160;</td>
+          <td class="paramname"><em>arguments</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>executeFunction </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Function name </td></tr>
+    <tr><td class="paramname">arguments</td><td>Literal arguments to execute function </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if function could be executed correctly </dd></dl>
+
+</div>
+</div>
+<a id="a18b40d5132d50016a630e2db836abc84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18b40d5132d50016a630e2db836abc84">&#9670;&nbsp;</a></span>executeMethod()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Context::executeMethod </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>variableName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>methodName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classCS_1_1LiteralValue.html">LiteralValue</a> *&#160;</td>
+          <td class="paramname"><em>arguments</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>executeMethod </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">variableName</td><td></td></tr>
+    <tr><td class="paramname">methodName</td><td></td></tr>
+    <tr><td class="paramname">arguments</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if method could be executed correctly </dd></dl>
+
+</div>
+</div>
+<a id="a4b078cec6486cb28728bc4af0260aa56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b078cec6486cb28728bc4af0260aa56">&#9670;&nbsp;</a></span>functionNameExist()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Context::functionNameExist </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>functionNameExist </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Function name </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if exist a function with specified name </dd></dl>
+
+</div>
+</div>
+<a id="a7a44fe0819838229ae27dbfbf3c750bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a44fe0819838229ae27dbfbf3c750bc">&#9670;&nbsp;</a></span>getCurrentScope()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">scope_index Context::getCurrentScope </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>getCurrentScope </p>
+<dl class="section return"><dt>Returns</dt><dd>Index to current scope </dd></dl>
+
+</div>
+</div>
+<a id="a611495d64b4ff815e9d0f37fd1306b06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a611495d64b4ff815e9d0f37fd1306b06">&#9670;&nbsp;</a></span>getVariableDataType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">DataTypesId Context::getVariableDataType </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>getVariableDataType </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Variable name </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="aaff3b6527f36728879d44b4f0301f320"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaff3b6527f36728879d44b4f0301f320">&#9670;&nbsp;</a></span>getVariableValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classCS_1_1LiteralValue.html">LiteralValue</a> * Context::getVariableValue </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>getVariableValue </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Variable name </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to a literal value stored in scope </dd></dl>
+
+</div>
+</div>
+<a id="af175b6ac8bd54176d21b96da582e1a7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af175b6ac8bd54176d21b96da582e1a7e">&#9670;&nbsp;</a></span>isDataType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Context::isDataType </td>
+          <td>(</td>
+          <td class="paramtype">DataTypesId&#160;</td>
+          <td class="paramname"><em>dataType</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>isDataType </p>
+<dl class="section return"><dt>Returns</dt><dd>true if its an instantiable data type </dd></dl>
+
+</div>
+</div>
+<a id="ad9a1dd88cb84311a219e02cd606d3625"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9a1dd88cb84311a219e02cd606d3625">&#9670;&nbsp;</a></span>isValidName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Context::isValidName </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>isValidName </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Variable or function name </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if name its not a language keyword or anothe not valid names </dd></dl>
+
+</div>
+</div>
+<a id="ac5959e0ec8068af2fc933c844f1af251"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5959e0ec8068af2fc933c844f1af251">&#9670;&nbsp;</a></span>nameExist()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Context::nameExist </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>nameExist </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Variable name </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if exist a variable with specified name </dd></dl>
+
+</div>
+</div>
+<a id="a5d5a283f31a9ba7e62b23b9c0238aff5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d5a283f31a9ba7e62b23b9c0238aff5">&#9670;&nbsp;</a></span>newFunction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classCS_1_1FunctionDefinition.html">FunctionDefinition</a> * Context::newFunction </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">DataTypesId&#160;</td>
+          <td class="paramname"><em>dataType</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>newFunction </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Function name </td></tr>
+    <tr><td class="paramname">dataType</td><td>Function return data type </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to a new function definition. Destruction responsability is over this <a class="el" href="classCS_1_1Context.html" title="Singleton class to sotre all values needed to be non volatile on sucesive interpreter instances.">Context</a> class </dd></dl>
+
+</div>
+</div>
+<a id="ab224e2cfc8057b600438ca277b059fd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab224e2cfc8057b600438ca277b059fd2">&#9670;&nbsp;</a></span>newScope()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">scope_index Context::newScope </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>newScope </p>
+<dl class="section return"><dt>Returns</dt><dd>Index to new scope. Usefull to switch later. </dd></dl>
+
+</div>
+</div>
+<a id="afd8b3b527dce2c338de5ee91869ccb46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd8b3b527dce2c338de5ee91869ccb46">&#9670;&nbsp;</a></span>newVariable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Context::newVariable </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">DataTypesId&#160;</td>
+          <td class="paramname"><em>dataType</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>newVariable </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Variable name </td></tr>
+    <tr><td class="paramname">dataType</td><td>data type in variable definition </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a6c0bcb77a2abaf48e8b30a55283e70b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c0bcb77a2abaf48e8b30a55283e70b0">&#9670;&nbsp;</a></span>removeScope()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Context::removeScope </td>
+          <td>(</td>
+          <td class="paramtype">scope_index&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>removeScope remove scope and all definitions inside it. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">scopeIndex</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a3be2efd29b1fe1c8ec53266d8be2aae9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3be2efd29b1fe1c8ec53266d8be2aae9">&#9670;&nbsp;</a></span>setVariableValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Context::setVariableValue </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classCS_1_1LiteralValue.html">LiteralValue</a> *&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>setVariableValue </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Variable name </td></tr>
+    <tr><td class="paramname">value</td><td><a class="el" href="classCS_1_1LiteralValue.html">LiteralValue</a> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if variable could be setted </dd></dl>
+
+</div>
+</div>
+<a id="a338b8a3c7e3c0b574b5b466d50eea97e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a338b8a3c7e3c0b574b5b466d50eea97e">&#9670;&nbsp;</a></span>switchScope()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">scope_index Context::switchScope </td>
+          <td>(</td>
+          <td class="paramtype">scope_index&#160;</td>
+          <td class="paramname"><em>scopeIndex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>switchScope Creates a new scope as a copy of the scope passed as argument and set current scope tho this </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">scopeIndex</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Index to new copy scope to be removed when execution is finished. </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>interpteter/<a class="el" href="context_8h_source.html">context.h</a></li>
 <li>interpteter/context.cpp</li>
