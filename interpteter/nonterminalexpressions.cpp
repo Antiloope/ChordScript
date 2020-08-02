@@ -245,6 +245,7 @@ ForInstructionExpression::~ForInstructionExpression(){
 
 void ForInstructionExpression::interpret(){
     _runningContext = Context::getInstance()->switchScope(_context);
+    scope_index tmp = _runningContext;
     if( !_runningContext ) throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
 
     Context::getInstance()->setReturnValue(nullptr);
@@ -256,7 +257,7 @@ void ForInstructionExpression::interpret(){
         _function->interpret();
         _endAssignation->interpret();
     }
-    Context::getInstance()->removeScope(_runningContext);
+    Context::getInstance()->removeScope(tmp);
 }
 
 ////////////////////////////////////////
@@ -356,17 +357,19 @@ void IfInstructionExpression::interpret(){
     if( *(bool*)_condition->getValue()->getValue() )
     {
         _runningContext = Context::getInstance()->switchScope(_context);
+        scope_index tmp = _runningContext;
         if( !_runningContext ) throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
         _function->interpret();
-        Context::getInstance()->removeScope(_runningContext);
+        Context::getInstance()->removeScope(tmp);
     }
     else
     {
         if( _elseFunction ) {
             _runningElseContext = Context::getInstance()->switchScope(_elseContext);
+            scope_index tmp = _runningElseContext;
             if( !_runningElseContext ) throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
             _elseFunction->interpret();
-            Context::getInstance()->removeScope(_runningElseContext);
+            Context::getInstance()->removeScope(tmp);
         }
     }
 }

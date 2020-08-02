@@ -123,6 +123,7 @@ void FunctionDefinition::interpret(LiteralValue* literalArgs) {
 
     Context* ctx = Context::getInstance();
     _runningContext = ctx->switchScope(_context);
+    scope_index tmp = _runningContext;
 
     for( auto argumentDefinition : _argumentsDefinitionList )
     {
@@ -133,7 +134,7 @@ void FunctionDefinition::interpret(LiteralValue* literalArgs) {
     _function->interpret();
 
     if( !ctx->getReturnValue() ) ctx->setReturnValue(new NullLiteralValue());
-    ctx->removeScope(_runningContext);
+    ctx->removeScope(tmp);
 }
 
 FunctionDefinition::~FunctionDefinition() {
