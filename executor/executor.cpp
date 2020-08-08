@@ -5,14 +5,30 @@
 #include <cstring>
 #include <jack/jack.h>
 #include <thread>
+#include <queue>
 
 #include <math.h>
 
 using namespace CS;
 
-constexpr size_t DefaultBatchSize = 1024;
-constexpr size_t DefaultOutputBufferSize = 10;
-constexpr char Stereo = 2;
+///////////////////////////////////////////////////
+///
+///   Definitions and parametrization
+///
+///////////////////////////////////////////////////
+
+enum ChannelMode {
+    mono = 1,
+    stereo = 2
+};
+const char DualBufferMode = 2;
+enum DualBuffer {
+    first = 0,
+    second = 1
+} currentBuffer = first;
+
+const size_t DefaultBatchSize = 1024;
+const size_t DefaultOutputBufferSize = 10;
 const string ClientName = "ChordScript";
 const string ServerName = "ChordScriptServer";
 
@@ -20,24 +36,28 @@ size_t batchSize = DefaultBatchSize;
 size_t outputBufferSize = DefaultOutputBufferSize * DefaultBatchSize;
 size_t batchIndex = 0;
 
+///////////////////////////////////////////////////
+///
+///   Jack and buffers handling
+///
+///////////////////////////////////////////////////
+
 jack_client_t* jackClient = nullptr;
-jack_port_t* stereoOutputPort[Stereo];
-OutputBuffer outputBuffer[Stereo];
-
-enum DualBuffer {
-    first = 0,
-    second = 1
-} currentBuffer = first;
-
-thread t;
+// Output port to send data
+jack_port_t* stereoOutputPort[ChannelMode::stereo];
+// Internal usage outputBuffer array to manage dual buffer
+OutputBuffer outputBuffer[DualBufferMode];
+// Queue to manage insertions in soundsList
+queue<Sound*> soundsToAdd;
+// Thread to manage soundsList insertions from queue soundsToAdd and to play soundson outputBuffer
+thread bufferHandlerThread;
 atomic_flag lockBuffer = ATOMIC_FLAG_INIT;
 
-Executor* Executor::_instance = nullptr;
-
-Executor* Executor::getInstance() {
-    if ( !_instance ) _instance = new Executor();
-    return _instance;
-}
+///////////////////////////////////////////////////
+///
+///   Jack callbacks
+///
+///////////////////////////////////////////////////
 
 int processCallback(jack_nframes_t nframes,void*) {
     // Increase time
@@ -46,48 +66,64 @@ int processCallback(jack_nframes_t nframes,void*) {
     jack_default_audio_sample_t *out;
 
     // Copy stereo outputBuffer to memory
-    out = (jack_default_audio_sample_t*)jack_port_get_buffer (
-        stereoOutputPort[Channel::right],
-                nframes
-                );
+    out = (jack_default_audio_sample_t*)
+        jack_port_get_buffer(
+            stereoOutputPort[Channel::right],
+            nframes );
 
     memcpy(
-           out,
+        out,
         &outputBuffer[currentBuffer][Channel::right][batchIndex * batchSize],
-           sizeof (jack_default_audio_sample_t) * nframes
-        );
+        sizeof (jack_default_audio_sample_t) * nframes );
 
-    out = (jack_default_audio_sample_t*)jack_port_get_buffer (
-        stereoOutputPort[Channel::left],
-                nframes
-                );
+    out = (jack_default_audio_sample_t*)
+        jack_port_get_buffer (
+            stereoOutputPort[Channel::left],
+            nframes );
 
     memcpy(
-            out,
+        out,
         &outputBuffer[currentBuffer][Channel::left][batchIndex * batchSize],
-            sizeof (jack_default_audio_sample_t) * nframes
-        );
+        sizeof (jack_default_audio_sample_t) * nframes );
 
     batchIndex++;
 
     // If its going out of buffer size, go to first batch again and
     // call processOverflow to fill outputBuffer with new data.
 
-    if (batchIndex * batchSize >= outputBufferSize){
+    if( batchIndex * batchSize >= outputBufferSize )
+    {
         currentBuffer == DualBuffer::first ? currentBuffer = DualBuffer::second : currentBuffer = DualBuffer::first;
         batchIndex = 0;
     }
 
-    if (batchIndex == 1) {
+    if ( batchIndex == 1 ) {
         lockBuffer.clear();
     }
 
     return 0;
 }
 
+void processShutdown(void*) {
+}
+
+/**
+ * @brief This function is executed in bufferHandlerThread.
+ * This function, play sounds in soundsList on secondary buffer and
+ * load soundsList with sounds from soundsToAdd queue.
+ * @param soundsList A pointer to a list of sounds to be played
+ */
 void loadBuffer(list<Sound*>* soundsList) {
-    while (1) {
-        while (lockBuffer.test_and_set()) {}
+    while (true) {
+        while (lockBuffer.test_and_set())
+        {
+            // While waiting, load sounds from soundsToAdd queue to soundsList
+            if( !soundsToAdd.empty() )
+            {
+                soundsList->push_back(soundsToAdd.front());
+                soundsToAdd.pop();
+            }
+        }
         DualBuffer nextBuffer;
 
         // Switch buffer
@@ -99,23 +135,31 @@ void loadBuffer(list<Sound*>* soundsList) {
         while (i != soundsList->end())
         {
             if ( outputBuffer[nextBuffer].play( *i ) )
-            {
                 i++;
-            }
             else
-            {
                 i = soundsList->erase(i);
-            }
         }
         lockBuffer.test_and_set();
     }
 }
 
-void processShutdown(void*) {
+///////////////////////////////////////////////////
+///
+///   Executor class
+///
+///////////////////////////////////////////////////
+
+Executor* Executor::_instance = nullptr;
+
+Executor* Executor::getInstance() {
+    if ( !_instance ) _instance = new Executor();
+    return _instance;
 }
 
-Executor::Executor() {
+Executor::Executor() {}
 
+void Executor::addSound(Sound* newSound) const {
+    soundsToAdd.push(newSound);
 }
 
 Executor::~Executor() {
@@ -123,15 +167,22 @@ Executor::~Executor() {
         _soundsList.pop_back();
         delete tmp;
     }
+    while(Sound* tmp = soundsToAdd.front()){
+        soundsToAdd.pop();
+        delete tmp;
+    }
     jack_client_close(jackClient);
 }
 
 void Executor::init() {
+    // Set output buffer size based on default outputBufferSize
     outputBuffer[Channel::right].setSize(outputBufferSize);
     outputBuffer[Channel::left].setSize(outputBufferSize);
 
-    t = thread(loadBuffer,&_soundsList);
+    // Start the trhead
+    bufferHandlerThread = thread(loadBuffer,&_soundsList);
 
+    // Following lines start jack client and connect to the jack server
     jack_options_t options = JackNullOption;
     jack_status_t status;
 
@@ -160,8 +211,7 @@ void Executor::init() {
 
     // Set client callbacks
 
-    // TODO: Think what to send to processCalback
-    jack_set_process_callback (jackClient, processCallback, this);
+    jack_set_process_callback (jackClient, processCallback, nullptr);
 
     // TODO: Think what to send to processShutdown
     jack_on_shutdown (jackClient, processShutdown, 0);
@@ -186,11 +236,13 @@ void Executor::init() {
     if (jack_activate (jackClient))
         throw new LogException("Cannot activate client");
 
+    // Set conficuration for TimeHandler
     TimeHandler::getInstance()->configure(
                 jack_get_sample_rate (jackClient),
                 jack_get_buffer_size(jackClient)
                 );
 
+    // Connect ports to outputPort strucure used to load buffers
     const char ** ports = jack_get_ports (
                 jackClient,
                 NULL,
@@ -229,6 +281,5 @@ void Executor::init() {
     }
 
     Sound * tmp = new Sound(buffer,NOW);
-    _soundsList.push_back(tmp);
-
+    this->addSound(tmp);
 }
