@@ -6,12 +6,12 @@
 #include <jack/jack.h>
 #include <thread>
 
+#include <math.h>
+
 using namespace CS;
 
 constexpr unsigned int DEFAULT_BATCH_SIZE = 1024;
 constexpr unsigned int DEFAULT_OUTPUT_BUFFER_SIZE = 10;
-constexpr unsigned short LEFT = 0;
-constexpr unsigned short RIGHT = 1;
 constexpr unsigned short STEREO = 2;
 
 size_t batchSize = DEFAULT_BATCH_SIZE;
@@ -20,20 +20,24 @@ size_t batchIndex = 0;
 
 jack_client_t* jackClient = nullptr;
 jack_port_t* stereoOutputPort[STEREO];
-OutputBuffer outputBuffer[2];
-unsigned short currentBuffer = 0;
+OutputBuffer outputBuffer[STEREO];
+
+enum DualBuffer{
+    first = 0,
+    second = 1
+} currentBuffer = first;
 
 thread t;
 atomic_flag lockBuffer = ATOMIC_FLAG_INIT;
 
 Executor* Executor::_instance = nullptr;
 
-Executor* Executor::getInstance(){
+Executor* Executor::getInstance() {
     if ( !_instance ) _instance = new Executor();
     return _instance;
 }
 
-int processCallback(jack_nframes_t nframes,void* arg){
+int processCallback(jack_nframes_t nframes,void*) {
     // Increase time
     TimeHandler::getInstance()->increaseTick(batchSize);
 
@@ -41,24 +45,24 @@ int processCallback(jack_nframes_t nframes,void* arg){
 
     // Copy stereo outputBuffer to memory
     out = (jack_default_audio_sample_t*)jack_port_get_buffer (
-                stereoOutputPort[RIGHT],
+        stereoOutputPort[Channel::right],
                 nframes
                 );
 
     memcpy(
            out,
-           &outputBuffer[currentBuffer][RIGHT][batchIndex * batchSize],
+        &outputBuffer[currentBuffer][Channel::right][batchIndex * batchSize],
            sizeof (jack_default_audio_sample_t) * nframes
         );
 
     out = (jack_default_audio_sample_t*)jack_port_get_buffer (
-                stereoOutputPort[LEFT],
+        stereoOutputPort[Channel::left],
                 nframes
                 );
 
     memcpy(
             out,
-            &outputBuffer[currentBuffer][LEFT][batchIndex * batchSize],
+        &outputBuffer[currentBuffer][Channel::left][batchIndex * batchSize],
             sizeof (jack_default_audio_sample_t) * nframes
         );
 
@@ -68,7 +72,7 @@ int processCallback(jack_nframes_t nframes,void* arg){
     // call processOverflow to fill outputBuffer with new data.
 
     if (batchIndex * batchSize >= outputBufferSize){
-        currentBuffer == 0 ? currentBuffer = 1 : currentBuffer = 0;
+        currentBuffer == DualBuffer::first ? currentBuffer = DualBuffer::second : currentBuffer = DualBuffer::first;
         batchIndex = 0;
     }
 
@@ -105,7 +109,7 @@ void loadBuffer(list<Sound*>* soundsList){
     }
 }
 
-void processShutdown(void* arg){
+void processShutdown(void*){
 }
 
 Executor::Executor() {
@@ -165,16 +169,16 @@ void Executor::init() {
     // jack_get_sample_rate (jackClient);
 
     // Crete ports
-    stereoOutputPort[LEFT] = jack_port_register (jackClient, "LeftOutput",
+    stereoOutputPort[Channel::left] = jack_port_register (jackClient, "LeftOutput",
                                           JACK_DEFAULT_AUDIO_TYPE,
                                           JackPortIsOutput, 0);
 
-    stereoOutputPort[RIGHT] = jack_port_register (jackClient, "RightOutput",
+    stereoOutputPort[Channel::right] = jack_port_register (jackClient, "RightOutput",
                                           JACK_DEFAULT_AUDIO_TYPE,
                                           JackPortIsOutput, 0);
-    if (stereoOutputPort[LEFT] == NULL)
+    if (stereoOutputPort[Channel::left] == NULL)
         throw new LogException("No more JACK ports available");
-    if (stereoOutputPort[LEFT] == NULL)
+    if (stereoOutputPort[Channel::left] == NULL)
         throw new LogException("No more JACK ports available");
 
     // Activate client
@@ -196,34 +200,34 @@ void Executor::init() {
     if (ports == NULL)
         throw new LogException("No physical playback ports");
 
-    if (jack_connect (jackClient, jack_port_name (stereoOutputPort[LEFT]), ports[LEFT]) ||
-        jack_connect (jackClient, jack_port_name (stereoOutputPort[RIGHT]), ports[RIGHT]))
+    if (jack_connect (jackClient, jack_port_name (stereoOutputPort[Channel::left]), ports[Channel::left]) ||
+        jack_connect (jackClient, jack_port_name (stereoOutputPort[Channel::right]), ports[Channel::right]))
         throw new LogException("Cannot connect output ports");
 
     free (ports);
 
     Log::getInstance().write("AudioServerAdapter correctly initilized",Log::info_t);
 
-//    AudioFile<float>::AudioBuffer buffer;
-//    buffer.resize(2);
-//    buffer[0].resize (outputBufferSize*10);
-//    buffer[1].resize (outputBufferSize*10);
+    AudioFile<float>::AudioBuffer buffer;
+    buffer.resize(2);
+    buffer[0].resize (outputBufferSize*10);
+    buffer[1].resize (outputBufferSize*10);
 
-//    int numChannels = 1;
-//    int numSamplesPerChannel = outputBufferSize*10;
-//    float sampleRate = 44100.f;
-//    float frequency = 440.f;
+    int numChannels = 2;
+    int numSamplesPerChannel = outputBufferSize*10;
+    float sampleRate = 44100.f;
+    float frequency = 440.f;
 
-//    for (int i = 0; i < numSamplesPerChannel; i++)
-//    {
-//        //frequency += 0.003;+
-//        float sample = sinf (2. * M_PI * ((float) i / sampleRate) * frequency) ;
+    for (int i = 0; i < numSamplesPerChannel; i++)
+    {
+        frequency += 0.003;
+        float sample = sinf (2. * M_PI * ((float) i / sampleRate) * frequency) ;
 
-//        for (int channel = 0; channel < numChannels; channel++)
-//             buffer[channel][i] = sample * 0.5;
-//    }
+        for (int channel = 0; channel < numChannels; channel++)
+             buffer[channel][i] = sample * 0.5;
+    }
 
-//    Sound * tmp = new Sound(buffer,NOW);
-//    _soundsList.push_back(tmp);
+    Sound * tmp = new Sound(buffer,NOW);
+    _soundsList.push_back(tmp);
 
 }

@@ -221,6 +221,14 @@ private:
     bool _value;
 };
 
+class SoundLinkedValue : public LinkedValue {
+public:
+    SoundLinkedValue(size_t);
+    void load(list<TerminalExpression *> *) override;
+    LiteralValue * getValue() const override;
+private:
+};
+
 }
 
 #endif // VALUE_H

@@ -4,14 +4,19 @@
 #include "AudioFile.h"
 #include "utils/timehandler.h"
 
+using namespace std;
+
 namespace CS {
 
-constexpr unsigned short BUFFER_RIGHT = 0;
-constexpr unsigned short BUFFER_LEFT = 1;
+enum Channel {
+    right = 0,
+    left = 1
+};
 
 constexpr unsigned short NOW = 0;
 
 typedef AudioFile<float>::AudioBuffer AudioBuffer;
+typedef vector<float> BufferChannel;
 
 class Buffer
 {
@@ -20,26 +25,30 @@ public:
     Buffer(AudioBuffer);
     virtual ~Buffer();
 
-    std::vector<float>& operator[](int a);
+    BufferChannel& operator[](Channel a);
 protected:
     AudioBuffer *_buffer;
 };
 
-class Sound : public Buffer
+class Sound
 {
 public:
     Sound(unsigned long time_ms);
     Sound(AudioBuffer,unsigned long time_ms);
-    ~Sound();
+    virtual ~Sound();
 
-    friend class OutputBuffer;
     virtual bool play(size_t);
-    virtual tick_t getStartTick();
+    virtual tick_t getStartTick() const;
+    tick_t getRemainingTicks();
+    tick_t getAbsoluteProgress() const;
+    float getInstantValue(Channel,tick_t);
 
+    BufferChannel& operator[](Channel);
 protected:
-    unsigned long _progress;
+    tick_t _progress;
     tick_t _startTick;
     bool _isPlayed;
+    Buffer _buffer;
 private:
 };
 
@@ -50,7 +59,7 @@ public:
     ~PeriodicSound();
 
     bool play(size_t);
-    tick_t getStartTick();
+    tick_t getStartTick() const;
 private:
 
 };
@@ -63,7 +72,7 @@ public:
     ~OutputBuffer();
 
     bool play(Sound*);
-    void setSize(unsigned long);
+    void setSize(size_t);
     void reset();
 };
 
