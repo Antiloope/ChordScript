@@ -10,19 +10,21 @@
 
 using namespace CS;
 
-constexpr unsigned int DEFAULT_BATCH_SIZE = 1024;
-constexpr unsigned int DEFAULT_OUTPUT_BUFFER_SIZE = 10;
-constexpr unsigned short STEREO = 2;
+constexpr size_t DefaultBatchSize = 1024;
+constexpr size_t DefaultOutputBufferSize = 10;
+constexpr char Stereo = 2;
+const string ClientName = "ChordScript";
+const string ServerName = "ChordScriptServer";
 
-size_t batchSize = DEFAULT_BATCH_SIZE;
-size_t outputBufferSize = DEFAULT_OUTPUT_BUFFER_SIZE * DEFAULT_BATCH_SIZE;
+size_t batchSize = DefaultBatchSize;
+size_t outputBufferSize = DefaultOutputBufferSize * DefaultBatchSize;
 size_t batchIndex = 0;
 
 jack_client_t* jackClient = nullptr;
-jack_port_t* stereoOutputPort[STEREO];
-OutputBuffer outputBuffer[STEREO];
+jack_port_t* stereoOutputPort[Stereo];
+OutputBuffer outputBuffer[Stereo];
 
-enum DualBuffer{
+enum DualBuffer {
     first = 0,
     second = 1
 } currentBuffer = first;
@@ -83,13 +85,13 @@ int processCallback(jack_nframes_t nframes,void*) {
     return 0;
 }
 
-void loadBuffer(list<Sound*>* soundsList){
+void loadBuffer(list<Sound*>* soundsList) {
     while (1) {
         while (lockBuffer.test_and_set()) {}
-        unsigned short nextBuffer;
+        DualBuffer nextBuffer;
 
         // Switch buffer
-        currentBuffer == 0 ? nextBuffer = 1 : nextBuffer = 0;
+        currentBuffer == DualBuffer::first ? nextBuffer = DualBuffer::second : nextBuffer = DualBuffer::first;
         outputBuffer[nextBuffer].reset();
 
         auto i = soundsList->begin();
@@ -109,7 +111,7 @@ void loadBuffer(list<Sound*>* soundsList){
     }
 }
 
-void processShutdown(void*){
+void processShutdown(void*) {
 }
 
 Executor::Executor() {
@@ -125,23 +127,22 @@ Executor::~Executor() {
 }
 
 void Executor::init() {
-    outputBuffer[0].setSize(outputBufferSize);
-    outputBuffer[1].setSize(outputBufferSize);
+    outputBuffer[Channel::right].setSize(outputBufferSize);
+    outputBuffer[Channel::left].setSize(outputBufferSize);
 
     t = thread(loadBuffer,&_soundsList);
 
     jack_options_t options = JackNullOption;
     jack_status_t status;
 
-    string jackClientName = "simple"; // TODO: Set client name
-    string jackServerName = "asd";  // TODO: Set server name
+    string jackClientName = ClientName;
+    string jackServerName = ServerName;
 
     jackClient = jack_client_open(
                 jackClientName.c_str(),
                 options,
                 &status,
-                jackServerName.c_str()
-                );
+                jackServerName.c_str() );
     if ( jackClient == nullptr )
     {
         string log = "Error creating jack client. ";
