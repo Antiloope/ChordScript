@@ -5,6 +5,7 @@
 #include "utils/Exceptions/exception.h"
 #include <stdlib.h>
 #include "interpteter/interpreter.h"
+#include "interpteter/context.h"
 
 #include <iostream>
 
@@ -16,6 +17,8 @@ int main(int argc, char *argv[])
 
     Log::getInstance().write("Program started",Log::info_t);
 
+    Context::getInstance()->load();
+
     Interpreter interpreter;
 
     string testCode;
@@ -24,6 +27,9 @@ int main(int argc, char *argv[])
     while(source.get(c))
         testCode.push_back(c);
     source.close();
+
+    Executor* audio = Executor::getInstance();
+    audio->init();
 
     try {
         interpreter.interpret(testCode);
@@ -36,10 +42,10 @@ int main(int argc, char *argv[])
     }
 
     uiManager ui;
-    Executor* audio = Executor::getInstance();
+
 
     ui.init();
-    audio->init();
+
 
     int ret = a.exec();
     Log::getInstance().write("Program closed",Log::info_t);

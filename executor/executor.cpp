@@ -32,6 +32,8 @@ const size_t DefaultOutputBufferSize = 10;
 const string ClientName = "ChordScript";
 const string ServerName = "ChordScriptServer";
 
+const char numberOfSounds = (char)1000;
+
 size_t batchSize = DefaultBatchSize;
 size_t outputBufferSize = DefaultOutputBufferSize * DefaultBatchSize;
 size_t batchIndex = 0;
@@ -117,7 +119,7 @@ void loadBuffer(list<Sound*>* soundsList) {
     while (true) {
         while (lockBuffer.test_and_set())
         {
-            // While waiting, load sounds from soundsToAdd queue to soundsList
+            // While waiting, load sounds from soundsToAdd to soundsList
             if( !soundsToAdd.empty() )
             {
                 soundsList->push_back(soundsToAdd.front());
@@ -134,7 +136,7 @@ void loadBuffer(list<Sound*>* soundsList) {
 
         while (i != soundsList->end())
         {
-            if ( outputBuffer[nextBuffer].play( *i ) )
+            if ( outputBuffer[nextBuffer].play( *i) )
                 i++;
             else
                 i = soundsList->erase(i);
@@ -156,10 +158,24 @@ Executor* Executor::getInstance() {
     return _instance;
 }
 
-Executor::Executor() {}
+Executor::Executor() {
+    for( char i = 0; i < numberOfSounds; i++)
+    {
+        _availableSounds.push(i);
+    }
+}
 
 void Executor::addSound(Sound* newSound) const {
     soundsToAdd.push(newSound);
+}
+
+unsigned int Executor::getSampleRate() const {
+    return jack_get_sample_rate (jackClient);
+}
+
+char Executor::getSoundId() {
+    char ret = _availableSounds.top();
+    return ret;
 }
 
 Executor::~Executor() {
@@ -261,25 +277,29 @@ void Executor::init() {
 
     Log::getInstance().write("AudioServerAdapter correctly initilized",Log::info_t);
 
-    AudioFile<float>::AudioBuffer buffer;
-    buffer.resize(2);
-    buffer[0].resize (outputBufferSize*10);
-    buffer[1].resize (outputBufferSize*10);
+//    AudioFile<float>::AudioBuffer buffer;
+//    buffer.resize(2);
+//    buffer[0].resize (outputBufferSize*10);
+//    buffer[1].resize (outputBufferSize*10);
 
-    int numChannels = 2;
-    int numSamplesPerChannel = outputBufferSize*10;
-    float sampleRate = 44100.f;
-    float frequency = 440.f;
+//    int numChannels = 2;
+//    int numSamplesPerChannel = outputBufferSize*10;
+//    float sampleRate = 44100.f;
+//    float frequency = 440.f;
 
-    for (int i = 0; i < numSamplesPerChannel; i++)
-    {
-        frequency += 0.003;
-        float sample = sinf (2. * M_PI * ((float) i / sampleRate) * frequency) ;
+//    for (int i = 0; i < numSamplesPerChannel; i++)
+//    {
+//        frequency += 0.003;
+//        float sample = sinf (2. * M_PI * ((float) i / sampleRate) * frequency) ;
 
-        for (int channel = 0; channel < numChannels; channel++)
-             buffer[channel][i] = sample * 0.5;
-    }
+//        for (int channel = 0; channel < numChannels; channel++)
+//             buffer[channel][i] = sample * 0.5;
+//    }
 
-    Sound * tmp = new Sound(buffer,NOW);
-    this->addSound(tmp);
+//    Sound * tmp = new Sound(buffer,NOW);
+//    this->addSound(tmp);
+//    tmp = new Sound(buffer,20);
+//    this->addSound(tmp);
+//    tmp = new Sound(buffer,10);
+//    this->addSound(tmp);
 }

@@ -43,7 +43,6 @@ void ProgramExpression::interpret(list<TerminalExpression*> terminalExpressionsL
         tmp.load(&terminalExpressionsList);
         tmp.interpret();
     }
-    auto inspector = Context::getInstance()->getReturnValue();
 }
 
 void ProgramExpression::interpret(){
@@ -469,7 +468,7 @@ AssignationExpression::~AssignationExpression() {
 }
 
 void AssignationExpression::interpret() {
-    if( !Context::getInstance()->setVariableValue(_varName,_value->getValue()) )
+    if( !Context::getInstance()->setVariableValue(_varName,_value->getValue()->clone()) )
     {
         string errorDescription = "Invalid conversion from ";
         errorDescription.append(DataType::getDataTypeString(_value->getDataTypeId()));
@@ -568,7 +567,7 @@ ReturnInstructionExpression::~ReturnInstructionExpression() {
 }
 
 void ReturnInstructionExpression::interpret() {
-    Context::getInstance()->setReturnValue(_returnValue->getValue());
+    Context::getInstance()->setReturnValue(_returnValue->getValue()->clone());
 }
 
 ////////////////////////////////////////

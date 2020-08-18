@@ -1,4 +1,7 @@
 #include "context.h"
+#include "functiondefinition.h"
+#include "languagedefinitions.h"
+
 using namespace std;
 using namespace CS;
 
@@ -80,6 +83,35 @@ Context::Context() {
     {
         _freeScopesIndexes.push(i);
     }
+}
+
+void Context::load() {
+
+    list<ArgumentDefinition> argumentsList = {
+        ArgumentDefinition(DataTypesId::Numeric,Functions::freqParam),
+        ArgumentDefinition(DataTypesId::Numeric,Functions::durationParam)
+    };
+
+    BaseFunction* tmpFunction = this->newBaseFunction(Names::sinFunction,DataTypesId::Buffer);
+    tmpFunction->load(argumentsList,&Functions::sin);
+
+    tmpFunction = this->newBaseFunction(Names::squareFunction,DataTypesId::Buffer);
+    tmpFunction->load(argumentsList,&Functions::square);
+
+    this->newVariable(Names::sinSound,DataTypesId::Sound);
+    this->newVariable(Names::sinSound,DataTypesId::Sound);
+
+    LiteralValue* value = new SoundLiteralValue(new SoundGenerator(Names::sinFunction));
+    _scopes.find(GlobalScope)->second.setVariableValue(Names::sinSound,value);
+    value = new SoundLiteralValue(new SoundGenerator(Names::squareFunction));
+    _scopes.find(GlobalScope)->second.setVariableValue(Names::squareSound,value);
+
+
+    this->newVariable(Names::a3,DataTypesId::Numeric);
+    this->newVariable(Names::c3,DataTypesId::Numeric);
+
+    _scopes.find(GlobalScope)->second.setVariableValue(Names::a3,new NumericLiteralValue(220));
+    _scopes.find(GlobalScope)->second.setVariableValue(Names::c3,new NumericLiteralValue(130.813));
 }
 
 scope_index Context::newScope() {
@@ -183,8 +215,6 @@ void Context::newVariable(string name, DataTypesId dataType) {
     _scopes.find(currentContext)->second.newVariable(name,dataType);
 }
 
-#include "functiondefinition.h"
-
 FunctionDefinition* Context::newFunction(string name, DataTypesId dataType) {
     auto tmp = _functions.find(name);
     if(tmp != _functions.end())
@@ -227,7 +257,7 @@ bool Context::executeMethod(string variableName,string methodName,LiteralValue* 
 
     DataType* dataType = _dataTypes.find(dataTypeId)->second;
 
-    dataType->executeMethod(methodName,literalValue,arguments);
+    if( dataType->executeMethod(methodName,literalValue,arguments) ) return false;
 
     return true;
 }
@@ -262,6 +292,58 @@ LiteralValue* Context::getVariableValue(string name) {
     return _scopes.find(ctx)->second.getVariableValue(name)->clone();
 }
 
+LiteralValue* Context::getVariableValue(string name,DataTypesId dataTypeId) {
+    stack<scope_index> tmpStack;
+    while( !_scopeStack.empty() )
+    {
+        if( !_scopes.find(_scopeStack.top())->second.exist(name) )
+        {
+            tmpStack.push(_scopeStack.top());
+            _scopeStack.pop();
+        }
+        else break;
+    }
+    if( _scopeStack.empty() )
+    {
+        while( !tmpStack.empty() )
+        {
+            _scopeStack.push(tmpStack.top());
+            tmpStack.pop();
+        }
+        return nullptr;
+    }
+    size_t ctxIndex = _scopeStack.top();
+    while( !tmpStack.empty() )
+    {
+        _scopeStack.push(tmpStack.top());
+        tmpStack.pop();
+    }
+
+    LiteralValue* copyValue = _scopes.find(ctxIndex)->second.getVariableValue(name)->clone();
+
+    LiteralValue* castedValue = _dataTypes.find(dataTypeId)->second->cast(copyValue);
+
+    if( !castedValue ) delete copyValue;
+    return castedValue;
+}
+
+LiteralValue* Context::getArgumentValue(string name,DataTypesId dataTypeId) {
+    if( !_scopes.find(_scopeStack.top())->second.exist(name) ) return nullptr;
+
+    LiteralValue* copyValue = _scopes.find(_scopeStack.top())->second.getVariableValue(name)->clone();
+
+    LiteralValue* castedValue = _dataTypes.find(dataTypeId)->second->cast(copyValue);
+
+    if( !castedValue ) delete copyValue;
+    return castedValue;
+}
+
+LiteralValue* Context::getArgumentValue(string name) {
+    if( !_scopes.find(_scopeStack.top())->second.exist(name) ) return nullptr;
+
+    return _scopes.find(_scopeStack.top())->second.getVariableValue(name)->clone();
+}
+
 bool Context::executeFunction(string name,LiteralValue* arguments) {
     auto tmp = _functions.find(name);
     if( tmp == _functions.end() ) return false;
@@ -275,6 +357,18 @@ bool Context::executeFunction(string name,LiteralValue* arguments) {
 Context* Context::getInstance() {
     if ( !_instance ) _instance = new Context();
     return _instance;
+}
+
+BaseFunction* Context::newBaseFunction(string name,DataTypesId dataType) {
+    auto tmp = _functions.find(name);
+    if(tmp != _functions.end())
+    {
+        delete get<1>(tmp->second);
+        _functions.erase(name);
+    }
+    BaseFunction* ret = new BaseFunction();
+    _functions.insert({name,tuple<DataTypesId,FunctionDefinition*>(dataType,ret)});
+    return ret;
 }
 
 void Context::removeScope(scope_index ctx) {
@@ -308,6 +402,7 @@ bool Context::setVariableValue(string name,LiteralValue* value) {
             _scopeStack.push(tmpStack.top());
             tmpStack.pop();
         }
+        if( value ) delete value;
         return false;
     }
     size_t ctxIndex = _scopeStack.top();
@@ -325,7 +420,11 @@ bool Context::setVariableValue(string name,LiteralValue* value) {
 }
 
 void Context::setReturnValue(LiteralValue* value) {
-    if( value == _returnValue ) return;
+    if( value == _returnValue )
+    {
+        delete value;
+        return;
+    }
     if( _returnValue ) delete _returnValue;
     _returnValue = value;
 }

@@ -2,6 +2,7 @@
 #define EXECUTOR_H
 
 #include <list>
+#include <stack>
 #include "buffer.h"
 
 using namespace std;
@@ -27,11 +28,15 @@ public:
      * It start jack client and connect porst to the jack server and start a thread to handle queue and reproduction list sync
      */
     void init();
+
+    unsigned int getSampleRate() const;
+    char getSoundId();
 private:
     Executor();
     static Executor* _instance;
 
     list<Sound*> _soundsList;
+    stack<char> _availableSounds;
 };
 
 }

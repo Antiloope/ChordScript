@@ -9,6 +9,10 @@ string ArgumentDefinition::getName() const {
     return _name;
 }
 
+DataTypesId ArgumentDefinition::getDataTypeId() const {
+    return _dataType;
+}
+
 FunctionDefinition::FunctionDefinition() {}
 
 void FunctionDefinition::load(list<TerminalExpression*>* terminalExpressionsList) {
@@ -127,7 +131,7 @@ void FunctionDefinition::interpret(LiteralValue* literalArgs) {
 
     for( auto argumentDefinition : _argumentsDefinitionList )
     {
-        ctx->setVariableValue(argumentDefinition.getName(),args.front());
+        ctx->setVariableValue(argumentDefinition.getName(),args.front()->clone());
         args.pop_front();
     }
 
@@ -142,4 +146,48 @@ FunctionDefinition::~FunctionDefinition() {
 
     Context::getInstance()->removeScope(_runningContext);
     Context::getInstance()->removeScope(_context);
+}
+
+BaseFunction::BaseFunction() : FunctionDefinition() {}
+
+BaseFunction::~BaseFunction() {}
+
+void BaseFunction::load(list<ArgumentDefinition> arguments,void (*function)()) {
+    Context* ctx = Context::getInstance();
+
+    _context = ctx->newScope();
+
+    for( auto argument : arguments )
+    {
+        ctx->newVariable(argument.getName(),argument.getDataTypeId());
+    }
+
+    _argumentsDefinitionList = arguments;
+
+    _functionPointer = function;
+
+    ctx->returnScope();
+}
+
+void BaseFunction::interpret(LiteralValue* literalArgs) {
+    if( literalArgs->getDataTypeId() != DataTypesId::Argument ) throw SyntaxException("Invalid arguments");
+
+    list<LiteralValue*> args = *(list<LiteralValue*>*)literalArgs->getValue();
+
+    if( args.size() != _argumentsDefinitionList.size() ) throw SyntaxException("Invalid number of arguments");
+
+    Context* ctx = Context::getInstance();
+    _runningContext = ctx->switchScope(_context);
+    scope_index tmp = _runningContext;
+
+    for( auto argumentDefinition : _argumentsDefinitionList )
+    {
+        ctx->setVariableValue(argumentDefinition.getName(),args.front()->clone());
+        args.pop_front();
+    }
+
+    _functionPointer();
+
+    if( !ctx->getReturnValue() ) ctx->setReturnValue(new NullLiteralValue());
+    ctx->removeScope(tmp);
 }

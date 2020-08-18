@@ -5,7 +5,9 @@
 #include "terminalexpressions.h"
 #include "utils/Exceptions/exception.h"
 #include "datatype.h"
+#include "soundgenerator.h"
 #include <tuple>
+#include "executor/executorinterface.h"
 
 using namespace std;
 
@@ -91,6 +93,24 @@ public:
     ~ArgumentLiteralValue();
 private:
     list<LiteralValue*> _literalValuesList;
+};
+
+class SoundLiteralValue : public LiteralValue {
+public:
+    SoundLiteralValue(SoundGenerator*);
+    LiteralValue* clone();
+    ~SoundLiteralValue();
+private:
+    SoundGenerator* _soundGenerator;
+};
+
+class BufferLiteralValue : public LiteralValue {
+public:
+    BufferLiteralValue(AudioBuffer);
+    LiteralValue* clone();
+    ~BufferLiteralValue();
+private:
+    AudioBuffer _buffer;
 };
 
 class LinkedValue : public Value {
@@ -219,14 +239,6 @@ public:
     LiteralValue * getValue() const override;
 private:
     bool _value;
-};
-
-class SoundLinkedValue : public LinkedValue {
-public:
-    SoundLinkedValue(size_t);
-    void load(list<TerminalExpression *> *) override;
-    LiteralValue * getValue() const override;
-private:
 };
 
 }

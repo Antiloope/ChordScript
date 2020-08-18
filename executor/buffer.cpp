@@ -19,12 +19,14 @@ vector<float>& Buffer::operator[](Channel a) {
 }
 
 bool OutputBuffer::play(Sound* sound) {
+    if( !sound ) return false;
+
     tick_t currentTick = TimeHandler::getInstance()->getCurrentTick();
     tick_t tickPlusBuffer = currentTick + (*_buffer)[Channel::right].size();
     tick_t sizeToPlay = sound->getRemainingTicks();
 
-    sizeToPlay = (sound->getStartTick() + sizeToPlay < (*_buffer)[Channel::right].size())
-                     ? sound->getStartTick() + sizeToPlay
+    sizeToPlay = ( sizeToPlay < (*_buffer)[Channel::right].size())
+                     ? sizeToPlay
                      : (*_buffer)[Channel::right].size();
 
     while ( sound->getAbsoluteProgress() < tickPlusBuffer)
@@ -32,7 +34,7 @@ bool OutputBuffer::play(Sound* sound) {
         BufferChannel* rightChannel = &(*_buffer)[Channel::right];
         BufferChannel* leftChannel = &(*_buffer)[Channel::left];
         for (
-            unsigned long i = sound->getStartTick() ;
+            unsigned long i = 0 ;
             i < sizeToPlay;
             i++ )
         {
@@ -70,21 +72,19 @@ void OutputBuffer::reset() {
     }
 }
 
-Sound::Sound(unsigned long time_ms) {
+Sound::Sound(tick_t startTick) {
     _progress = 0;
     _isPlayed = false;
-    _startTick = TimeHandler::getInstance()->getCurrentTick() + TimeHandler::getInstance()->msToTicks(time_ms);
+    _startTick = startTick;
 }
 
-Sound::Sound(AudioBuffer buffer,unsigned long time_ms) : _buffer(buffer) {
+Sound::Sound(AudioBuffer buffer,tick_t startTick) : _buffer(buffer) {
     _progress = 0;
     _isPlayed = false;
-    _startTick = TimeHandler::getInstance()->getCurrentTick() + TimeHandler::getInstance()->msToTicks(time_ms);
+    _startTick = startTick;
 }
 
-Sound::~Sound() {
-
-}
+Sound::~Sound() {}
 
 bool Sound::play(size_t playedTicks) {
     _progress += playedTicks;

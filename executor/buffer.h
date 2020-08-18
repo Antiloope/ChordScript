@@ -33,8 +33,8 @@ protected:
 class Sound
 {
 public:
-    Sound(unsigned long time_ms);
-    Sound(AudioBuffer,unsigned long time_ms);
+    Sound(tick_t startTick);
+    Sound(AudioBuffer,tick_t startTick);
     virtual ~Sound();
 
     virtual bool play(size_t);

@@ -123,6 +123,30 @@ LiteralValue* ArgumentLiteralValue::clone() {
     return new ArgumentLiteralValue(tmp);
 }
 
+SoundLiteralValue::SoundLiteralValue(SoundGenerator* generator) : LiteralValue(DataTypesId::Sound) {
+    _soundGenerator = generator;
+    _value = _soundGenerator;
+}
+
+LiteralValue* SoundLiteralValue::clone() {
+    return new SoundLiteralValue(_soundGenerator->clone());
+}
+
+SoundLiteralValue::~SoundLiteralValue() {
+    if( _soundGenerator ) delete _soundGenerator;
+}
+
+BufferLiteralValue::BufferLiteralValue(AudioBuffer buffer) : LiteralValue(DataTypesId::Buffer) {
+    _buffer = buffer;
+    _value = &_buffer;
+}
+
+LiteralValue* BufferLiteralValue::clone() {
+    return new BufferLiteralValue(_buffer);
+}
+
+BufferLiteralValue::~BufferLiteralValue() {}
+
 ////////////////////////////////////////
 ///     LinkedValue : Value
 ////////////////////////////////////////

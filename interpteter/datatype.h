@@ -11,6 +11,8 @@ namespace CS {
 class LiteralValue;
 class ArgumentLiteralValue;
 
+typedef LiteralValue* (*methodFunction_t)(LiteralValue*,LiteralValue*);
+
 enum class DataTypesId {
     Sample,
     Sound,
@@ -33,10 +35,10 @@ public:
     static DataTypesId getDataTypeId(string);
     DataType();
     virtual ~DataType();
-    virtual bool executeMethod(string,LiteralValue*,LiteralValue*);
+    bool executeMethod(string,LiteralValue*,LiteralValue*);
     virtual LiteralValue* cast(LiteralValue*) const = 0;
 protected:
-    unordered_map<string,void (*)(LiteralValue*,LiteralValue*)> _methods;
+    unordered_map<string,methodFunction_t> _methods;
 };
 
 class SampleDataType : public DataType
@@ -53,6 +55,8 @@ public:
     SoundDataType();
     ~SoundDataType();
     LiteralValue* cast(LiteralValue*) const;
+private:
+    static LiteralValue* play(LiteralValue*,LiteralValue*);
 };
 
 class NumericDataType : public DataType

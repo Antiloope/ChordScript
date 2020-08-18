@@ -28,13 +28,16 @@ SOURCES += \
     UI/uimanager.cpp \
     executor/buffer.cpp \
     executor/executor.cpp \
+    executor/executorinterface.cpp \
     interpteter/context.cpp \
     interpteter/datatype.cpp \
     interpteter/expression.cpp \
     interpteter/functiondefinition.cpp \
     interpteter/interpreter.cpp \
+    interpteter/languagedefinitions.cpp \
     interpteter/lexer.cpp \
     interpteter/nonterminalexpressions.cpp \
+    interpteter/soundgenerator.cpp \
     interpteter/terminalexpressions.cpp \
     interpteter/value.cpp \
     main.cpp \
@@ -48,14 +51,17 @@ HEADERS += \
     executor/AudioFile.h \
     executor/buffer.h \
     executor/executor.h \
+    executor/executorinterface.h \
     interpteter/context.h \
     interpteter/datatype.h \
     interpteter/expression.h \
     interpteter/functiondefinition.h \
     interpteter/interpreter.h \
     interpteter/languageConstants.h \
+    interpteter/languagedefinitions.h \
     interpteter/lexer.h \
     interpteter/nonterminalexpressions.h \
+    interpteter/soundgenerator.h \
     interpteter/terminalexpressions.h \
     interpteter/value.h \
     utils/Exceptions/exception.h \

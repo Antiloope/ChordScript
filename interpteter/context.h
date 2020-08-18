@@ -16,6 +16,7 @@ using namespace std;
 namespace CS {
 
 class FunctionDefinition;
+class BaseFunction;
 
 typedef unordered_map<string,tuple<DataTypesId,LiteralValue*>> variables_map;
 typedef unordered_map<string,tuple<DataTypesId,FunctionDefinition*>> functions_map;
@@ -87,7 +88,10 @@ class Context
 {
 public:
     static Context* getInstance();
-
+    /**
+     * @brief load initial values.
+     */
+    void load();
     /**
      * @brief isDataType
      * @return true if its an instantiable data type
@@ -137,6 +141,26 @@ public:
      * @return A pointer to a literal value stored in scope
      */
     LiteralValue* getVariableValue(string);
+    /**
+     * @brief getVariableValue
+     * @param name Variable name
+     * @param dataTypeId Id to a data type to cast
+     * @return A pointer casted to specified data type from a literal value stored in scope
+     */
+    LiteralValue* getVariableValue(string,DataTypesId);
+    /**
+     * @brief getArgumentValue
+     * @param name Argument name
+     * @return A pointer to a literal value stored current scope
+     */
+    LiteralValue* getArgumentValue(string);
+    /**
+     * @brief getArgumentValue
+     * @param name Argument name
+     * @param dataTypeId Id to a data type to cast
+     * @return A pointer casted to specified data type from a literal value stored current scope
+     */
+    LiteralValue* getArgumentValue(string,DataTypesId);
 
     /**
      * @brief newFunction
@@ -199,6 +223,8 @@ private:
     scopes_map _scopes;
     functions_map _functions;
     LiteralValue* _returnValue;
+
+    BaseFunction* newBaseFunction(string,DataTypesId);
 };
 
 }

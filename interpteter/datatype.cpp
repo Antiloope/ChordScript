@@ -1,5 +1,6 @@
 #include "datatype.h"
 #include "languageConstants.h"
+#include "context.h"
 
 using namespace CS;
 using namespace CS::constants;
@@ -43,7 +44,14 @@ DataType::DataType() {}
 
 DataType::~DataType() {}
 
-bool DataType::executeMethod(string,LiteralValue*,LiteralValue*) {
+bool DataType::executeMethod(string methodName,LiteralValue* value,LiteralValue* arguments) {
+    if( _methods.find(methodName) == _methods.end() ) return false;
+    auto method = _methods.find(methodName)->second;
+
+    LiteralValue* returnValue = method(value,arguments);
+    if( !returnValue ) return false;
+
+    Context::getInstance()->setReturnValue(returnValue);
     return true;
 }
 
@@ -63,7 +71,9 @@ LiteralValue* SampleDataType::cast(LiteralValue* value) const {
     }
 }
 
-SoundDataType::SoundDataType() {}
+SoundDataType::SoundDataType() {
+    _methods.insert(pair<string,methodFunction_t>("play",&SoundDataType::play));
+}
 
 SoundDataType::~SoundDataType() {}
 
@@ -77,6 +87,116 @@ LiteralValue* SoundDataType::cast(LiteralValue* value) const {
         return nullptr;
         break;
     }
+}
+
+LiteralValue* SoundDataType::play(LiteralValue* value, LiteralValue* args) {
+    if( args->getDataTypeId() != DataTypesId::Argument ) return nullptr;
+
+    auto argumentValues = (list<LiteralValue*>*)args->getValue();
+
+    SoundGenerator* generator = (SoundGenerator*)value->getValue();
+
+    tick_t startTick = TimeHandler::getInstance()->getCurrentTick();
+
+    if( argumentValues->empty() )
+    {
+        generator->play({},0,startTick);
+        return new NullLiteralValue();
+    }
+
+    auto it = argumentValues->begin();
+
+    switch( (*it)->getDataTypeId() )
+    {
+    case DataTypesId::Array:
+    {
+        list<LiteralValue*>* arrayValues = (list<LiteralValue*>*)((ArrayLiteralValue*)(*it))->getValue();
+        list<double> freqList;
+
+        for(auto arrayIt = arrayValues->begin(); arrayIt != arrayValues->end(); arrayIt++)
+        {
+            if( (*arrayIt)->getDataTypeId() != DataTypesId::Numeric ) return nullptr;
+            freqList.push_back(*(double*)(*arrayIt)->getValue());
+        }
+        it++;
+        if( it == argumentValues->end() )
+        {
+            generator->play(freqList,0,startTick);
+            return new NullLiteralValue();
+        }
+
+        if( (*it)->getDataTypeId() != DataTypesId::Numeric )
+        {
+            return nullptr;
+        }
+
+        double duration = *(double*)(*it)->getValue();
+        it++;
+        if( it != argumentValues->end() )
+        {
+            return nullptr;
+        }
+
+        generator->play(freqList,duration,startTick);
+        break;
+    }
+    case DataTypesId::Argument:
+    {
+        for( ; it != argumentValues->end(); it++ )
+        {
+            list<LiteralValue*>* argumentList = (list<LiteralValue*>*)((ArgumentLiteralValue*)(*it))->getValue();
+            auto argIt = argumentList->begin();
+
+            if( (*argIt)->getDataTypeId() != DataTypesId::Array )
+            {
+                generator->stop();
+                return nullptr;
+            }
+
+            list<LiteralValue*>* arrayValues = (list<LiteralValue*>*)((ArrayLiteralValue*)(*argIt))->getValue();
+            list<double> freqList;
+
+            for(auto arrayIt = arrayValues->begin(); arrayIt != arrayValues->end(); arrayIt++)
+            {
+                if( (*arrayIt)->getDataTypeId() != DataTypesId::Numeric )
+                {
+                    generator->stop();
+                    return nullptr;
+                }
+                freqList.push_back(*(double*)(*arrayIt)->getValue());
+            }
+            argIt++;
+            if( argIt == argumentList->end() )
+            {
+                generator->stop();
+                return nullptr;
+            }
+
+            if( (*argIt)->getDataTypeId() != DataTypesId::Numeric )
+            {
+                generator->stop();
+                return nullptr;
+            }
+
+            double duration = *(double*)(*argIt)->getValue() * 1000;
+            argIt++;
+            if( argIt != argumentList->end() )
+            {
+                generator->stop();
+                return nullptr;
+            }
+
+            generator->play(freqList,duration,startTick);
+            startTick += TimeHandler::getInstance()->msToTicks(duration);
+        }
+        break;
+    }
+    default:
+        return nullptr;
+        break;
+    }
+
+    return new NullLiteralValue();
 }
 
 NumericDataType::NumericDataType() {}
