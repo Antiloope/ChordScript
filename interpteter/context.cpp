@@ -257,7 +257,7 @@ bool Context::executeMethod(string variableName,string methodName,LiteralValue* 
 
     DataType* dataType = _dataTypes.find(dataTypeId)->second;
 
-    if( dataType->executeMethod(methodName,literalValue,arguments) ) return false;
+    if( !dataType->executeMethod(methodName,literalValue,arguments) ) return false;
 
     return true;
 }
