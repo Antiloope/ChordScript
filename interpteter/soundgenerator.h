@@ -12,13 +12,19 @@ namespace CS {
 class SoundGenerator
 {
 public:
-    SoundGenerator(string);
+    SoundGenerator(double(*)(double));
+    SoundGenerator(Sound);
     SoundGenerator(const SoundGenerator&);
     SoundGenerator* clone();
     void play(list<double>,double,tick_t);
     void stop();
+    SoundGenerator operator*(double);
+    SoundGenerator operator/(double);
+    SoundGenerator operator*(SoundGenerator&);
+    SoundGenerator operator+(SoundGenerator&);
+    SoundGenerator operator-(SoundGenerator&);
 private:
-    string _functionName;
+    Sound _baseSound;
     list<Sound*> _generatedSounds;
 };
 

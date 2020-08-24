@@ -178,7 +178,7 @@ LiteralValue* SoundDataType::play(LiteralValue* value, LiteralValue* args) {
                 return nullptr;
             }
 
-            double duration = *(double*)(*argIt)->getValue() * 1000;
+            double duration = *(double*)(*argIt)->getValue();
             argIt++;
             if( argIt != argumentList->end() )
             {
@@ -187,7 +187,7 @@ LiteralValue* SoundDataType::play(LiteralValue* value, LiteralValue* args) {
             }
 
             generator->play(freqList,duration,startTick);
-            startTick += TimeHandler::getInstance()->msToTicks(duration);
+            startTick += TimeHandler::getInstance()->msToTicks(duration*1000);
         }
         break;
     }

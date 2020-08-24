@@ -1,4 +1,6 @@
 #include "buffer.h"
+#include "executorinterface.h"
+#include <math.h>
 
 using namespace CS;
 
@@ -21,32 +23,27 @@ vector<float>& Buffer::operator[](Channel a) {
 bool OutputBuffer::play(Sound* sound) {
     if( !sound ) return false;
 
-    tick_t currentTick = TimeHandler::getInstance()->getCurrentTick();
-    tick_t tickPlusBuffer = currentTick + (*_buffer)[Channel::right].size();
-    tick_t sizeToPlay = sound->getRemainingTicks();
+    size_t bufferSize = (*_buffer)[Channel::right].size();
 
-    sizeToPlay = ( sizeToPlay < (*_buffer)[Channel::right].size())
-                     ? sizeToPlay
-                     : (*_buffer)[Channel::right].size();
+    Buffer newBuffer(AudioBuffer(2));
+    newBuffer[Channel::right].resize(bufferSize);
+    newBuffer[Channel::left].resize(bufferSize);
 
-    while ( sound->getAbsoluteProgress() < tickPlusBuffer)
+    sound->play(TimeHandler::getInstance()->getCurrentTick(),newBuffer);
+
+    BufferChannel* rightChannel = &(*_buffer)[Channel::right];
+    BufferChannel* leftChannel = &(*_buffer)[Channel::left];
+
+    for( size_t i = 0; i < bufferSize; i++ )
     {
-        BufferChannel* rightChannel = &(*_buffer)[Channel::right];
-        BufferChannel* leftChannel = &(*_buffer)[Channel::left];
-        for (
-            unsigned long i = 0 ;
-            i < sizeToPlay;
-            i++ )
-        {
-            (*rightChannel)[i] = (*rightChannel)[i] + sound->getInstantValue(Channel::right,i);
-            (*leftChannel)[i] = (*leftChannel)[i] + sound->getInstantValue(Channel::left,i);
-        }
-        if ( !sound->play(sizeToPlay) )
-        {
-            return false;
-        }
+        (*rightChannel)[i] = (*rightChannel)[i] + newBuffer[Channel::right][i];
+        (*leftChannel)[i] = (*leftChannel)[i] + newBuffer[Channel::left][i];
     }
 
+    if( sound->isPlayed() )
+    {
+        return false;
+    }
     return true;
 }
 
@@ -60,9 +57,7 @@ void OutputBuffer::setSize(unsigned long size) {
     (*_buffer)[1].resize(size);
 }
 
-OutputBuffer::~OutputBuffer() {
-    delete _buffer;
-}
+OutputBuffer::~OutputBuffer() {}
 
 void OutputBuffer::reset() {
     for(size_t i = 0 ; i < (*_buffer)[Channel::right].size(); i++)
@@ -72,61 +67,219 @@ void OutputBuffer::reset() {
     }
 }
 
-Sound::Sound(tick_t startTick) {
-    _progress = 0;
-    _isPlayed = false;
-    _startTick = startTick;
+Sound::Sound(const Sound& sound) {
+    _progress = sound._progress;
+    _isPlayed = sound._isPlayed;
+    _startTick = sound._startTick;
+    _freq = sound._freq;
+    _duration = sound._freq;
+    _function = sound._function;
+    _amplitudeFactor = sound._amplitudeFactor->clone();
+    _amplitudeOffset = sound._amplitudeOffset->clone();
+    _freqFactor = sound._freqFactor->clone();
+    _freqOffset = sound._freqOffset->clone();
+    _absoluteFreq = sound._absoluteFreq ? sound._absoluteFreq->clone() :  nullptr;
+    _panning = sound._panning->clone();
 }
 
-Sound::Sound(AudioBuffer buffer,tick_t startTick) : _buffer(buffer) {
-    _progress = 0;
-    _isPlayed = false;
-    _startTick = startTick;
+Sound::Sound(double(*function)(double)) {
+    _function = function;
+    _amplitudeFactor = new ConstModifier(1);
+    _amplitudeOffset = new ConstModifier(0);
+    _freqFactor = new ConstModifier(1);
+    _freqOffset = new ConstModifier(0);
+    _panning = new ConstModifier(0.5);
 }
 
-Sound::~Sound() {}
+Sound::Sound(double(*function)(double), double freq, double duration, tick_t startTick) {
+    _function = function;
+    _freq = freq;
+    _duration = duration;
+    _startTick = startTick;
+    _amplitudeFactor = new ConstModifier(1);
+    _amplitudeOffset = new ConstModifier(0);
+    _freqFactor = new ConstModifier(1);
+    _freqOffset = new ConstModifier(0);
+    _panning = new ConstModifier(0.5);
+}
 
-bool Sound::play(size_t playedTicks) {
-    _progress += playedTicks;
-    if ( _progress < _buffer[Channel::right].size())
+Sound::~Sound() {
+    if( _amplitudeFactor ) delete _amplitudeFactor;
+    if( _freqFactor ) delete _freqFactor;
+    if( _amplitudeOffset ) delete _amplitudeOffset;
+    if( _freqOffset ) delete _freqOffset;
+    if( _absoluteFreq ) delete _absoluteFreq;
+}
+
+bool Sound::isPlayed() const {
+    return _isPlayed;
+}
+
+void Sound::setAmplitudeFactor(double factor) {
+    if( _amplitudeFactor ) delete _amplitudeFactor;
+    _amplitudeFactor = new ConstModifier(factor);
+}
+
+void Sound::setAmplitudeFactor(Sound sound) {
+    if( _amplitudeFactor ) delete _amplitudeFactor;
+    _amplitudeFactor = new SoundModifier(sound);
+}
+
+void Sound::setAmplitudeOffset(double offset) {
+    if( _amplitudeOffset ) delete _amplitudeOffset;
+    _amplitudeOffset = new ConstModifier(offset);
+}
+
+void Sound::setAmplitudeOffset(Sound sound) {
+    if( _amplitudeOffset ) delete _amplitudeOffset;
+    _amplitudeOffset = new SoundModifier(sound);
+}
+
+void Sound::setFreqFactor(double factor) {
+    if( _freqFactor ) delete _freqFactor;
+    _freqFactor = new ConstModifier(factor);
+}
+
+void Sound::setFreqFactor(Sound sound) {
+    if( _freqFactor ) delete _freqFactor;
+    _freqFactor = new SoundModifier(sound);
+}
+
+void Sound::setFreqOffset(double offset) {
+    if( _freqOffset ) delete _freqOffset;
+    _freqOffset = new ConstModifier(offset);
+}
+
+void Sound::setFreqOffset(Sound sound) {
+    if( _freqOffset ) delete _freqOffset;
+    _freqOffset = new SoundModifier(sound);
+}
+
+void Sound::setAbsoluteFreq(double freq) {
+    if( _absoluteFreq ) delete _absoluteFreq;
+    _absoluteFreq = new ConstModifier(freq);
+}
+
+void Sound::setAbsoluteFreq(Sound sound) {
+    if( _absoluteFreq ) delete _absoluteFreq;
+    _absoluteFreq = new SoundModifier(sound);
+}
+
+void Sound::setPanning(double pan) {
+    if( _panning ) delete _panning;
+    _panning = new ConstModifier(pan);
+}
+
+void Sound::setPanning(Sound sound) {
+    if( _panning ) delete _panning;
+    _panning = new SoundModifier(sound);
+}
+void setPanning(double);
+void setPanning(Sound);
+
+Sound* Sound::generate(double freq, double duration, tick_t startTick) {
+    Sound* ret = new Sound(*this);
+    ret->load(freq,duration,startTick);
+    return ret;
+}
+
+void Sound::load(double freq, double duration, tick_t startTick) {
+    _freq = freq;
+    _duration = duration;
+    _startTick = startTick;
+    _progress = 0;
+    _isPlayed = false;
+}
+
+void Sound::play(tick_t currentTick,Buffer& bufferToLoad) {
+    size_t bufferSize = bufferToLoad[Channel::right].size();
+
+    signed long span = currentTick - _startTick;
+
+    size_t cursor = 0;
+
+    tick_t durationTicks = (tick_t)((double)_duration * (double)ExecutorInterface::getSampleRate());
+
+    if( span <= 0 )
     {
-        return true;
+        if( abs(span) >= (signed long)bufferSize )
+        {
+            return;
+        }
+        cursor = -span;
     }
+    size_t sampleRate = ExecutorInterface::getSampleRate();
+    for( ; cursor < bufferSize; cursor++ )
+    {
+        double freq;
+        if( _absoluteFreq )
+        {
+            freq = _absoluteFreq->getValue(_freq);
+        }
+        else
+        {
+            freq = _freq * _freqFactor->getValue(_freq) + _freqOffset->getValue(_freq);
+        }
+        double value =
+            _function(
+                2. * M_PI * freq *
+                ((double)_progress / (double)sampleRate)
+                ) *
+                _amplitudeFactor->getValue(_freq) + _amplitudeOffset->getValue(_freq);
 
-    _isPlayed = true;
-    return false;
+        if( _progress >= durationTicks )
+        {
+            if( abs(value) < 0.001 )
+            {
+                _isPlayed = true;
+                return;
+            }
+
+        }
+        _progress++;
+
+        bufferToLoad[Channel::right][cursor] = _panning->getValue(_freq) * value;
+        bufferToLoad[Channel::left][cursor] = (1-_panning->getValue(_freq)) * value;
+    }
 }
 
-tick_t Sound::getStartTick() const {
-    if (_progress != 0)
-        return 0;
-    return _startTick;
+double Sound::getInstantValue(double freq) {
+    double ret =
+        _function(
+            2. * M_PI * (
+                (_progress / ExecutorInterface::getSampleRate()) * (
+                _absoluteFreq ?
+                    _absoluteFreq->getValue(freq) :
+                    freq * _freqFactor->getValue(freq) + _freqOffset->getValue(freq) )
+                )
+            ) *
+            _amplitudeFactor->getValue(freq) + _amplitudeOffset->getValue(freq);
+    _progress++;
+    return ret;
 }
 
-tick_t Sound::getRemainingTicks() {
-    return _buffer[Channel::right].size() - _progress;
+ConstModifier::ConstModifier(double value) {
+    _value = value;
 }
 
-tick_t Sound::getAbsoluteProgress() const {
-    return _progress + _startTick;
+ConstModifier::~ConstModifier() {}
+
+double ConstModifier::getValue(double) {
+    return _value;
 }
 
-float Sound::getInstantValue(Channel channel, tick_t i) {
-    return _buffer[channel][_progress + i];
+Modifier* ConstModifier::clone() {
+    return new ConstModifier(_value);
 }
 
-PeriodicSound::PeriodicSound() : Sound(NOW) {
+SoundModifier::SoundModifier(Sound sound) : _sound(sound) {}
 
+SoundModifier::~SoundModifier() {}
+
+double SoundModifier::getValue(double freq) {
+    return _sound.getInstantValue(freq);
 }
 
-PeriodicSound::~PeriodicSound() {
-
-}
-
-bool PeriodicSound::play(size_t) {
-
-}
-
-tick_t PeriodicSound::getStartTick() const {
-
+Modifier* SoundModifier::clone() {
+    return new SoundModifier(_sound);
 }

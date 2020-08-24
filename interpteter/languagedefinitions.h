@@ -45,9 +45,6 @@ const string g5 = "N_G5";
 const string a5 = "N_A5";
 const string b5 = "N_B5";
 
-const string sinFunction = "F_SIN";
-const string squareFunction = "F_SQUARE";
-
 const string sinSound = "S_SIN";
 const string squareSound = "S_SQUARE";
 
@@ -58,8 +55,8 @@ namespace Functions {
 const string freqParam = "freq";
 const string durationParam = "duration";
 
-void sin();
-void square();
+double sin(double);
+double square(double);
 
 }
 

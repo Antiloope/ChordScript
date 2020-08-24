@@ -2,6 +2,8 @@
 #include "functiondefinition.h"
 #include "languagedefinitions.h"
 
+#include <math.h>
+
 using namespace std;
 using namespace CS;
 
@@ -86,24 +88,13 @@ Context::Context() {
 }
 
 void Context::load() {
-
-    list<ArgumentDefinition> argumentsList = {
-        ArgumentDefinition(DataTypesId::Numeric,Functions::freqParam),
-        ArgumentDefinition(DataTypesId::Numeric,Functions::durationParam)
-    };
-
-    BaseFunction* tmpFunction = this->newBaseFunction(Names::sinFunction,DataTypesId::Buffer);
-    tmpFunction->load(argumentsList,&Functions::sin);
-
-    tmpFunction = this->newBaseFunction(Names::squareFunction,DataTypesId::Buffer);
-    tmpFunction->load(argumentsList,&Functions::square);
-
     this->newVariable(Names::sinSound,DataTypesId::Sound);
-    this->newVariable(Names::sinSound,DataTypesId::Sound);
+    this->newVariable(Names::squareSound,DataTypesId::Sound);
 
-    LiteralValue* value = new SoundLiteralValue(new SoundGenerator(Names::sinFunction));
+    LiteralValue* value = new SoundLiteralValue(new SoundGenerator(&Functions::sin));
     _scopes.find(GlobalScope)->second.setVariableValue(Names::sinSound,value);
-    value = new SoundLiteralValue(new SoundGenerator(Names::squareFunction));
+
+    value = new SoundLiteralValue(new SoundGenerator(&Functions::square));
     _scopes.find(GlobalScope)->second.setVariableValue(Names::squareSound,value);
 
 

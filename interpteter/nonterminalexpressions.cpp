@@ -449,7 +449,7 @@ void AssignationExpression::load(list<TerminalExpression*>* terminalExpressionsL
 
     terminalExpressionsList->pop_front();
     if( terminalExpressionsList->empty()) throw SyntaxException("Expected a value after = ",tmp->getCodeReference() );
-    tmp = terminalExpressionsList->front();
+    terminalExpressionsList->front();
 
     _value = LinkedValue::generateLinkedValue(terminalExpressionsList);
     if (

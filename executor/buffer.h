@@ -18,6 +18,8 @@ constexpr unsigned short NOW = 0;
 typedef AudioFile<float>::AudioBuffer AudioBuffer;
 typedef vector<float> BufferChannel;
 
+class Modifier;
+
 class Buffer
 {
 public:
@@ -33,35 +35,46 @@ protected:
 class Sound
 {
 public:
-    Sound(tick_t startTick);
-    Sound(AudioBuffer,tick_t startTick);
+    Sound(const Sound&);
+    Sound(double(*)(double));
+    Sound(double(*)(double), double, double, tick_t);
     virtual ~Sound();
 
-    virtual bool play(size_t);
-    virtual tick_t getStartTick() const;
-    tick_t getRemainingTicks();
-    tick_t getAbsoluteProgress() const;
-    float getInstantValue(Channel,tick_t);
+    virtual void play(tick_t, Buffer&);
+    inline double getInstantValue(double);
+    bool isPlayed() const;
 
-    BufferChannel& operator[](Channel);
+    void setAmplitudeFactor(double);
+    void setAmplitudeFactor(Sound);
+    void setAmplitudeOffset(double);
+    void setAmplitudeOffset(Sound);
+    void setFreqFactor(double);
+    void setFreqFactor(Sound);
+    void setFreqOffset(double);
+    void setFreqOffset(Sound);
+    void setAbsoluteFreq(double);
+    void setAbsoluteFreq(Sound);
+    void setPanning(double);
+    void setPanning(Sound);
+
+    Sound* generate(double, double, tick_t);
 protected:
-    tick_t _progress;
-    tick_t _startTick;
-    bool _isPlayed;
-    Buffer _buffer;
+    void load(double, double, tick_t);
+
+    tick_t _progress = 0;
+    tick_t _startTick = 0;
+    bool _isPlayed = false;
+    double (*_function)(double);
+    double _freq = 0;
+    double _duration = 0;
+
+    Modifier* _panning;
+    Modifier* _amplitudeFactor;
+    Modifier* _amplitudeOffset;
+    Modifier* _freqFactor;
+    Modifier* _freqOffset;
+    Modifier* _absoluteFreq = nullptr;
 private:
-};
-
-class PeriodicSound : public Sound
-{
-public:
-    PeriodicSound();
-    ~PeriodicSound();
-
-    bool play(size_t);
-    tick_t getStartTick() const;
-private:
-
 };
 
 class OutputBuffer : public Buffer
@@ -75,6 +88,39 @@ public:
     void setSize(size_t);
     void reset();
 };
+
+class Modifier
+{
+public:
+    Modifier() {};
+    virtual ~Modifier() {};
+    virtual double getValue(double) = 0;
+    virtual Modifier* clone() = 0;
+private:
+};
+
+class ConstModifier : public Modifier
+{
+public:
+    ConstModifier(double);
+    ~ConstModifier();
+    double getValue(double) override;
+    Modifier * clone() override;
+private:
+    double _value;
+};
+
+class SoundModifier : public Modifier
+{
+public:
+    SoundModifier(Sound);
+    ~SoundModifier();
+    double getValue(double) override;
+    Modifier * clone() override;
+private:
+    Sound _sound;
+};
+
 
 }
 

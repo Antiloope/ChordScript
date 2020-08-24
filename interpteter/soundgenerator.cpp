@@ -3,103 +3,69 @@
 
 using namespace CS;
 
-SoundGenerator::SoundGenerator(string functionName) : _functionName(functionName) {}
+SoundGenerator::SoundGenerator(double(*function)(double)) : _baseSound(function) {}
 
-SoundGenerator::SoundGenerator(const SoundGenerator& base) : _functionName(base._functionName), _generatedSounds(base._generatedSounds) {}
+SoundGenerator::SoundGenerator(Sound sound) : _baseSound(sound) {}
+
+SoundGenerator::SoundGenerator(const SoundGenerator& base) : _baseSound(base._baseSound) {}
 
 SoundGenerator* SoundGenerator::clone() {
     return new SoundGenerator(*this);
 }
 
-void SoundGenerator::play(list<double> freqList,double duration,tick_t startTick) {
-    Context* ctx = Context::getInstance();
-    AudioBuffer returnBuffer(0);
+SoundGenerator SoundGenerator::operator*(double factor) {
+    Sound copySound = _baseSound;
+    copySound.setAmplitudeFactor(factor);
+    SoundGenerator ret(copySound);
+    return ret;
+}
 
+SoundGenerator SoundGenerator::operator/(double factor) {
+    Sound copySound = _baseSound;
+    copySound.setAmplitudeFactor(1/factor);
+    SoundGenerator ret(copySound);
+    return ret;
+}
+
+SoundGenerator SoundGenerator::operator*(SoundGenerator& sound) {
+    Sound copySound = _baseSound;
+    copySound.setAmplitudeFactor(sound._baseSound);
+    SoundGenerator ret(copySound);
+    return ret;
+}
+
+SoundGenerator SoundGenerator::operator+(SoundGenerator& sound) {
+    Sound copySound = _baseSound;
+    copySound.setAmplitudeOffset(sound._baseSound);
+    SoundGenerator ret(copySound);
+    return ret;
+}
+
+SoundGenerator SoundGenerator::operator-(SoundGenerator& sound) {
+    Sound copySound = _baseSound;
+    copySound.setAmplitudeOffset(sound._baseSound);
+    SoundGenerator ret(copySound);
+    return ret;
+}
+
+void SoundGenerator::play(list<double> freqList,double duration,tick_t startTick) {
     if( freqList.empty() )
     {
-        NumericLiteralValue freqLiteralValue = NumericLiteralValue(0);
-        NumericLiteralValue durationLiteralValue = NumericLiteralValue(duration);
+        Sound* newSound = _baseSound.generate(0,duration,startTick);
+        _generatedSounds.push_back(newSound);
 
-        list<LiteralValue*> args;
-        args.push_back(&freqLiteralValue);
-        args.push_back(&durationLiteralValue);
-
-        ArgumentLiteralValue literalArguments = ArgumentLiteralValue(args);
-
-        if( ctx->executeFunction(this->_functionName,&literalArguments) )
-        {
-            this->stop();
-            throw new SemanticException("Invalid funcition called " + _functionName + " to generate sound");
-        }
-
-        LiteralValue* ret = ctx->getReturnValue();
-        if( ret->getDataTypeId() != DataTypesId::Buffer )
-        {
-            this->stop();
-            throw new SemanticException("Invalid return value on function " + _functionName);
-        }
-
-        AudioBuffer* tmp = ((AudioBuffer*)ret->getValue());
-        returnBuffer.resize(2);
-        returnBuffer = *tmp;
+        ExecutorInterface::addSound(newSound);
     }
     else
     {
         for( double freq : freqList )
         {
-            NumericLiteralValue* freqLiteralValue = new NumericLiteralValue(freq);
-            NumericLiteralValue* durationLiteralValue = new NumericLiteralValue(duration);
+            Sound* newSound = _baseSound.generate(freq,duration,startTick);
+            _generatedSounds.push_back(newSound);
 
-            list<LiteralValue*> args;
-            args.push_back(freqLiteralValue);
-            args.push_back(durationLiteralValue);
-
-            ArgumentLiteralValue literalArguments = ArgumentLiteralValue(args);
-
-            if( !ctx->executeFunction(this->_functionName,&literalArguments) )
-            {
-                this->stop();
-                throw new SemanticException("Invalid funcition called " + _functionName + " to generate sound");
-            }
-
-            LiteralValue* ret = ctx->getReturnValue();
-            if( ret->getDataTypeId() != DataTypesId::Buffer )
-            {
-                this->stop();
-                throw new SemanticException("Invalid return value on function " + _functionName);
-            }
-
-            if( returnBuffer.size() )
-            {
-                for(size_t i = 0; i < returnBuffer[0].size(); i++ )
-                {
-                    for( auto j = 0; j < 2; j++ )
-                    {
-                        AudioBuffer* tmp = ((AudioBuffer*)ret->getValue());
-                        returnBuffer[j][i] += tmp->at(j).at(i);
-                    }
-                }
-            }
-            else
-            {
-                AudioBuffer* tmp = ((AudioBuffer*)ret->getValue());
-                returnBuffer.resize(2);
-                returnBuffer = *tmp;
-            }
-        }
-        for(size_t i = 0; i < returnBuffer.size(); i++ )
-        {
-            for( auto j = 0; j < 2; j++ )
-            {
-                returnBuffer[j][i] /= freqList.size();
-            }
+            ExecutorInterface::addSound(newSound);
         }
     }
-
-    Sound* newSound = new Sound(returnBuffer,startTick);
-    _generatedSounds.push_back(newSound);
-
-    ExecutorInterface::addSound(newSound);
 }
 
 void SoundGenerator::stop() {
