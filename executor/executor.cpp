@@ -30,7 +30,7 @@ enum DualBuffer {
 const size_t DefaultBatchSize = 1024;
 const size_t DefaultOutputBufferSize = 10;
 const string ClientName = "ChordScript";
-const string ServerName = "ChordScriptServer";
+const string ServerName = "JACK Input Client";
 
 const char numberOfSounds = (char)1000;
 
@@ -245,7 +245,7 @@ void Executor::init() {
                                           JackPortIsOutput, 0);
     if (stereoOutputPort[Channel::left] == NULL)
         throw new LogException("No more JACK ports available");
-    if (stereoOutputPort[Channel::left] == NULL)
+    if (stereoOutputPort[Channel::right] == NULL)
         throw new LogException("No more JACK ports available");
 
     // Activate client
@@ -269,37 +269,11 @@ void Executor::init() {
     if (ports == NULL)
         throw new LogException("No physical playback ports");
 
-    if (jack_connect (jackClient, jack_port_name (stereoOutputPort[Channel::left]), ports[Channel::left]) ||
-        jack_connect (jackClient, jack_port_name (stereoOutputPort[Channel::right]), ports[Channel::right]))
+    if (jack_connect (jackClient, jack_port_name (stereoOutputPort[Channel::left]), ports[Channel::right]) ||
+        jack_connect (jackClient, jack_port_name (stereoOutputPort[Channel::right]), ports[Channel::left]))
         throw new LogException("Cannot connect output ports");
 
     free (ports);
 
     Log::getInstance().write("AudioServerAdapter correctly initilized",Log::info_t);
-
-//    AudioFile<float>::AudioBuffer buffer;
-//    buffer.resize(2);
-//    buffer[0].resize (outputBufferSize*10);
-//    buffer[1].resize (outputBufferSize*10);
-
-//    int numChannels = 2;
-//    int numSamplesPerChannel = outputBufferSize*10;
-//    float sampleRate = 44100.f;
-//    float frequency = 440.f;
-
-//    for (int i = 0; i < numSamplesPerChannel; i++)
-//    {
-//        frequency += 0.003;
-//        float sample = sinf (2. * M_PI * ((float) i / sampleRate) * frequency) ;
-
-//        for (int channel = 0; channel < numChannels; channel++)
-//             buffer[channel][i] = sample * 0.5;
-//    }
-
-//    Sound * tmp = new Sound(buffer,NOW);
-//    this->addSound(tmp);
-//    tmp = new Sound(buffer,20);
-//    this->addSound(tmp);
-//    tmp = new Sound(buffer,10);
-//    this->addSound(tmp);
 }

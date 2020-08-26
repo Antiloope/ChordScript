@@ -227,6 +227,16 @@ void Sound::play(tick_t currentTick,Buffer& bufferToLoad) {
                 ) *
                 _amplitudeFactor->getValue(_freq) + _amplitudeOffset->getValue(_freq);
 
+        if( _progress >= durationTicks - 1000 )
+        {
+            double factor = ((double)durationTicks - (double)_progress) / (1000);
+            value = value * factor;
+        }
+        if( _progress < 1000 )
+        {
+            double factor = (double)((double)_progress) / (1000);
+            value = value * factor;
+        }
         if( _progress >= durationTicks )
         {
             if( abs(value) < 0.001 )
@@ -234,7 +244,6 @@ void Sound::play(tick_t currentTick,Buffer& bufferToLoad) {
                 _isPlayed = true;
                 return;
             }
-
         }
         _progress++;
 
@@ -244,14 +253,19 @@ void Sound::play(tick_t currentTick,Buffer& bufferToLoad) {
 }
 
 double Sound::getInstantValue(double freq) {
+    static double sampleRate = ExecutorInterface::getSampleRate();
+    double f;
+    if( _absoluteFreq )
+    {
+        f = _absoluteFreq->getValue(freq);
+    }
+    else
+    {
+        f = freq * _freqFactor->getValue(freq) + _freqOffset->getValue(freq);
+    }
     double ret =
         _function(
-            2. * M_PI * (
-                (_progress / ExecutorInterface::getSampleRate()) * (
-                _absoluteFreq ?
-                    _absoluteFreq->getValue(freq) :
-                    freq * _freqFactor->getValue(freq) + _freqOffset->getValue(freq) )
-                )
+            2. * M_PI * f *( (double)_progress / sampleRate )
             ) *
             _amplitudeFactor->getValue(freq) + _amplitudeOffset->getValue(freq);
     _progress++;
