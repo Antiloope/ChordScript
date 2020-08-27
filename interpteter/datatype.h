@@ -22,7 +22,6 @@ enum class DataTypesId {
     Array,
     Group,
     Boolean,
-    Buffer,
     String,
     Null,
     Function
@@ -57,6 +56,8 @@ public:
     LiteralValue* cast(LiteralValue*) const;
 private:
     static LiteralValue* play(LiteralValue*,LiteralValue*);
+    static LiteralValue* setPanning(LiteralValue*,LiteralValue*);
+    static LiteralValue* constantFreq(LiteralValue*,LiteralValue*);
 };
 
 class NumericDataType : public DataType
@@ -88,14 +89,6 @@ class BooleanDataType : public DataType
 public:
     BooleanDataType();
     ~BooleanDataType();
-    LiteralValue* cast(LiteralValue*) const;
-};
-
-class BufferDataType : public DataType
-{
-public:
-    BufferDataType();
-    ~BufferDataType();
     LiteralValue* cast(LiteralValue*) const;
 };
 

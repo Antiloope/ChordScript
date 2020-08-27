@@ -68,7 +68,6 @@ Context::Context() {
         {DataTypesId::Argument,    new ArgumentDataType()},
         {DataTypesId::Group,       new GroupDataType()},
         {DataTypesId::Boolean,     new BooleanDataType()},
-        {DataTypesId::Buffer,      new BufferDataType()},
         {DataTypesId::String,      new StringDataType()},
         {DataTypesId::Function,    new FunctionDataType()},
     };

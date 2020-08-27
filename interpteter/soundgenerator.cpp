@@ -77,3 +77,7 @@ void SoundGenerator::stop() {
         _generatedSounds.erase(i);
     }
 }
+
+Sound SoundGenerator::getSound() {
+    return _baseSound;
+}

@@ -136,17 +136,6 @@ SoundLiteralValue::~SoundLiteralValue() {
     if( _soundGenerator ) delete _soundGenerator;
 }
 
-BufferLiteralValue::BufferLiteralValue(AudioBuffer buffer) : LiteralValue(DataTypesId::Buffer) {
-    _buffer = buffer;
-    _value = &_buffer;
-}
-
-LiteralValue* BufferLiteralValue::clone() {
-    return new BufferLiteralValue(_buffer);
-}
-
-BufferLiteralValue::~BufferLiteralValue() {}
-
 ////////////////////////////////////////
 ///     LinkedValue : Value
 ////////////////////////////////////////
@@ -189,10 +178,6 @@ LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* termina
         if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
         tmp = *it;
         switch (tmp->getType()) {
-        case cCast(ExpressionTypes::OpenParenthesis):
-        case cCast(ExpressionTypes::MemberAccess):
-            ret = new ExecutionLinkedValue(tmp->getCodeReference());
-            break;
         case cCast(ExpressionTypes::Addition):
         case cCast(ExpressionTypes::Substract):
         case cCast(ExpressionTypes::Divition):
@@ -206,7 +191,7 @@ LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* termina
             ret = new BooleanOperationLinkedValue(tmp->getCodeReference());
             break;
         default:
-            ret = new NameLinkedValue(tmp->getCodeReference());
+            ret = detectOperation(terminalExpressionsList);
             break;
         }
         break;
@@ -237,6 +222,89 @@ LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* termina
         break;
     }
     ret->load(terminalExpressionsList);
+    return ret;
+}
+
+LinkedValue* LinkedValue::detectOperation(list<TerminalExpression*>* terminalExpressionsList) {
+    TerminalExpression* tmp = terminalExpressionsList->front();
+
+    LinkedValue* ret;
+
+    size_t codeReference = tmp->getCodeReference();
+
+    auto it = terminalExpressionsList->begin();
+    advance(it,1);
+    if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+    tmp = *it;
+
+    if( tmp->getType() == cCast(ExpressionTypes::MemberAccess) )
+    {
+        advance(it,1);
+        if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+        tmp = *it;
+
+        if( tmp->getType() != cCast(ExpressionTypes::Name) ) throw SyntaxException("Expected a method name",tmp->getCodeReference());
+
+        advance(it,1);
+        if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+        tmp = *it;
+
+        if( tmp->getType() != cCast(ExpressionTypes::OpenParenthesis) ) throw SyntaxException("Expected open pharentesis",tmp->getCodeReference());
+    }
+
+    if( tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) ) {
+        size_t pharentesisCounter = 1;
+        while(1)
+        {
+            advance(it,1);
+            if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+            tmp = *it;
+
+            if( tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) ) {
+                pharentesisCounter++;
+            }
+            else if( tmp->getType() == cCast(ExpressionTypes::CloseParenthesis) )
+            {
+                pharentesisCounter--;
+                if(pharentesisCounter == 0)
+                {
+                    advance(it,1);
+                    if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+                    tmp = *it;
+
+                    switch (tmp->getType()) {
+                    case cCast(ExpressionTypes::Addition):
+                    case cCast(ExpressionTypes::Substract):
+                    case cCast(ExpressionTypes::Divition):
+                    case cCast(ExpressionTypes::Multiplication):
+                        ret = new MathOperationLinkedValue(codeReference);
+                        break;
+                    case cCast(ExpressionTypes::Equal):
+                    case cCast(ExpressionTypes::GreaterThan):
+                    case cCast(ExpressionTypes::LessThan):
+                    case cCast(ExpressionTypes::Negation):
+                    case cCast(ExpressionTypes::Or):
+                    case cCast(ExpressionTypes::And):
+                        ret = new BooleanOperationLinkedValue(codeReference);
+                        break;
+                    default:
+                        ret = new ExecutionLinkedValue(codeReference);
+                        break;
+                    }
+                    break;
+                }
+            }
+            else if( tmp->getType() == cCast(ExpressionTypes::EOE) )
+            {
+                throw SyntaxException("Expected a closed pharentesis",tmp->getCodeReference());
+            }
+        }
+    }
+    else
+    {
+        ret = new NameLinkedValue(codeReference);
+    }
+
     return ret;
 }
 
@@ -1196,11 +1264,6 @@ void ArrayLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) 
             tmp = *it;
             switch ( tmp->getType() )
             {
-            case cCast(ExpressionTypes::OpenParenthesis):
-            case cCast(ExpressionTypes::MemberAccess):
-                _linkedValuesList.push_back(new ExecutionLinkedValue(tmp->getCodeReference()));
-                _linkedValuesList.back()->load(terminalExpressionsList);
-                break;
             case cCast(ExpressionTypes::Addition):
             case cCast(ExpressionTypes::Substract):
             case cCast(ExpressionTypes::Divition):
@@ -1216,7 +1279,7 @@ void ArrayLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) 
                 _linkedValuesList.back()->load(terminalExpressionsList);
                 break;
             default:
-                _linkedValuesList.push_back(new NameLinkedValue(tmp->getCodeReference()));
+                _linkedValuesList.push_back(LinkedValue::detectOperation(terminalExpressionsList));
                 _linkedValuesList.back()->load(terminalExpressionsList);
                 break;
             }
@@ -1290,7 +1353,7 @@ void ExecutionLinkedValue::load(list<TerminalExpression*>* terminalExpressionsLi
 
     _name = ((NameExpression*)tmp)->getName();
     if ( !Context::getInstance()->isValidName(_name) ) throw SyntaxException("Invalid name",tmp->getCodeReference());
-    if ( !Context::getInstance()->functionNameExist(_name) ) throw SemanticException("Unrecognized name",tmp->getCodeReference());
+    if ( !Context::getInstance()->nameExist(_name) && !Context::getInstance()->functionNameExist(_name) ) throw SemanticException("Unrecognized name",tmp->getCodeReference());
 
     terminalExpressionsList->pop_front();
     if ( terminalExpressionsList->empty() ) throw SyntaxException("Expected arguments",tmp->getCodeReference());

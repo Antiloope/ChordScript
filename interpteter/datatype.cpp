@@ -15,7 +15,6 @@ string DataType::getDataTypeString(DataTypesId dataType) {
     case DataTypesId::Array: return "array";
     case DataTypesId::Group: return sGroup;
     case DataTypesId::Boolean: return sBoolean;
-    case DataTypesId::Buffer: return sBuffer;
     case DataTypesId::String: return sString;
     case DataTypesId::Function: return sFunction;
     case DataTypesId::Sound: return sSound;
@@ -31,7 +30,6 @@ DataTypesId DataType::getDataTypeId(string dataType) {
     if ( !dataType.compare("array") ) return DataTypesId::Array;
     if ( !dataType.compare(sGroup) ) return DataTypesId::Group;
     if ( !dataType.compare(sBoolean) ) return DataTypesId::Boolean;
-    if ( !dataType.compare(sBuffer) ) return DataTypesId::Buffer;
     if ( !dataType.compare(sString) ) return DataTypesId::String;
     if ( !dataType.compare(sFunction) ) return DataTypesId::Function;
     if ( !dataType.compare(sSound) ) return DataTypesId::Sound;
@@ -73,6 +71,8 @@ LiteralValue* SampleDataType::cast(LiteralValue* value) const {
 
 SoundDataType::SoundDataType() {
     _methods.insert(pair<string,methodFunction_t>("play",&SoundDataType::play));
+    _methods.insert(pair<string,methodFunction_t>("setPanning",&SoundDataType::setPanning));
+    _methods.insert(pair<string,methodFunction_t>("constantFreq",&SoundDataType::constantFreq));
 }
 
 SoundDataType::~SoundDataType() {}
@@ -199,6 +199,86 @@ LiteralValue* SoundDataType::play(LiteralValue* value, LiteralValue* args) {
     return new NullLiteralValue();
 }
 
+LiteralValue* SoundDataType::setPanning(LiteralValue* value, LiteralValue* args) {
+    if( args->getDataTypeId() != DataTypesId::Argument ) return nullptr;
+
+    auto argumentValues = (list<LiteralValue*>*)args->getValue();
+
+    SoundGenerator* generator = (SoundGenerator*)value->getValue();
+
+    if( argumentValues->empty() )
+    {
+        throw SemanticException("Invalid call of method setPanning without arguments.");
+    }
+
+    if( argumentValues->size() > 1 )
+    {
+        throw SemanticException("Invalid call of method setPanning more than one parameter.");
+    }
+
+    switch( argumentValues->front()->getDataTypeId() )
+    {
+    case DataTypesId::Sound:
+    {
+        Sound panningValue = ((SoundGenerator*)argumentValues->front()->getValue())->getSound();
+        generator->_baseSound.setPanning(panningValue);
+        break;
+    }
+    case DataTypesId::Numeric:
+    {
+        double panningValue = *(double*)argumentValues->front()->getValue();
+        generator->_baseSound.setPanning(panningValue);
+        break;
+    }
+    default:
+        throw SemanticException("Invalid cast parameter data type in setPanning method. Must be a number or a sound.");
+        break;
+    }
+
+    return new NullLiteralValue();
+}
+
+LiteralValue* SoundDataType::constantFreq(LiteralValue* value, LiteralValue* args) {
+    if( args->getDataTypeId() != DataTypesId::Argument ) return nullptr;
+
+    auto argumentValues = (list<LiteralValue*>*)args->getValue();
+
+    SoundGenerator* generator = ((SoundGenerator*)value->getValue())->clone();
+
+    SoundLiteralValue* ret = new SoundLiteralValue(generator);
+
+    if( argumentValues->empty() )
+    {
+        throw SemanticException("Invalid call of method constantFreq without arguments.");
+    }
+
+    if( argumentValues->size() > 1 )
+    {
+        throw SemanticException("Invalid call of method constantFreq more than one parameter.");
+    }
+
+    switch( argumentValues->front()->getDataTypeId() )
+    {
+    case DataTypesId::Sound:
+    {
+        Sound panningValue = ((SoundGenerator*)argumentValues->front()->getValue())->getSound();
+        generator->_baseSound.setAbsoluteFreq(panningValue);
+        break;
+    }
+    case DataTypesId::Numeric:
+    {
+        double panningValue = *(double*)argumentValues->front()->getValue();
+        generator->_baseSound.setAbsoluteFreq(panningValue);
+        break;
+    }
+    default:
+        throw SemanticException("Invalid cast parameter data type in setPanning method. Must be a number or a sound.");
+        break;
+    }
+
+    return ret;
+}
+
 NumericDataType::NumericDataType() {}
 
 NumericDataType::~NumericDataType() {}
@@ -290,22 +370,6 @@ LiteralValue* BooleanDataType::cast(LiteralValue* value) const {
         delete value;
         return new BooleanLiteralValue(tmp);
     }
-    default:
-        return nullptr;
-        break;
-    }
-}
-
-BufferDataType::BufferDataType() {}
-
-BufferDataType::~BufferDataType() {}
-
-LiteralValue* BufferDataType::cast(LiteralValue* value) const {
-    switch ( value->getDataTypeId() )
-    {
-    case DataTypesId::Buffer:
-        return value;
-        break;
     default:
         return nullptr;
         break;

@@ -174,8 +174,6 @@ void Sound::setPanning(Sound sound) {
     if( _panning ) delete _panning;
     _panning = new SoundModifier(sound);
 }
-void setPanning(double);
-void setPanning(Sound);
 
 Sound* Sound::generate(double freq, double duration, tick_t startTick) {
     Sound* ret = new Sound(*this);

@@ -104,15 +104,6 @@ private:
     SoundGenerator* _soundGenerator;
 };
 
-class BufferLiteralValue : public LiteralValue {
-public:
-    BufferLiteralValue(AudioBuffer);
-    LiteralValue* clone();
-    ~BufferLiteralValue();
-private:
-    AudioBuffer _buffer;
-};
-
 class LinkedValue : public Value {
 public:
     LinkedValue(size_t);
@@ -120,6 +111,7 @@ public:
     virtual void load(list<TerminalExpression*>*) = 0;
     virtual ~LinkedValue();
     static LinkedValue* generateLinkedValue(list<TerminalExpression*>*);
+    static LinkedValue* detectOperation(list<TerminalExpression*>*);
     size_t getCodeReference() const;
 private:
     size_t _codeReference;

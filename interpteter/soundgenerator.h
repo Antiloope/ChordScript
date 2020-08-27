@@ -9,9 +9,12 @@ using namespace std;
 
 namespace CS {
 
+class SoundDataType;
+
 class SoundGenerator
 {
 public:
+    friend SoundDataType;
     SoundGenerator(double(*)(double));
     SoundGenerator(Sound);
     SoundGenerator(const SoundGenerator&);
@@ -23,6 +26,7 @@ public:
     SoundGenerator operator*(SoundGenerator&);
     SoundGenerator operator+(SoundGenerator&);
     SoundGenerator operator-(SoundGenerator&);
+    Sound getSound();
 private:
     Sound _baseSound;
     list<Sound*> _generatedSounds;

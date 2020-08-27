@@ -34,7 +34,6 @@ enum struct ExpressionTypes: char{
     Break,
     Return,
     Boolean,
-    Buffer,
     Numeric
 };
 
