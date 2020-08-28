@@ -95,6 +95,7 @@ public:
     Modifier() {};
     virtual ~Modifier() {};
     virtual double getValue(double) = 0;
+    virtual double getPositiveValue(double) = 0;
     virtual Modifier* clone() = 0;
 private:
 };
@@ -105,6 +106,7 @@ public:
     ConstModifier(double);
     ~ConstModifier();
     double getValue(double) override;
+    double getPositiveValue(double) override;
     Modifier * clone() override;
 private:
     double _value;
@@ -116,6 +118,7 @@ public:
     SoundModifier(Sound);
     ~SoundModifier();
     double getValue(double) override;
+    double getPositiveValue(double) override;
     Modifier * clone() override;
 private:
     Sound _sound;

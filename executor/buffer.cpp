@@ -212,18 +212,18 @@ void Sound::play(tick_t currentTick,Buffer& bufferToLoad) {
         double freq;
         if( _absoluteFreq )
         {
-            freq = _absoluteFreq->getValue(_freq);
+            freq = _absoluteFreq->getPositiveValue(_freq);
         }
         else
         {
-            freq = _freq * _freqFactor->getValue(_freq) + _freqOffset->getValue(_freq);
+            freq = _freq * _freqFactor->getPositiveValue(_freq) + _freqOffset->getValue(_freq);
         }
         double value =
             _function(
                 2. * M_PI * freq *
                 ((double)_progress / (double)sampleRate)
                 ) *
-                _amplitudeFactor->getValue(_freq) + _amplitudeOffset->getValue(_freq);
+                _amplitudeFactor->getPositiveValue(_freq) + _amplitudeOffset->getValue(_freq);
 
         if( _progress >= durationTicks - 1000 )
         {
@@ -245,8 +245,8 @@ void Sound::play(tick_t currentTick,Buffer& bufferToLoad) {
         }
         _progress++;
 
-        bufferToLoad[Channel::right][cursor] = _panning->getValue(_freq) * value;
-        bufferToLoad[Channel::left][cursor] = (1-_panning->getValue(_freq)) * value;
+        bufferToLoad[Channel::right][cursor] = _panning->getPositiveValue(_freq) * value;
+        bufferToLoad[Channel::left][cursor] = (1 - _panning->getPositiveValue(_freq)) * value;
     }
 }
 
@@ -255,17 +255,17 @@ double Sound::getInstantValue(double freq) {
     double f;
     if( _absoluteFreq )
     {
-        f = _absoluteFreq->getValue(freq);
+        f = _absoluteFreq->getPositiveValue(freq);
     }
     else
     {
-        f = freq * _freqFactor->getValue(freq) + _freqOffset->getValue(freq);
+        f = freq * _freqFactor->getPositiveValue(freq) + _freqOffset->getValue(freq);
     }
     double ret =
         _function(
-            2. * M_PI * f *( (double)_progress / sampleRate )
+            2. * M_PI * f *( (double)_progress / (double)sampleRate )
             ) *
-            _amplitudeFactor->getValue(freq) + _amplitudeOffset->getValue(freq);
+            _amplitudeFactor->getPositiveValue(freq) + _amplitudeOffset->getValue(freq);
     _progress++;
     return ret;
 }
@@ -280,6 +280,12 @@ double ConstModifier::getValue(double) {
     return _value;
 }
 
+double ConstModifier::getPositiveValue(double) {
+    if( _value >= 0 )
+        return _value;
+    return - _value;
+}
+
 Modifier* ConstModifier::clone() {
     return new ConstModifier(_value);
 }
@@ -290,6 +296,10 @@ SoundModifier::~SoundModifier() {}
 
 double SoundModifier::getValue(double freq) {
     return _sound.getInstantValue(freq);
+}
+
+double SoundModifier::getPositiveValue(double freq) {
+    return (_sound.getInstantValue(freq) + 1.) / 2 ;
 }
 
 Modifier* SoundModifier::clone() {
