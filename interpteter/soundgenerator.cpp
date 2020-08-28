@@ -41,13 +41,6 @@ SoundGenerator SoundGenerator::operator+(SoundGenerator& sound) {
     return ret;
 }
 
-SoundGenerator SoundGenerator::operator-(SoundGenerator& sound) {
-    Sound copySound = _baseSound;
-    copySound.setAmplitudeOffset(sound._baseSound);
-    SoundGenerator ret(copySound);
-    return ret;
-}
-
 void SoundGenerator::play(list<double> freqList,double duration,tick_t startTick) {
     if( freqList.empty() )
     {

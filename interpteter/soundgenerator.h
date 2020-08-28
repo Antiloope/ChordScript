@@ -25,7 +25,6 @@ public:
     SoundGenerator operator/(double);
     SoundGenerator operator*(SoundGenerator&);
     SoundGenerator operator+(SoundGenerator&);
-    SoundGenerator operator-(SoundGenerator&);
     Sound getSound();
 private:
     Sound _baseSound;

@@ -546,15 +546,18 @@ MathOperationLinkedValue::~MathOperationLinkedValue() {
 }
 
 LiteralValue* MathOperationLinkedValue::getValue() const {
-    stack<double> RPNStack;
-    bool isFirstElement = true;
+    stack<LiteralValue*> RPNStack;
+
     for( LinkedValue* linkedValue : _linkedValuesList )
     {
         LiteralValue* literalValue = linkedValue->getValue();
 
-        switch (literalValue->getDataTypeId()) {
+        switch (literalValue->getDataTypeId())
+        {
         case DataTypesId::Numeric:
-            RPNStack.push(*(double*)literalValue->getValue());
+        case DataTypesId::Sound:
+        case DataTypesId::String:
+            RPNStack.push(literalValue);
             break;
         case DataTypesId::Operator:
         {
@@ -563,64 +566,282 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                 delete literalValue;
                 throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
             }
-            double op1 = RPNStack.top();
-            RPNStack.pop();
-            if( RPNStack.empty() )
+            switch( RPNStack.top()->getDataTypeId() )
             {
-                delete literalValue;
-                throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
-            }
+            case DataTypesId::Numeric:
+            {
+                double op2 = *(double*)RPNStack.top()->getValue();
 
-            double op2 = RPNStack.top();
-            RPNStack.pop();
-            switch (*(char*)literalValue->getValue()) {
-            case cCast(MathSymbols::Multiplication):
-                RPNStack.push(op2 * op1);
-                break;
-            case cCast(MathSymbols::Divition):
-                if( op1 == 0 )
+                delete RPNStack.top();
+                RPNStack.pop();
+
+                if( RPNStack.empty() )
                 {
                     delete literalValue;
-                    throw SemanticException("Dividing by zero",linkedValue->getCodeReference());
+                    throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
                 }
-                RPNStack.push(op2 / op1);
-                break;
-            case cCast(MathSymbols::Addition):
-                RPNStack.push(op2 + op1);
-                break;
-            case cCast(MathSymbols::Substraction):
-                RPNStack.push(op2 - op1);
-                break;
-            default:
-                delete literalValue;
-                throw SyntaxException("Unknown operator",linkedValue->getCodeReference());
+
+                switch( *(char*)literalValue->getValue() )
+                {
+                case cCast(MathSymbols::Addition):
+                    switch ( RPNStack.top()->getDataTypeId() )
+                    {
+                    case DataTypesId::Numeric:
+                    {
+                        double op1 = *(double*)RPNStack.top()->getValue();
+                        delete RPNStack.top();
+                        RPNStack.pop();
+                        RPNStack.push(new NumericLiteralValue(op1 + op2));
+                        break;
+                    }
+                    default:
+                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                        delete literalValue;
+                        throw SyntaxException(
+                            "Invalid addition operation between a number and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
+                            linkedValue->getCodeReference());
+                        break;
+                    }
+                    break;
+                case cCast(MathSymbols::Substraction):
+                    switch ( RPNStack.top()->getDataTypeId() )
+                    {
+                    case DataTypesId::Numeric:
+                    {
+                        double op1 = *(double*)RPNStack.top()->getValue();
+                        delete RPNStack.top();
+                        RPNStack.pop();
+                        RPNStack.push(new NumericLiteralValue(op1 - op2));
+                        break;
+                    }
+                    default:
+                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                        delete literalValue;
+                        throw SyntaxException(
+                            "Invalid substraction operation between a number and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
+                            linkedValue->getCodeReference());
+                        break;
+                    }
+                    break;
+                case cCast(MathSymbols::Multiplication):
+                    switch ( RPNStack.top()->getDataTypeId() )
+                    {
+                    case DataTypesId::Numeric:
+                    {
+                        double op1 = *(double*)RPNStack.top()->getValue();
+                        delete RPNStack.top();
+                        RPNStack.pop();
+                        RPNStack.push(new NumericLiteralValue(op1 * op2));
+                        break;
+                    }
+                    case DataTypesId::Sound:
+                    {
+                        SoundGenerator* op1 = ((SoundGenerator*)RPNStack.top()->getValue())->clone();
+                        delete RPNStack.top();
+                        RPNStack.pop();
+                        op1 = op1->operator*(op2).clone();
+                        RPNStack.push(new SoundLiteralValue(op1));
+                        break;
+                    }
+                    default:
+                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                        delete literalValue;
+                        throw SyntaxException(
+                            "Invalid multiplication operation between a number and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
+                            linkedValue->getCodeReference());
+                        break;
+                    }
+                    break;
+                case cCast(MathSymbols::Divition):
+                    switch ( RPNStack.top()->getDataTypeId() )
+                    {
+                    case DataTypesId::Numeric:
+                    {
+                        double op1 = *(double*)RPNStack.top()->getValue();
+                        delete RPNStack.top();
+                        RPNStack.pop();
+                        RPNStack.push(new NumericLiteralValue(op1 / op2));
+                        break;
+                    }
+                    default:
+                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                        delete literalValue;
+                        throw SyntaxException(
+                            "Invalid divition operation between a number and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
+                            linkedValue->getCodeReference());
+                        break;
+                    }
+                    break;
+                default:
+                    while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                    delete literalValue;
+                    throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+                    break;
+                }
                 break;
             }
-        }
+            case DataTypesId::String:
+            {
+                string op2 = *(string*)RPNStack.top()->getValue();
+
+                delete RPNStack.top();
+                RPNStack.pop();
+
+                if( RPNStack.empty() )
+                {
+                    delete literalValue;
+                    throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+                }
+
+                switch( *(char*)literalValue->getValue() )
+                {
+                case cCast(MathSymbols::Addition):
+                    switch ( RPNStack.top()->getDataTypeId() )
+                    {
+                    case DataTypesId::String:
+                    {
+                        string op1 = *(string*)RPNStack.top()->getValue();
+                        delete RPNStack.top();
+                        RPNStack.pop();
+                        RPNStack.push(new StringLiteralValue(op1 + op2));
+                        break;
+                    }
+                    default:
+                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                        delete literalValue;
+                        throw SyntaxException(
+                            "Invalid addition operation between a string and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
+                            linkedValue->getCodeReference());
+                        break;
+                    }
+                    break;
+                default:
+                    while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                    delete literalValue;
+                    throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+                    break;
+                }
+                break;
+            }
+            case DataTypesId::Sound:
+            {
+                SoundGenerator* op2 = ((SoundGenerator*)RPNStack.top()->getValue())->clone();
+
+                delete RPNStack.top();
+                RPNStack.pop();
+
+                if( RPNStack.empty() )
+                {
+                    delete literalValue;
+                    throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+                }
+
+                switch( *(char*)literalValue->getValue() )
+                {
+                case cCast(MathSymbols::Addition):
+                    switch ( RPNStack.top()->getDataTypeId() )
+                    {
+                    case DataTypesId::Sound:
+                    {
+                        SoundGenerator* op1 = ((SoundGenerator*)RPNStack.top()->getValue())->clone();
+                        delete RPNStack.top();
+                        RPNStack.pop();
+                        op1 = (*op1 + *op2).clone();
+                        RPNStack.push(new SoundLiteralValue(op1));
+                        break;
+                    }
+                    default:
+                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                        delete literalValue;
+                        throw SyntaxException(
+                            "Invalid addition operation between a sound and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
+                            linkedValue->getCodeReference());
+                        break;
+                    }
+                    break;
+                case cCast(MathSymbols::Multiplication):
+                {
+                    switch ( RPNStack.top()->getDataTypeId() )
+                    {
+                    case DataTypesId::Numeric:
+                    {
+                        double op1 = *(double*)RPNStack.top()->getValue();
+                        delete RPNStack.top();
+                        RPNStack.pop();
+                        op2 = op2->operator*(op1).clone();
+                        RPNStack.push(new SoundLiteralValue(op2));
+                        break;
+                    }
+                    case DataTypesId::Sound:
+                    {
+                        SoundGenerator* op1 = ((SoundGenerator*)RPNStack.top()->getValue())->clone();
+                        delete RPNStack.top();
+                        RPNStack.pop();
+                        op1 = op1->operator*(*op2).clone();
+                        RPNStack.push(new SoundLiteralValue(op1));
+                        break;
+                    }
+                    default:
+                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                        delete literalValue;
+                        throw SyntaxException(
+                            "Invalid multiplication operation between a sound and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
+                            linkedValue->getCodeReference());
+                        break;
+                    }
+                    break;
+                }
+                case cCast(MathSymbols::Divition):
+                {
+                    switch ( RPNStack.top()->getDataTypeId() )
+                    {
+                    case DataTypesId::Numeric:
+                    {
+                        double op1 = *(double*)RPNStack.top()->getValue();
+                        delete RPNStack.top();
+                        RPNStack.pop();
+                        op2 = op2->operator/(op1).clone();
+                        RPNStack.push(new SoundLiteralValue(op2));
+                        break;
+                    }
+                    default:
+                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                        delete literalValue;
+                        throw SyntaxException(
+                            "Invalid divition operation between a number and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
+                            linkedValue->getCodeReference());
+                        break;
+                    }
+                    break;
+                }
+                default:
+                    while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                    delete literalValue;
+                    throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+                    break;
+                }
+                break;
+            }
+            default:
+                while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+                delete literalValue;
+                throw SyntaxException("Unknown literal value",linkedValue->getCodeReference());
+                break;
+            }
             break;
         default:
-            if( isFirstElement && RPNStack.empty() )
-            {
-                return literalValue;
-            }
-            else
-            {
-                string errorDescription = "Invalid convertion from ";
-                errorDescription.append(DataType::getDataTypeString(literalValue->getDataTypeId()));
-                errorDescription.append(" to numeric");
-                delete literalValue;
-                throw SemanticException(errorDescription,linkedValue->getCodeReference());
-            }
+            while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+            delete literalValue;
+            throw SyntaxException("Unknown literal value",linkedValue->getCodeReference());
             break;
         }
-        delete literalValue;
-        isFirstElement = false;
+        }
     }
     if ( RPNStack.empty() ) throw SyntaxException("Invalid number of operands",this->getCodeReference());
-    double ret = RPNStack.top();
+    LiteralValue* ret = RPNStack.top();
     RPNStack.pop();
     if ( !RPNStack.empty() ) throw SyntaxException("Invalid number of operands",this->getCodeReference());
-    return new NumericLiteralValue(ret);
+    return ret;
 }
 
 ////////////////////////////////////////
