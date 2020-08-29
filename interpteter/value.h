@@ -6,6 +6,7 @@
 #include "utils/Exceptions/exception.h"
 #include "datatype.h"
 #include "soundgenerator.h"
+#include "sampleplayer.h"
 #include <tuple>
 #include "executor/executorinterface.h"
 
@@ -102,6 +103,15 @@ public:
     ~SoundLiteralValue();
 private:
     SoundGenerator* _soundGenerator;
+};
+
+class SampleLiteralValue : public LiteralValue {
+public:
+    SampleLiteralValue(SamplePlayer*);
+    LiteralValue* clone();
+    ~SampleLiteralValue();
+private:
+    SamplePlayer* _samplePlayer;
 };
 
 class LinkedValue : public Value {

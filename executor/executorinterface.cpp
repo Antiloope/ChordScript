@@ -20,6 +20,6 @@ char ExecutorInterface::getSoundId() {
     return Executor::getInstance()->getSoundId();
 }
 
-void ExecutorInterface::addSound(Sound* newSound) {
+void ExecutorInterface::addSound(Playable* newSound) {
     Executor::getInstance()->addSound(newSound);
 }

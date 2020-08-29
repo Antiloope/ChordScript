@@ -8,7 +8,7 @@ using namespace std;
 namespace CS {
 
 typedef vector<vector<float>> AudioBuffer;
-class Sound;
+class Playable;
 
 class ExecutorInterface
 {
@@ -16,7 +16,7 @@ public:
     static AudioBuffer getBuffer(double);
     static unsigned int getSampleRate();
     static char getSoundId();
-    static void addSound(Sound*);
+    static void addSound(Playable*);
 };
 
 }

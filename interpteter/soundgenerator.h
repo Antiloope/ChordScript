@@ -10,10 +10,12 @@ using namespace std;
 namespace CS {
 
 class SoundDataType;
+class SamplePlayer;
 
 class SoundGenerator
 {
 public:
+    friend SamplePlayer;
     friend SoundDataType;
     SoundGenerator(double(*)(double));
     SoundGenerator(Sound);

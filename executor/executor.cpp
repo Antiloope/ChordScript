@@ -50,7 +50,7 @@ jack_port_t* stereoOutputPort[ChannelMode::stereo];
 // Internal usage outputBuffer array to manage dual buffer
 OutputBuffer outputBuffer[DualBufferMode];
 // Queue to manage insertions in soundsList
-queue<Sound*> soundsToAdd;
+queue<Playable*> soundsToAdd;
 // Thread to manage soundsList insertions from queue soundsToAdd and to play soundson outputBuffer
 thread bufferHandlerThread;
 atomic_flag lockBuffer = ATOMIC_FLAG_INIT;
@@ -115,7 +115,7 @@ void processShutdown(void*) {
  * load soundsList with sounds from soundsToAdd queue.
  * @param soundsList A pointer to a list of sounds to be played
  */
-void loadBuffer(list<Sound*>* soundsList) {
+void loadBuffer(list<Playable*>* soundsList) {
     while (true) {
         while (lockBuffer.test_and_set())
         {
@@ -136,7 +136,7 @@ void loadBuffer(list<Sound*>* soundsList) {
 
         while (i != soundsList->end())
         {
-            if ( outputBuffer[nextBuffer].play( *i) )
+            if ( outputBuffer[nextBuffer].play(*i) )
                 i++;
             else
                 i = soundsList->erase(i);
@@ -165,7 +165,7 @@ Executor::Executor() {
     }
 }
 
-void Executor::addSound(Sound* newSound) const {
+void Executor::addSound(Playable* newSound) const {
     soundsToAdd.push(newSound);
 }
 
@@ -179,11 +179,11 @@ char Executor::getSoundId() {
 }
 
 Executor::~Executor() {
-    while(Sound* tmp = _soundsList.back()){
+    while(Playable* tmp = _soundsList.back()){
         _soundsList.pop_back();
         delete tmp;
     }
-    while(Sound* tmp = soundsToAdd.front()){
+    while(Playable* tmp = soundsToAdd.front()){
         soundsToAdd.pop();
         delete tmp;
     }

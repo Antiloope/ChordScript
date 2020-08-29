@@ -22,7 +22,7 @@ public:
      * @brief Add the sound passed as parameter into a queue, waiting to be added later into the reproduction list.
      * @param newSound Poiter to a Sound to be played
      */
-    void addSound(Sound*) const;
+    void addSound(Playable*) const;
     /**
      * @brief This method must be called first of all.
      * It start jack client and connect porst to the jack server and start a thread to handle queue and reproduction list sync
@@ -35,7 +35,7 @@ private:
     Executor();
     static Executor* _instance;
 
-    list<Sound*> _soundsList;
+    list<Playable*> _soundsList;
     stack<char> _availableSounds;
 };
 

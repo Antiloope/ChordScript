@@ -76,6 +76,8 @@ Context::Context() {
 
     _functions = {};
 
+    _audioFiles = {};
+
     _scopeStack.push(GlobalScope);
 
     _returnValue = nullptr;
@@ -96,12 +98,15 @@ void Context::load() {
     value = new SoundLiteralValue(new SoundGenerator(&Functions::square));
     _scopes.find(GlobalScope)->second.setVariableValue(Names::squareSound,value);
 
-
     this->newVariable(Names::a3,DataTypesId::Numeric);
     this->newVariable(Names::c3,DataTypesId::Numeric);
 
     _scopes.find(GlobalScope)->second.setVariableValue(Names::a3,new NumericLiteralValue(220));
     _scopes.find(GlobalScope)->second.setVariableValue(Names::c3,new NumericLiteralValue(130.813));
+
+    BaseFunction* func = new BaseFunction();
+    func->load({{DataTypesId::String,"fileName"}},&Functions::sample);
+    _functions.insert({Names::sampleFunction,tuple<DataTypesId,BaseFunction*>(DataTypesId::Sample,func)});
 }
 
 scope_index Context::newScope() {
@@ -110,6 +115,22 @@ scope_index Context::newScope() {
     _scopes.insert(pair<scope_index,Scope>(ctxId,Scope()));
     _scopeStack.push(ctxId);
     return ctxId;
+}
+
+void Context::newAudioFile(string fileName,AudioFile<float> audioFile) {
+    _audioFiles.erase(fileName);
+    _audioFiles.insert(pair<string,AudioFile<float>>(fileName,audioFile));
+}
+
+void Context::removeAudioFile(string fileName) {
+    _audioFiles.erase(fileName);
+}
+
+const AudioFile<float>* Context::getAudioFile(string fileName) const {
+    auto file = _audioFiles.find(fileName);
+    if( file == _audioFiles.end() )
+        return nullptr;
+    return &file->second;
 }
 
 void Context::returnScope() {

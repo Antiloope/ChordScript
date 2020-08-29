@@ -32,7 +32,20 @@ protected:
     AudioBuffer *_buffer;
 };
 
-class Sound
+class Playable
+{
+public:
+    Playable() {};
+    virtual ~Playable() {};
+    virtual void play(tick_t, Buffer&) = 0;
+    virtual bool isPlayed() const;
+protected:
+    tick_t _progress = 0;
+    tick_t _startTick = 0;
+    bool _isPlayed = false;
+};
+
+class Sound : public Playable
 {
 public:
     Sound(const Sound&);
@@ -40,9 +53,8 @@ public:
     Sound(double(*)(double), double, double, tick_t);
     virtual ~Sound();
 
-    virtual void play(tick_t, Buffer&);
+    void play(tick_t, Buffer&) override;
     inline double getInstantValue(double);
-    bool isPlayed() const;
 
     void setAmplitudeFactor(double);
     void setAmplitudeFactor(Sound);
@@ -61,9 +73,6 @@ public:
 protected:
     void load(double, double, tick_t);
 
-    tick_t _progress = 0;
-    tick_t _startTick = 0;
-    bool _isPlayed = false;
     double (*_function)(double);
     double _freq = 0;
     double _duration = 0;
@@ -77,6 +86,34 @@ protected:
 private:
 };
 
+class Sample : public Playable
+{
+public:
+    Sample(string);
+    Sample(const Sample&);
+    ~Sample();
+
+    void play(tick_t, Buffer&) override;
+
+    void setAmplitudeFactor(double);
+    void setAmplitudeFactor(Sound);
+    void setAmplitudeOffset(double);
+    void setAmplitudeOffset(Sound);
+    void setTimeFactor(double);
+    void setTimeFactor(Sound);
+    void setPanning(double);
+    void setPanning(Sound);
+    Sample* generate(double,tick_t);
+    double getDurationInSeconds();
+private:
+    string _fileName;
+
+    Modifier* _panning;
+    Modifier* _amplitudeFactor;
+    Modifier* _amplitudeOffset;
+    Modifier* _timeFactor;
+};
+
 class OutputBuffer : public Buffer
 {
 public:
@@ -84,7 +121,7 @@ public:
     OutputBuffer(AudioBuffer);
     ~OutputBuffer();
 
-    bool play(Sound*);
+    bool play(Playable*);
     void setSize(size_t);
     void reset();
 };

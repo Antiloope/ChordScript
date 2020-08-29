@@ -37,6 +37,7 @@ SOURCES += \
     interpteter/languagedefinitions.cpp \
     interpteter/lexer.cpp \
     interpteter/nonterminalexpressions.cpp \
+    interpteter/sampleplayer.cpp \
     interpteter/soundgenerator.cpp \
     interpteter/terminalexpressions.cpp \
     interpteter/value.cpp \
@@ -61,6 +62,7 @@ HEADERS += \
     interpteter/languagedefinitions.h \
     interpteter/lexer.h \
     interpteter/nonterminalexpressions.h \
+    interpteter/sampleplayer.h \
     interpteter/soundgenerator.h \
     interpteter/terminalexpressions.h \
     interpteter/value.h \

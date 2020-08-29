@@ -46,6 +46,9 @@ public:
     SampleDataType();
     ~SampleDataType();
     LiteralValue* cast(LiteralValue*) const;
+private:
+    static LiteralValue* play(LiteralValue*,LiteralValue*);
+    static LiteralValue* setPanning(LiteralValue*,LiteralValue*);
 };
 
 class SoundDataType : public DataType

@@ -48,6 +48,8 @@ const string b5 = "N_B5";
 const string sinSound = "S_SIN";
 const string squareSound = "S_SQUARE";
 
+const string sampleFunction = "SAMPLE";
+
 }
 
 namespace Functions {
@@ -57,6 +59,8 @@ const string durationParam = "duration";
 
 double sin(double);
 double square(double);
+
+void sample();
 
 }
 

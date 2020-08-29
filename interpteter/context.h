@@ -22,6 +22,7 @@ typedef unordered_map<string,tuple<DataTypesId,LiteralValue*>> variables_map;
 typedef unordered_map<string,tuple<DataTypesId,FunctionDefinition*>> functions_map;
 typedef unordered_map<DataTypesId,DataType*> data_types_map;
 typedef size_t scope_index;
+typedef unordered_map<string,AudioFile<float>> audio_files_map;
 
 const scope_index GlobalScope = 0;
 const scope_index MaxContextCount = 1000;
@@ -212,6 +213,10 @@ public:
      */
     void removeScope(scope_index);
 
+    void newAudioFile(string,AudioFile<float>);
+    void removeAudioFile(string);
+    const AudioFile<float>* getAudioFile(string) const;
+
     void setReturnValue(LiteralValue*);
     LiteralValue* getReturnValue() const;
 private:
@@ -223,6 +228,7 @@ private:
     scopes_map _scopes;
     functions_map _functions;
     LiteralValue* _returnValue;
+    audio_files_map _audioFiles;
 
     BaseFunction* newBaseFunction(string,DataTypesId);
 };
