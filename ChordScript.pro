@@ -24,6 +24,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    UI/codeeditor.cpp \
     UI/maininterface.cpp \
     UI/uimanager.cpp \
     executor/buffer.cpp \
@@ -47,6 +48,7 @@ SOURCES += \
     utils/timehandler.cpp
 
 HEADERS += \
+    UI/codeeditor.h \
     UI/maininterface.h \
     UI/uimanager.h \
     executor/AudioFile.h \
@@ -84,3 +86,6 @@ DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
 unix: LIBS += -L$$PWD/../../../../../home/antiloope/Programs/Qt/5.14.2/gcc_64/lib/ -lQt5Core
 
 unix: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -ljack
+
+RESOURCES += \
+    resources.qrc

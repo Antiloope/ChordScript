@@ -19,27 +19,27 @@ int main(int argc, char *argv[])
 
     Context::getInstance()->load();
 
-    Interpreter interpreter;
+//    Interpreter interpreter;
 
-    string testCode;
-    ifstream source("/home/antiloope/Documents/tesis/build-ChordScript-Desktop_Qt_5_14_2_GCC_64bit-Debug/source.txt",ifstream::in);
-    char c;
-    while(source.get(c))
-        testCode.push_back(c);
-    source.close();
+//    string testCode;
+//    ifstream source("/home/antiloope/Documents/tesis/build-ChordScript-Desktop_Qt_5_14_2_GCC_64bit-Debug/source.txt",ifstream::in);
+//    char c;
+//    while(source.get(c))
+//        testCode.push_back(c);
+//    source.close();
 
     Executor* audio = Executor::getInstance();
     audio->init();
 
-    try {
-        interpreter.interpret(testCode);
-    } catch (SyntaxException& e) {
-        Log::getInstance().write(e.what() + to_string(e.getCharacterRefference()) + testCode[e.getCharacterRefference()-1] + testCode[e.getCharacterRefference()] + testCode[e.getCharacterRefference()+1],Log::info_t);
-    } catch (SemanticException& e) {
-        Log::getInstance().write(e.what() + to_string(e.getCharacterRefference()) + testCode[e.getCharacterRefference()-1] + testCode[e.getCharacterRefference()] + testCode[e.getCharacterRefference()+1],Log::info_t);
-    } catch (exception& e) {
-        Log::getInstance().write(e.what(),Log::info_t);
-    }
+//    try {
+//        interpreter.interpret(testCode);
+//    } catch (SyntaxException& e) {
+//        Log::getInstance().write(e.what() + to_string(e.getCharacterRefference()) + testCode[e.getCharacterRefference()-1] + testCode[e.getCharacterRefference()] + testCode[e.getCharacterRefference()+1],Log::info_t);
+//    } catch (SemanticException& e) {
+//        Log::getInstance().write(e.what() + to_string(e.getCharacterRefference()) + testCode[e.getCharacterRefference()-1] + testCode[e.getCharacterRefference()] + testCode[e.getCharacterRefference()+1],Log::info_t);
+//    } catch (exception& e) {
+//        Log::getInstance().write(e.what(),Log::info_t);
+//    }
 
     uiManager ui;
 
