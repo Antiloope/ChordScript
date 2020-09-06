@@ -1,17 +1,20 @@
 #include "uimanager.h"
+#include <QApplication>
+#include "uidefinitions.h"
 
-uiManager::uiManager()
-{
-    mainWindow = new MainInterface();
+using namespace CS::UI;
+
+UiManager::UiManager() {
+    mainWindow = new MainInterface(this);
 }
 
-uiManager::~uiManager()
-{
+UiManager::~UiManager() {
     delete mainWindow;
 }
 
-bool uiManager::init()
-{
+bool UiManager::init(QApplication& app) {
+    app.setWindowIcon(UiDefinitions::getInstance()->getIcon(IconId::App));
+    app.setStyleSheet("QPushButton{background-color:#ffffffff}");
     mainWindow->show();
     return true;
 }

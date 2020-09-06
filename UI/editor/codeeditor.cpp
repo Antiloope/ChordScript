@@ -1,26 +1,30 @@
 #include "codeeditor.h"
 #include <QTextBlock>
 #include <QPainter>
+#include "linenumberarea.h"
 
-CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
-{
+using namespace CS::UI;
+
+CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent) {
     lineNumberArea = new LineNumberArea(this);
-
-    connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
-    connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
-    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
 
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
+    this->setFocus();
 
     setFont(QFont("monospace"));
-
+    this->setStyleSheet("QPlainTextEdit{selection-background-color:#b302d9}");
     setPlainText("# Type code here!");
     selectAll();
 
     zoomIn(5);
 
     setTabStopDistance( 4 * fontMetrics().horizontalAdvance(' ') );
+
+    connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
+    connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
+    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
+    connect(this, SIGNAL(selectionChanged()),this, SLOT(setSelectedText()));
 }
 
 void CodeEditor::wheelEvent(QWheelEvent *event) {
@@ -34,8 +38,7 @@ void CodeEditor::wheelEvent(QWheelEvent *event) {
     }
 }
 
-int CodeEditor::lineNumberAreaWidth()
-{
+int CodeEditor::lineNumberAreaWidth() {
     int digits = 1;
     int max = qMax(1, blockCount());
     while (max >= 10) {
@@ -48,13 +51,11 @@ int CodeEditor::lineNumberAreaWidth()
     return space;
 }
 
-void CodeEditor::updateLineNumberAreaWidth(int /* newBlockCount */)
-{
+void CodeEditor::updateLineNumberAreaWidth(int /* newBlockCount */) {
     setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
 }
 
-void CodeEditor::updateLineNumberArea(const QRect &rect, int dy)
-{
+void CodeEditor::updateLineNumberArea(const QRect &rect, int dy) {
     if (dy)
         lineNumberArea->scroll(0, dy);
     else
@@ -64,16 +65,14 @@ void CodeEditor::updateLineNumberArea(const QRect &rect, int dy)
         updateLineNumberAreaWidth(0);
 }
 
-void CodeEditor::resizeEvent(QResizeEvent *e)
-{
+void CodeEditor::resizeEvent(QResizeEvent *e) {
     QPlainTextEdit::resizeEvent(e);
 
     QRect cr = contentsRect();
     lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
 }
 
-void CodeEditor::highlightCurrentLine()
-{
+void CodeEditor::highlightCurrentLine() {
     QList<QTextEdit::ExtraSelection> extraSelections;
 
     if (!isReadOnly()) {
@@ -91,8 +90,7 @@ void CodeEditor::highlightCurrentLine()
     setExtraSelections(extraSelections);
 }
 
-void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
-{
+void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event) {
     QPainter painter(lineNumberArea);
     painter.fillRect(event->rect(), QColor(QRgb(0xed9bff)));
     QTextBlock block = firstVisibleBlock();
@@ -102,7 +100,7 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible() && bottom >= event->rect().top()) {
             QString number = QString::number(blockNumber + 1);
-            painter.setPen(Qt::black);
+            painter.setPen(QColor(QRgb(0xfae1ff)));
             painter.drawText(0, top, lineNumberArea->width()-3, fontMetrics().height(),
                              Qt::AlignRight, number);
         }
@@ -111,4 +109,18 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
         bottom = top + (int) blockBoundingRect(block).height();
         ++blockNumber;
     }
+}
+
+void CodeEditor::setSelectedText() {
+    _selectedText = "";
+    for( auto i = this->textCursor().selectionStart(); i < this->textCursor().selectionEnd(); i++)
+    {
+        _selectedText += this->toPlainText()[i];
+    }
+}
+
+QString CodeEditor::getText() const {
+    if( _selectedText == "" )
+        return this->toPlainText();
+    return _selectedText;
 }

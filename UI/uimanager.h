@@ -3,14 +3,19 @@
 
 #include "maininterface.h"
 
-class uiManager
-{
+namespace CS {
+namespace UI {
+
+class UiManager {
 public:
-    uiManager();
-    ~uiManager();
-    bool init();
+    UiManager();
+    ~UiManager();
+    bool init(QApplication&);
 private:
-    MainInterface * mainWindow;
+    MainInterface *mainWindow;
 };
+
+}
+}
 
 #endif // UIMANAGER_H

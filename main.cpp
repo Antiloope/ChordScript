@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    Log::getInstance().write("Program started",Log::info_t);
+    Log::getInstance().title("Program started");
 
     Context::getInstance()->load();
 
@@ -41,14 +41,11 @@ int main(int argc, char *argv[])
 //        Log::getInstance().write(e.what(),Log::info_t);
 //    }
 
-    uiManager ui;
-
-
-    ui.init();
-
+    UI::UiManager ui;
+    ui.init(a);
 
     int ret = a.exec();
-    Log::getInstance().write("Program closed",Log::info_t);
+    Log::getInstance().close("Program closed");
     return ret;
     return 0;
 }

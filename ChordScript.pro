@@ -24,8 +24,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    UI/codeeditor.cpp \
+    UI/consoletabs/consoletabs.cpp \
+    UI/editor/codeeditor.cpp \
+    UI/editor/linenumberarea.cpp \
     UI/maininterface.cpp \
+    UI/toolbox/toolbox.cpp \
+    UI/uidefinitions.cpp \
     UI/uimanager.cpp \
     executor/buffer.cpp \
     executor/executor.cpp \
@@ -48,8 +52,12 @@ SOURCES += \
     utils/timehandler.cpp
 
 HEADERS += \
-    UI/codeeditor.h \
+    UI/consoletabs/consoletabs.h \
+    UI/editor/codeeditor.h \
+    UI/editor/linenumberarea.h \
     UI/maininterface.h \
+    UI/toolbox/toolbox.h \
+    UI/uidefinitions.h \
     UI/uimanager.h \
     executor/AudioFile.h \
     executor/buffer.h \
@@ -72,8 +80,7 @@ HEADERS += \
     utils/log.h \
     utils/timehandler.h
 
-FORMS += \
-    UI/mainwindow.ui
+FORMS +=
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -85,7 +92,7 @@ DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
 
 unix: LIBS += -L$$PWD/../../../../../home/antiloope/Programs/Qt/5.14.2/gcc_64/lib/ -lQt5Core
 
-unix: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -ljack
+unix: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -ljack -ljackserver
 
 RESOURCES += \
     resources.qrc

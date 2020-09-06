@@ -2,5 +2,10 @@
     <qresource prefix="/icons">
         <file>resources/play.svg</file>
         <file>resources/stop.svg</file>
+        <file>resources/restart.svg</file>
+        <file>resources/record.svg</file>
+        <file>resources/circulo.svg</file>
+        <file>resources/recording.svg</file>
+        <file>resources/closeTab.svg</file>
     </qresource>
 </RCC>

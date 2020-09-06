@@ -8,12 +8,12 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="51.164928mm"
-   height="51.164928mm"
-   viewBox="0 0 51.164928 51.164928"
+   height="37.164928mm"
+   viewBox="0 0 51.164928 37.164928"
    version="1.1"
    id="svg1122"
    inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
-   sodipodi:docname="stop.svg">
+   sodipodi:docname="closeTab.svg">
   <defs
      id="defs1116" />
   <sodipodi:namedview
@@ -57,8 +57,9 @@
      id="layer1"
      transform="translate(0.58249998,-99.417536)">
     <path
-       d="M 5.0608401,105.14594 H 45.022163 v 39.96133 H 5.0608401 Z"
-       style="fill:#d80f02;fill-opacity:1;stroke:#000000;stroke-width:1.03868;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       sodipodi:nodetypes="ccccc"
+       d="M 5.0608401,106.73335 H 45.022163 l -19.72133,23.55716 v 0 z"
+       style="fill:#b302d9;fill-opacity:1;stroke:#000000;stroke-width:1.03868;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
        id="rect899-3" />
   </g>
 </svg>

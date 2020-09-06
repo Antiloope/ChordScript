@@ -4,6 +4,7 @@
 #include "utils/log.h"
 #include <cstring>
 #include <jack/jack.h>
+#include <jack/control.h>
 #include <thread>
 #include <queue>
 
@@ -44,6 +45,7 @@ size_t batchIndex = 0;
 ///
 ///////////////////////////////////////////////////
 
+jackctl_server_t * jackServer = nullptr;
 jack_client_t* jackClient = nullptr;
 // Output port to send data
 jack_port_t* stereoOutputPort[ChannelMode::stereo];
@@ -145,6 +147,14 @@ void loadBuffer(list<Playable*>* soundsList) {
     }
 }
 
+bool serverDeviceAcquire(const char *) {
+    return true;
+}
+
+void serverDeviceRelease(const char *) {
+
+}
+
 ///////////////////////////////////////////////////
 ///
 ///   Executor class
@@ -204,6 +214,13 @@ void Executor::init() {
 
     string jackClientName = ClientName;
     string jackServerName = ServerName;
+
+//    jackServer = jackctl_server_create(serverDeviceAcquire,serverDeviceRelease);
+
+//    auto drivers = jackctl_server_get_drivers_list(jackServer);
+
+//    bool s = jackctl_server_open(jackServer,(jackctl_driver*)drivers->data);
+//    s = jackctl_server_start(jackServer);
 
     jackClient = jack_client_open(
                 jackClientName.c_str(),
