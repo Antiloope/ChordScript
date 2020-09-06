@@ -2,11 +2,14 @@
 #include <QTextBlock>
 #include <QPainter>
 #include "linenumberarea.h"
+#include "syntaxhighlighter.h"
 
 using namespace CS::UI;
 
 CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent) {
     lineNumberArea = new LineNumberArea(this);
+
+    _highlighter = new SyntaxHighlighter(this->document());
 
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
@@ -101,7 +104,7 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event) {
         if (block.isVisible() && bottom >= event->rect().top()) {
             QString number = QString::number(blockNumber + 1);
             painter.setPen(QColor(QRgb(0xfae1ff)));
-            painter.drawText(0, top, lineNumberArea->width()-3, fontMetrics().height(),
+            painter.drawText(0, top+4, lineNumberArea->width()-4, fontMetrics().height(),
                              Qt::AlignRight, number);
         }
         block = block.next();

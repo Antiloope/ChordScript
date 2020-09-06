@@ -16,7 +16,6 @@ string DataType::getDataTypeString(DataTypesId dataType) {
     case DataTypesId::Group: return sGroup;
     case DataTypesId::Boolean: return sBoolean;
     case DataTypesId::String: return sString;
-    case DataTypesId::Function: return sFunction;
     case DataTypesId::Sound: return sSound;
     default: return "unknown";
     }
@@ -31,7 +30,6 @@ DataTypesId DataType::getDataTypeId(string dataType) {
     if ( !dataType.compare(sGroup) ) return DataTypesId::Group;
     if ( !dataType.compare(sBoolean) ) return DataTypesId::Boolean;
     if ( !dataType.compare(sString) ) return DataTypesId::String;
-    if ( !dataType.compare(sFunction) ) return DataTypesId::Function;
     if ( !dataType.compare(sSound) ) return DataTypesId::Sound;
     return DataTypesId::Null;
 }
@@ -529,22 +527,6 @@ LiteralValue* NullDataType::cast(LiteralValue* value) const {
     switch ( value->getDataTypeId() )
     {
     case DataTypesId::Null:
-        return value;
-        break;
-    default:
-        return nullptr;
-        break;
-    }
-}
-
-FunctionDataType::FunctionDataType() {}
-
-FunctionDataType::~FunctionDataType() {}
-
-LiteralValue* FunctionDataType::cast(LiteralValue* value) const {
-    switch ( value->getDataTypeId() )
-    {
-    case DataTypesId::Function:
         return value;
         break;
     default:

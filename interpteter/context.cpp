@@ -69,7 +69,6 @@ Context::Context() {
         {DataTypesId::Group,       new GroupDataType()},
         {DataTypesId::Boolean,     new BooleanDataType()},
         {DataTypesId::String,      new StringDataType()},
-        {DataTypesId::Function,    new FunctionDataType()},
     };
 
     _scopes.insert( pair<size_t,Scope>(GlobalScope,Scope()) );

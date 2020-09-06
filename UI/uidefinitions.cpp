@@ -29,6 +29,10 @@ UiDefinitions::UiDefinitions() {
     _colors[iCast(ColorId::Light)] = QColor(239,168,254,255);
     _colors[iCast(ColorId::Dark)] = QColor(92,1,111,255);
     _colors[iCast(ColorId::Shadow)] = QColor(153,153,153,153);
+    _colors[iCast(ColorId::H_DataType)] = QColor(93,1,111,255);
+    _colors[iCast(ColorId::H_ReservedKeyword)] = QColor(132,2,161,255);
+    _colors[iCast(ColorId::H_Comment)] = QColor(102,102,102,255);
+    _colors[iCast(ColorId::H_Function)] = QColor(179,2,217,255);
 
     // Creating brushes to paint palette
     QBrush primary(_colors[iCast(ColorId::Primary)]);
@@ -51,6 +55,8 @@ UiDefinitions::UiDefinitions() {
     darkest.setStyle(Qt::SolidPattern);
     QBrush shadow(_colors[iCast(ColorId::Shadow)]);
     shadow.setStyle(Qt::SolidPattern);
+    QBrush dataType(_colors[iCast(ColorId::H_DataType)]);
+    dataType.setStyle(Qt::SolidPattern);
 
     _palettes[iCast(PaletteId::Global)].setBrush(QPalette::Active, QPalette::WindowText, textPrimary);
     _palettes[iCast(PaletteId::Global)].setBrush(QPalette::Active, QPalette::Button, light);
@@ -122,6 +128,10 @@ QFont UiDefinitions::getFont(FontId fontId) const {
     return _fonts[iCast(fontId)];
 }
 
-QIcon UiDefinitions::getIcon(IconId iconId) {
+QIcon UiDefinitions::getIcon(IconId iconId) const{
     return _icons[iCast(iconId)];
+}
+
+QColor UiDefinitions::getColor(ColorId colorId) const{
+    return _colors[iCast(colorId)];
 }

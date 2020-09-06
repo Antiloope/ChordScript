@@ -45,9 +45,7 @@ namespace constants {
     const string sArgument          = "argument";
     const string sGroup             = "group";
     const string sBoolean           = "boolean";
-    const string sBuffer            = "buffer";
     const string sString            = "string";
-    const string sFunction          = "function";
     const string sFor               = "for";
     const string sIf                = "if";
     const string sBreak             = "break";
@@ -71,9 +69,7 @@ namespace constants {
         case getHash("argument"):
         case getHash("group"):
         case getHash("boolean"):
-        case getHash("buffer"):
         case getHash("string"):
-        case getHash("function"):
         case getHash("for"):
         case getHash("if"):
         case getHash("break"):

@@ -7,6 +7,8 @@
 namespace CS {
 namespace UI {
 
+class SyntaxHighlighter;
+
 class CodeEditor : public QPlainTextEdit
 {
     Q_OBJECT
@@ -26,6 +28,7 @@ private slots:
 private:
     QWidget *lineNumberArea;
     QString _selectedText;
+    SyntaxHighlighter* _highlighter;
 signals:
 };
 

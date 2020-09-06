@@ -24,7 +24,6 @@ enum class DataTypesId {
     Boolean,
     String,
     Null,
-    Function
 };
 
 class DataType
@@ -108,14 +107,6 @@ class NullDataType : public DataType
 public:
     NullDataType();
     ~NullDataType();
-    LiteralValue* cast(LiteralValue*) const;
-};
-
-class FunctionDataType : public DataType
-{
-public:
-    FunctionDataType();
-    ~FunctionDataType();
     LiteralValue* cast(LiteralValue*) const;
 };
 

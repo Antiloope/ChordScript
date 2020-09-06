@@ -27,6 +27,7 @@ SOURCES += \
     UI/consoletabs/consoletabs.cpp \
     UI/editor/codeeditor.cpp \
     UI/editor/linenumberarea.cpp \
+    UI/editor/syntaxhighlighter.cpp \
     UI/maininterface.cpp \
     UI/toolbox/toolbox.cpp \
     UI/uidefinitions.cpp \
@@ -55,6 +56,7 @@ HEADERS += \
     UI/consoletabs/consoletabs.h \
     UI/editor/codeeditor.h \
     UI/editor/linenumberarea.h \
+    UI/editor/syntaxhighlighter.h \
     UI/maininterface.h \
     UI/toolbox/toolbox.h \
     UI/uidefinitions.h \
