@@ -3,6 +3,7 @@
 #include <QPainter>
 #include "linenumberarea.h"
 #include "syntaxhighlighter.h"
+#include "UI/uidefinitions.h"
 
 using namespace CS::UI;
 
@@ -15,7 +16,7 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent) {
     highlightCurrentLine();
     this->setFocus();
 
-    setFont(QFont("monospace"));
+    setFont(UiDefinitions::getInstance()->getFont(FontId::Code));
     this->setStyleSheet("QPlainTextEdit{selection-background-color:#b302d9}");
     setPlainText("# Type code here!");
     selectAll();
@@ -81,7 +82,7 @@ void CodeEditor::highlightCurrentLine() {
     if (!isReadOnly()) {
         QTextEdit::ExtraSelection selection;
 
-        QColor lineColor = QColor(QRgb(0xfae1ff));
+        QColor lineColor = QColor(UiDefinitions::getInstance()->getColor(ColorId::Light));
 
         selection.format.setBackground(lineColor);
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);
@@ -95,7 +96,7 @@ void CodeEditor::highlightCurrentLine() {
 
 void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event) {
     QPainter painter(lineNumberArea);
-    painter.fillRect(event->rect(), QColor(QRgb(0xed9bff)));
+    painter.fillRect(event->rect(), QColor(UiDefinitions::getInstance()->getColor(ColorId::LightGray)));
     QTextBlock block = firstVisibleBlock();
     int blockNumber = block.blockNumber();
     int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
@@ -103,8 +104,12 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event) {
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible() && bottom >= event->rect().top()) {
             QString number = QString::number(blockNumber + 1);
-            painter.setPen(QColor(QRgb(0xfae1ff)));
-            painter.drawText(0, top+4, lineNumberArea->width()-4, fontMetrics().height(),
+            painter.setPen(UiDefinitions::getInstance()->getColor(ColorId::Lightest));
+            auto font = UiDefinitions::getInstance()->getFont(FontId::Global);
+            font.setPixelSize(15);
+            font.setBold(true);
+            painter.setFont(font);
+            painter.drawText(0, top+4, lineNumberArea->width()-4, painter.fontMetrics().height()+10,
                              Qt::AlignRight, number);
         }
         block = block.next();

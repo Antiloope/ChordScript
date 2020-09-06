@@ -26,19 +26,19 @@ ConsoleTabs::ConsoleTabs(QWidget *parent)
 
     QTextBrowser* log = new QTextBrowser(this);
     log->setSource(QUrl("log.md"),QTextDocument::MarkdownResource);
-    log->setFont(UiDefinitions::getInstance()->getFont(FontId::Monospace));
+    log->setFont(UiDefinitions::getInstance()->getFont(FontId::Courier));
     log->setAcceptRichText(true);
     this->addTab(log,"Output Log");
 
     QTextBrowser* searchResult = new QTextBrowser(this);
     searchResult->setSource(QUrl("log.md"),QTextDocument::MarkdownResource);
-    searchResult->setFont(UiDefinitions::getInstance()->getFont(FontId::Monospace));
+    searchResult->setFont(UiDefinitions::getInstance()->getFont(FontId::Courier));
     searchResult->setAcceptRichText(true);
     this->addTab(searchResult,"Search Results");
 
     QTextBrowser* serverLog = new QTextBrowser(this);
     serverLog->setSource(QUrl("log.md"),QTextDocument::MarkdownResource);
-    serverLog->setFont(UiDefinitions::getInstance()->getFont(FontId::Monospace));
+    serverLog->setFont(UiDefinitions::getInstance()->getFont(FontId::Courier));
     serverLog->setAcceptRichText(true);
     this->addTab(serverLog,"Server Log");
 

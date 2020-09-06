@@ -127,7 +127,7 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     toolBar->setMinimumSize(QSize(0, 33));
     toolBar->setAutoFillBackground(true);
     this->addToolBar(Qt::TopToolBarArea, toolBar);
-    toolBar->setStyleSheet("QToolBar{background-color:white;} QToolButton{border:none;padding:3px}QToolButton:hover{border-radius:6px;background-color:#1a1a1aff}");
+    toolBar->setStyleSheet("QToolBar{background-color:white;border:none} QToolButton{border:none;padding:3px}QToolButton:hover{border-radius:6px;background-color:#1a1a1aff}");
 
     menuBar->addAction(menuFile->menuAction());
     menuBar->addAction(menuEdit->menuAction());

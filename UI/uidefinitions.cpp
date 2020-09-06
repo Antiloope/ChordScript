@@ -29,6 +29,7 @@ UiDefinitions::UiDefinitions() {
     _colors[iCast(ColorId::Light)] = QColor(239,168,254,255);
     _colors[iCast(ColorId::Dark)] = QColor(92,1,111,255);
     _colors[iCast(ColorId::Shadow)] = QColor(153,153,153,153);
+    _colors[iCast(ColorId::LightGray)] = QColor(200,200,200,255);
     _colors[iCast(ColorId::H_DataType)] = QColor(93,1,111,255);
     _colors[iCast(ColorId::H_ReservedKeyword)] = QColor(132,2,161,255);
     _colors[iCast(ColorId::H_Comment)] = QColor(102,102,102,255);
@@ -110,12 +111,19 @@ UiDefinitions::UiDefinitions() {
     _fonts[iCast(FontId::Global)].setStrikeOut(false);
     _fonts[iCast(FontId::Global)].setKerning(true);
 
-    _fonts[iCast(FontId::Monospace)].setFamily(QString::fromUtf8("Courier"));
-    _fonts[iCast(FontId::Monospace)].setPointSize(DEFAULT_GLOBAL_FONT_SIZE);
-    _fonts[iCast(FontId::Monospace)].setBold(false);
-    _fonts[iCast(FontId::Monospace)].setWeight(DEFAULT_GLOBAL_FONT_WIDTH);
-    _fonts[iCast(FontId::Monospace)].setStrikeOut(false);
-    _fonts[iCast(FontId::Monospace)].setKerning(true);
+    _fonts[iCast(FontId::Courier)].setFamily(QString::fromUtf8("Courier"));
+    _fonts[iCast(FontId::Courier)].setPointSize(DEFAULT_GLOBAL_FONT_SIZE);
+    _fonts[iCast(FontId::Courier)].setBold(false);
+    _fonts[iCast(FontId::Courier)].setWeight(DEFAULT_GLOBAL_FONT_WIDTH);
+    _fonts[iCast(FontId::Courier)].setStrikeOut(false);
+    _fonts[iCast(FontId::Courier)].setKerning(true);
+
+    _fonts[iCast(FontId::Code)].setFamily(QString::fromUtf8("Courier New"));
+    _fonts[iCast(FontId::Code)].setPointSize(DEFAULT_GLOBAL_FONT_SIZE);
+    _fonts[iCast(FontId::Code)].setBold(false);
+    _fonts[iCast(FontId::Code)].setWeight(DEFAULT_GLOBAL_FONT_WIDTH);
+    _fonts[iCast(FontId::Code)].setStrikeOut(false);
+    _fonts[iCast(FontId::Code)].setKerning(true);
 
     _icons[iCast(IconId::App)] = QIcon(QString::fromUtf8(APP_ICON_PATH.c_str()));
 }

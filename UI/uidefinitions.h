@@ -15,7 +15,8 @@ enum struct PaletteId {
 
 enum struct FontId {
     Global = 0,
-    Monospace,
+    Courier,
+    Code,
 };
 
 enum struct ColorId : char {
@@ -29,6 +30,7 @@ enum struct ColorId : char {
     Dark,
     Darkest,
     Shadow,
+    LightGray,
     H_DataType,
     H_ReservedKeyword,
     H_Comment,
@@ -49,8 +51,8 @@ public:
     QColor getColor(ColorId) const;
 private:
     QPalette _palettes[1];
-    QFont _fonts[2];
-    QColor _colors[14];
+    QFont _fonts[3];
+    QColor _colors[15];
     QIcon _icons[1];
     static UiDefinitions* instance;
     UiDefinitions();
