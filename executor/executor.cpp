@@ -198,6 +198,7 @@ Executor::~Executor() {
         delete tmp;
     }
     jack_client_close(jackClient);
+    jackctl_server_destroy(jackServer);
 }
 
 void Executor::init() {
@@ -215,12 +216,44 @@ void Executor::init() {
     string jackClientName = ClientName;
     string jackServerName = ServerName;
 
-//    jackServer = jackctl_server_create(serverDeviceAcquire,serverDeviceRelease);
+    jackServer = jackctl_server_create(serverDeviceAcquire,serverDeviceRelease);
 
-//    auto drivers = jackctl_server_get_drivers_list(jackServer);
+    if( !jackServer )
+    {
+        throw new LogException("Error creating jack server.");
+    }
 
-//    bool s = jackctl_server_open(jackServer,(jackctl_driver*)drivers->data);
-//    s = jackctl_server_start(jackServer);
+    const _JSList* drivers = jackctl_server_get_drivers_list(jackServer);
+
+    const _JSList* driver = drivers;
+    while( driver )
+    {
+        const char* name = jackctl_driver_get_name((jackctl_driver_t*)(driver->data));
+        Log::getInstance().write( name, Log::info_t );
+        if( strcmp(name, "alsa") != 0 && strcmp(name, "portaudio") != 0 )
+            driver = driver->next;
+        else
+            break;
+    }
+    if( !jackctl_server_open(jackServer,(jackctl_driver_t*)(driver->data)) )
+    {
+        throw new LogException("Error opening jack server.");
+    }
+    if( !jackctl_server_start(jackServer) )
+    {
+        throw new LogException("Error starting jack server.");
+    }
+
+    const _JSList* parameters = jackctl_driver_get_parameters((jackctl_driver_t*)(driver->data));
+
+    while( parameters )
+    {
+        const char* name = jackctl_parameter_get_name((jackctl_parameter_t*)(parameters->data));
+        Log::getInstance().write( name, Log::info_t );
+        parameters = parameters->next;
+    }
+
+    //jackctl_server_destroy(jackServer);
 
     jackClient = jack_client_open(
                 jackClientName.c_str(),
