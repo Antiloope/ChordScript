@@ -171,6 +171,7 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     splitter->addWidget(_consoleTabs);
 
     connect(actionPlay,SIGNAL(triggered()),this,SLOT(playButton()));
+    connect(actionStop,SIGNAL(triggered()),this,SLOT(stopButton()));
 }
 
 MainInterface::~MainInterface() {
@@ -178,12 +179,14 @@ MainInterface::~MainInterface() {
 
 #include "interpteter/interpreter.h"
 
-void MainInterface::playButton() {
-    CS::Interpreter interpreter;
+void MainInterface::stopButton() {
+    _interpreter->stopSounds();
+}
 
+void MainInterface::playButton() {
     string code = _editor->getText().replace(QRegExp("[ \t]")," ").toStdString();
     try {
-        interpreter.interpret(code);
+        _interpreter->interpret(code);
     } catch (CS::SyntaxException& e) {
         string log = e.what();
         log += ". At character: " + to_string(e.getCharacterRefference()) + ". Close to: ";

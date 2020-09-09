@@ -53,10 +53,28 @@ bool DataType::executeMethod(string methodName,LiteralValue* value,LiteralValue*
 
 SampleDataType::SampleDataType() {
     _methods.insert(pair<string,methodFunction_t>("play",&SampleDataType::play));
+    _methods.insert(pair<string,methodFunction_t>("stop",&SampleDataType::stop));
     _methods.insert(pair<string,methodFunction_t>("setPanning",&SampleDataType::setPanning));
 }
 
 SampleDataType::~SampleDataType() {}
+
+LiteralValue* SampleDataType::stop(LiteralValue* value,LiteralValue* args) {
+    if( args->getDataTypeId() != DataTypesId::Argument ) return nullptr;
+
+    auto argumentValues = (list<LiteralValue*>*)args->getValue();
+
+    if( !argumentValues->empty() )
+    {
+        return nullptr;
+    }
+
+    SamplePlayer* player = (SamplePlayer*)value->getValue();
+
+    player->stop();
+
+    return new NullLiteralValue();
+}
 
 LiteralValue* SampleDataType::play(LiteralValue* value, LiteralValue* args) {
     if( args->getDataTypeId() != DataTypesId::Argument ) return nullptr;
@@ -198,6 +216,7 @@ LiteralValue* SampleDataType::cast(LiteralValue* value) const {
 
 SoundDataType::SoundDataType() {
     _methods.insert(pair<string,methodFunction_t>("play",&SoundDataType::play));
+    _methods.insert(pair<string,methodFunction_t>("stop",&SoundDataType::stop));
     _methods.insert(pair<string,methodFunction_t>("setPanning",&SoundDataType::setPanning));
     _methods.insert(pair<string,methodFunction_t>("constantFreq",&SoundDataType::constantFreq));
 }
@@ -214,6 +233,23 @@ LiteralValue* SoundDataType::cast(LiteralValue* value) const {
         return nullptr;
         break;
     }
+}
+
+LiteralValue* SoundDataType::stop(LiteralValue* value,LiteralValue* args) {
+    if( args->getDataTypeId() != DataTypesId::Argument ) return nullptr;
+
+    auto argumentValues = (list<LiteralValue*>*)args->getValue();
+
+    if( !argumentValues->empty() )
+    {
+        return nullptr;
+    }
+
+    SoundGenerator* generator = (SoundGenerator*)value->getValue();
+
+    generator->stop();
+
+    return new NullLiteralValue();
 }
 
 LiteralValue* SoundDataType::play(LiteralValue* value, LiteralValue* args) {

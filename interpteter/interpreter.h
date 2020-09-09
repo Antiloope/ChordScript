@@ -12,6 +12,7 @@ class Interpreter
 public:
     Interpreter();
     void interpret(const string sourceCode);
+    void stopSounds();
 };
 
 }

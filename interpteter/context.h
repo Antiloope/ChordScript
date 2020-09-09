@@ -76,6 +76,8 @@ public:
      */
     void newVariable(string, DataTypesId);
 
+   const variables_map getAllPlayables();
+
 private:
     variables_map _scope;
 };
@@ -212,6 +214,8 @@ public:
      * @param scopeIndex
      */
     void removeScope(scope_index);
+
+    const variables_map getAllPlayables();
 
     void newAudioFile(string,AudioFile<float>);
     void removeAudioFile(string);

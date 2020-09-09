@@ -2,6 +2,8 @@
 #include "functiondefinition.h"
 #include "languagedefinitions.h"
 
+#include "executor/buffer.h"
+
 #include <math.h>
 
 using namespace std;
@@ -58,6 +60,20 @@ bool Scope::setVariableValue(string name,LiteralValue* value) {
         delete get<1>(_scope.find(name)->second);
     get<1>(_scope.find(name)->second) = value;
     return true;
+}
+
+const variables_map Scope::getAllPlayables() {
+    variables_map ret;
+
+    for( auto&& scope : _scope )
+    {
+        if( get<0>(scope.second) == DataTypesId::Sample || get<0>(scope.second) == DataTypesId::Sound )
+        {
+            ret.insert(scope);
+        }
+    }
+
+    return ret;
 }
 
 Context::Context() {
@@ -441,4 +457,16 @@ void Context::setReturnValue(LiteralValue* value) {
 
 LiteralValue* Context::getReturnValue() const {
     return _returnValue;
+}
+
+const variables_map Context::getAllPlayables() {
+    variables_map ret;
+
+    for( auto&& scope : _scopes )
+    {
+        variables_map tmp = scope.second.getAllPlayables();
+        ret.insert(tmp.begin(),tmp.end());
+    }
+
+    return ret;
 }

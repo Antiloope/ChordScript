@@ -4,6 +4,9 @@
 #include <QMainWindow>
 
 namespace CS {
+
+class Interpreter;
+
 namespace UI {
 
 class CodeEditor;
@@ -20,8 +23,10 @@ private:
     UiManager* _manager;
     CodeEditor* _editor;
     ConsoleTabs* _consoleTabs;
+    Interpreter* _interpreter;
 protected slots:
     void playButton();
+    void stopButton();
 signals:
 
 };

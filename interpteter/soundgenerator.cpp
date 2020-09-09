@@ -66,8 +66,10 @@ void SoundGenerator::stop() {
 
     while (i != _generatedSounds.end())
     {
-        delete (*i);
-        _generatedSounds.erase(i);
+        auto tmp = i;
+        i++;
+        ExecutorInterface::removeSound((*tmp));
+        _generatedSounds.erase(tmp);
     }
 }
 

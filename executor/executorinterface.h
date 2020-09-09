@@ -17,6 +17,8 @@ public:
     static unsigned int getSampleRate();
     static char getSoundId();
     static void addSound(Playable*);
+    static void removeSound(Playable*);
+    static void removeAllSounds();
 };
 
 }

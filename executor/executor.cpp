@@ -6,6 +6,7 @@
 #include <jack/jack.h>
 #include <jack/control.h>
 #include <thread>
+#include <mutex>
 #include <queue>
 
 #include <math.h>
@@ -53,9 +54,14 @@ jack_port_t* stereoOutputPort[ChannelMode::stereo];
 OutputBuffer outputBuffer[DualBufferMode];
 // Queue to manage insertions in soundsList
 queue<Playable*> soundsToAdd;
+// Queue to manage removes in soundsList
+queue<Playable*> soundsToRemove;
 // Thread to manage soundsList insertions from queue soundsToAdd and to play soundson outputBuffer
 thread bufferHandlerThread;
 atomic_flag lockBuffer = ATOMIC_FLAG_INIT;
+mutex mutexQueues;
+
+bool removeAll = false;
 
 ///////////////////////////////////////////////////
 ///
@@ -119,13 +125,39 @@ void processShutdown(void*) {
  */
 void loadBuffer(list<Playable*>* soundsList) {
     while (true) {
-        while (lockBuffer.test_and_set())
+        while( lockBuffer.test_and_set() )
         {
-            // While waiting, load sounds from soundsToAdd to soundsList
-            if( !soundsToAdd.empty() )
+            if( mutexQueues.try_lock() )
             {
-                soundsList->push_back(soundsToAdd.front());
-                soundsToAdd.pop();
+                // While waiting, load sounds from soundsToAdd to soundsList
+                if( !soundsToAdd.empty() )
+                {
+                    soundsList->push_back(soundsToAdd.front());
+                    soundsToAdd.pop();
+                }
+
+                if( !soundsToRemove.empty() )
+                {
+                    for( Playable* sound : *soundsList )
+                    {
+                        if( sound == soundsToRemove.front() )
+                            delete soundsToRemove.front();
+                    }
+                    soundsList->remove(soundsToRemove.front());
+                    soundsToRemove.pop();
+                }
+
+                if( removeAll )
+                {
+                    for(auto&& i : *soundsList)
+                    {
+                        delete i;
+                    }
+                    soundsList->clear();
+                    removeAll = false;
+                }
+
+                mutexQueues.unlock();
             }
         }
         DualBuffer nextBuffer;
@@ -138,10 +170,14 @@ void loadBuffer(list<Playable*>* soundsList) {
 
         while (i != soundsList->end())
         {
-            if ( outputBuffer[nextBuffer].play(*i) )
+            if( outputBuffer[nextBuffer].play(*i) )
                 i++;
             else
+            {
+                Playable* tmp = *i;
+                delete tmp;
                 i = soundsList->erase(i);
+            }
         }
         lockBuffer.test_and_set();
     }
@@ -176,7 +212,21 @@ Executor::Executor() {
 }
 
 void Executor::addSound(Playable* newSound) const {
+    mutexQueues.lock();
     soundsToAdd.push(newSound);
+    mutexQueues.unlock();
+}
+
+void Executor::removeSound(Playable* sound) const {
+    mutexQueues.lock();
+    soundsToRemove.push(sound);
+    mutexQueues.unlock();
+}
+
+void Executor::removeAllSounds() const {
+    mutexQueues.lock();
+    removeAll = true;
+    mutexQueues.unlock();
 }
 
 unsigned int Executor::getSampleRate() const {
@@ -216,42 +266,42 @@ void Executor::init() {
     string jackClientName = ClientName;
     string jackServerName = ServerName;
 
-    jackServer = jackctl_server_create(serverDeviceAcquire,serverDeviceRelease);
+//    jackServer = jackctl_server_create(serverDeviceAcquire,serverDeviceRelease);
 
-    if( !jackServer )
-    {
-        throw new LogException("Error creating jack server.");
-    }
+//    if( !jackServer )
+//    {
+//        throw new LogException("Error creating jack server.");
+//    }
 
-    const _JSList* drivers = jackctl_server_get_drivers_list(jackServer);
+//    const _JSList* drivers = jackctl_server_get_drivers_list(jackServer);
 
-    const _JSList* driver = drivers;
-    while( driver )
-    {
-        const char* name = jackctl_driver_get_name((jackctl_driver_t*)(driver->data));
-        Log::getInstance().write( name, Log::info_t );
-        if( strcmp(name, "alsa") != 0 && strcmp(name, "portaudio") != 0 )
-            driver = driver->next;
-        else
-            break;
-    }
-    if( !jackctl_server_open(jackServer,(jackctl_driver_t*)(driver->data)) )
-    {
-        throw new LogException("Error opening jack server.");
-    }
-    if( !jackctl_server_start(jackServer) )
-    {
-        throw new LogException("Error starting jack server.");
-    }
+//    const _JSList* driver = drivers;
+//    while( driver )
+//    {
+//        const char* name = jackctl_driver_get_name((jackctl_driver_t*)(driver->data));
+////        Log::getInstance().write( name, Log::info_t );
+//        if( strcmp(name, "alsa") != 0 && strcmp(name, "portaudio") != 0 )
+//            driver = driver->next;
+//        else
+//            break;
+//    }
+//    if( !jackctl_server_open(jackServer,(jackctl_driver_t*)(driver->data)) )
+//    {
+//        throw new LogException("Error opening jack server.");
+//    }
+//    if( !jackctl_server_start(jackServer) )
+//    {
+//        throw new LogException("Error starting jack server.");
+//    }
 
-    const _JSList* parameters = jackctl_driver_get_parameters((jackctl_driver_t*)(driver->data));
+//    const _JSList* parameters = jackctl_driver_get_parameters((jackctl_driver_t*)(driver->data));
 
-    while( parameters )
-    {
-        const char* name = jackctl_parameter_get_name((jackctl_parameter_t*)(parameters->data));
-        Log::getInstance().write( name, Log::info_t );
-        parameters = parameters->next;
-    }
+//    while( parameters )
+//    {
+//        const char* name = jackctl_parameter_get_name((jackctl_parameter_t*)(parameters->data));
+//        Log::getInstance().write( name, Log::info_t );
+//        parameters = parameters->next;
+//    }
 
     //jackctl_server_destroy(jackServer);
 

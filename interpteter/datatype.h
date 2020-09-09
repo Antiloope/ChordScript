@@ -47,6 +47,7 @@ public:
     LiteralValue* cast(LiteralValue*) const;
 private:
     static LiteralValue* play(LiteralValue*,LiteralValue*);
+    static LiteralValue* stop(LiteralValue*,LiteralValue*);
     static LiteralValue* setPanning(LiteralValue*,LiteralValue*);
 };
 
@@ -58,6 +59,7 @@ public:
     LiteralValue* cast(LiteralValue*) const;
 private:
     static LiteralValue* play(LiteralValue*,LiteralValue*);
+    static LiteralValue* stop(LiteralValue*,LiteralValue*);
     static LiteralValue* setPanning(LiteralValue*,LiteralValue*);
     static LiteralValue* constantFreq(LiteralValue*,LiteralValue*);
 };

@@ -28,7 +28,7 @@ void SamplePlayer::stop() {
 
     while (i != _generatedSounds.end())
     {
-        delete (*i);
+        ExecutorInterface::removeSound(*i);
         _generatedSounds.erase(i);
     }
 }

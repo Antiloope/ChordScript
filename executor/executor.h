@@ -29,6 +29,10 @@ public:
      */
     void init();
 
+    void removeSound(Playable*) const;
+
+    void removeAllSounds() const;
+
     unsigned int getSampleRate() const;
     char getSoundId();
 private:

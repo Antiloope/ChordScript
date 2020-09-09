@@ -23,3 +23,11 @@ char ExecutorInterface::getSoundId() {
 void ExecutorInterface::addSound(Playable* newSound) {
     Executor::getInstance()->addSound(newSound);
 }
+
+void ExecutorInterface::removeSound(Playable* sound) {
+    Executor::getInstance()->removeSound(sound);
+}
+
+void ExecutorInterface::removeAllSounds() {
+    Executor::getInstance()->removeAllSounds();
+}
