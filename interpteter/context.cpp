@@ -122,6 +122,10 @@ void Context::load() {
     BaseFunction* func = new BaseFunction();
     func->load({{DataTypesId::String,"fileName"}},&Functions::sample);
     _functions.insert({Names::sampleFunction,tuple<DataTypesId,BaseFunction*>(DataTypesId::Sample,func)});
+
+    func = new BaseFunction();
+    func->load({{}},&Functions::stop);
+    _functions.insert({Names::stopFunction,tuple<DataTypesId,BaseFunction*>(DataTypesId::Null,func)});
 }
 
 scope_index Context::newScope() {

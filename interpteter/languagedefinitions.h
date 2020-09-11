@@ -49,7 +49,7 @@ const string sinSound = "S_SIN";
 const string squareSound = "S_SQUARE";
 
 const string sampleFunction = "SAMPLE";
-
+const string stopFunction = "STOP";
 }
 
 namespace Functions {
@@ -61,6 +61,8 @@ double sin(double);
 double square(double);
 
 void sample();
+
+void stop();
 
 }
 

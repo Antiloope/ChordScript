@@ -180,7 +180,7 @@ MainInterface::~MainInterface() {
 #include "interpteter/interpreter.h"
 
 void MainInterface::stopButton() {
-    _interpreter->stopSounds();
+    _interpreter->interpret("STOP();");
 }
 
 void MainInterface::playButton() {

@@ -43,3 +43,25 @@ void CS::Functions::sample() {
 
     ctx->setReturnValue(ret);
 }
+
+void CS::Functions::stop() {
+    Context* ctx = Context::getInstance();
+
+    ExecutorInterface::removeAllSounds();
+
+    SoundDataType soundDataType;
+    SampleDataType sampleDataType;
+    for( auto&& playable : Context::getInstance()->getAllPlayables() )
+    {
+        if( get<0>(playable.second) == DataTypesId::Sound )
+        {
+            soundDataType.executeMethod("stop",(get<1>(playable.second)),new ArgumentLiteralValue({}));
+        }
+        else
+        {
+            sampleDataType.executeMethod("stop",(get<1>(playable.second)),new ArgumentLiteralValue({}));
+        }
+    }
+
+    ctx->setReturnValue(new NullLiteralValue());
+}
