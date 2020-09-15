@@ -1,14 +1,29 @@
 #include "toolbox.h"
-
+#include "UI/uidefinitions.h"
 #include <QPushButton>
 
 using namespace CS::UI;
 
 ToolBox::ToolBox(QWidget *parent)
     : QToolBox(parent) {
-    this->setStyleSheet("QToolBox::tab {background: #ed9bff ;padding:0px;border-radius: 5px; color: white;}QToolBox::tab:selected { /* italicize selected tabs */    font: italic;    color: white;}");
-    this->setMaximumWidth(200);
-    this->setMinimumWidth(150);
-    this->addItem(new QPushButton(this),"Sound analizer");
+    UiDefinitions* def = UiDefinitions::getInstance();
+
+    this->setStyleSheet(
+        "QToolBox::tab {"
+            "border: 3px solid " + def->getColorRGB(ColorId::Dark) + ";"
+        "}"
+        "QToolBox::tab:selected {"
+            "font-weight: bold;"
+            "background: "+ def->getColorRGB(ColorId::Dark) + ";"
+            "color: " + def->getColorRGB(ColorId::Lightest) + ";"
+        "}"
+        "QToolBox::tab:!selected {"
+            "background: "+ def->getColorRGB(ColorId::Light) + ";"
+            "color: " + def->getColorRGB(ColorId::TextPrimary) + ";"
+        "}"
+        );
+
+    this->addItem(new QPushButton(this),"Sound Analizer");
+    this->addItem(new QPushButton(this),"Language Documentation");
     this->addItem(new QPushButton(this),"Help");
 }

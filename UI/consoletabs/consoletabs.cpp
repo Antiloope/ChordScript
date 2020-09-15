@@ -14,42 +14,53 @@ const QString CLOSE_TAB_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/clo
 
 ConsoleTabs::ConsoleTabs(QWidget *parent)
     : QTabWidget(parent) {
-    this->setMaximumHeight(((QSplitter*)(parent))->frameSize().height()/2);
-    this->setDocumentMode(true);
+    //this->setDocumentMode(true);
+    UiDefinitions* def = UiDefinitions::getInstance();
 
-    QIcon closeTab;
-    closeTab.addFile(CLOSE_TAB_ICON_RESOURCE, QSize(), QIcon::Normal, QIcon::Off);
-    QPushButton* closeButton = new QPushButton(closeTab,"");
-    closeButton->setStyleSheet("QPushButton{border:none;margin-bottom:6px;padding:4px;}QPushButton:hover{border-radius:6px;background-color:#1a1a1aff}");
-    closeButton->setIconSize(QSize(25,16));
-    this->setCornerWidget(closeButton);
+    this->setFont(def->getFont(FontId::Global));
+    this->setStyleSheet(
+        "QTextBrowser{"
+            "border: none;"
+        "}"
+        "QTabBar::tab:!selected {"
+            "background: "+ def->getColorRGB(ColorId::Light) + ";"
+            "color: " + def->getColorRGB(ColorId::TextPrimary) + ";"
+            "padding: 7px;"
+            "border: 3px solid " + def->getColorRGB(ColorId::Dark) + ";"
+        "}"
+        "QTabWidget::tab-bar {"
+            "alignment: center;"
+        "}"
+        "QTabWidget::pane {"
+            "border-top: 2px solid " + def->getColorRGB(ColorId::Dark) + ";"
+            "position: absolute;"
+            "top: -0.8em;"
+            "padding-top: 0.8em;"
+        "}"
+        "QTabBar::tab:selected {"
+            "padding: 10px;"
+            "background: "+ def->getColorRGB(ColorId::Dark) + ";"
+            "color: " + def->getColorRGB(ColorId::Lightest) + ";"
+        "}"
+        );
 
     QTextBrowser* log = new QTextBrowser(this);
     log->setSource(QUrl("log.md"),QTextDocument::MarkdownResource);
-    log->setFont(UiDefinitions::getInstance()->getFont(FontId::Courier));
+    log->setFont(UiDefinitions::getInstance()->getFont(FontId::Code));
     log->setAcceptRichText(true);
     this->addTab(log,"Output Log");
 
     QTextBrowser* searchResult = new QTextBrowser(this);
     searchResult->setSource(QUrl("log.md"),QTextDocument::MarkdownResource);
-    searchResult->setFont(UiDefinitions::getInstance()->getFont(FontId::Courier));
+    searchResult->setFont(UiDefinitions::getInstance()->getFont(FontId::Code));
     searchResult->setAcceptRichText(true);
+
     this->addTab(searchResult,"Search Results");
 
     QTextBrowser* serverLog = new QTextBrowser(this);
     serverLog->setSource(QUrl("log.md"),QTextDocument::MarkdownResource);
-    serverLog->setFont(UiDefinitions::getInstance()->getFont(FontId::Courier));
+    serverLog->setFont(UiDefinitions::getInstance()->getFont(FontId::Code));
     serverLog->setAcceptRichText(true);
     this->addTab(serverLog,"Server Log");
 
-    this->connect(closeButton,SIGNAL(clicked()),this,SLOT(minimize()));
-    this->connect(this,SIGNAL(tabBarClicked(int)),this,SLOT(maximize()));
-}
-
-void ConsoleTabs::minimize() {
-    this->setFixedHeight(this->tabBar()->height());
-}
-
-void ConsoleTabs::maximize() {
-    this->setMaximumHeight(((QSplitter*)(this->parent()))->frameSize().height());
 }

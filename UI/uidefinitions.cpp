@@ -26,10 +26,10 @@ UiDefinitions::UiDefinitions() {
     _colors[iCast(ColorId::TextSecondary)] = QColor(102,102,102,255);
     _colors[iCast(ColorId::Darkest)] = QColor(0,0,0,255);
     _colors[iCast(ColorId::Lightest)] = QColor(255,255,255,255);
-    _colors[iCast(ColorId::Light)] = QColor(239,168,254,255);
-    _colors[iCast(ColorId::Dark)] = QColor(92,1,111,255);
-    _colors[iCast(ColorId::Shadow)] = QColor(153,153,153,153);
-    _colors[iCast(ColorId::LightGray)] = QColor(200,200,200,255);
+    _colors[iCast(ColorId::Light)] = QColor(247,213,254,255);
+    _colors[iCast(ColorId::Dark)] = QColor(71,33,79,255);
+    _colors[iCast(ColorId::Shadow)] = QColor(170,170,170,153);
+    _colors[iCast(ColorId::LightGray)] = QColor(210,210,210,255);
     _colors[iCast(ColorId::H_DataType)] = QColor(93,1,111,255);
     _colors[iCast(ColorId::H_ReservedKeyword)] = QColor(132,2,161,255);
     _colors[iCast(ColorId::H_Comment)] = QColor(102,102,102,255);
@@ -136,10 +136,14 @@ QFont UiDefinitions::getFont(FontId fontId) const {
     return _fonts[iCast(fontId)];
 }
 
-QIcon UiDefinitions::getIcon(IconId iconId) const{
+QIcon UiDefinitions::getIcon(IconId iconId) const {
     return _icons[iCast(iconId)];
 }
 
-QColor UiDefinitions::getColor(ColorId colorId) const{
+QColor UiDefinitions::getColor(ColorId colorId) const {
     return _colors[iCast(colorId)];
+}
+
+QString UiDefinitions::getColorRGB(ColorId colorId) const {
+    return _colors[iCast(colorId)].name(QColor::HexRgb);
 }

@@ -49,6 +49,7 @@ public:
     QFont getFont(FontId) const;
     QIcon getIcon(IconId) const;
     QColor getColor(ColorId) const;
+    QString getColorRGB(ColorId) const;
 private:
     QPalette _palettes[1];
     QFont _fonts[3];

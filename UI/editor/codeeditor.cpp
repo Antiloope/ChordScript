@@ -1,6 +1,7 @@
 #include "codeeditor.h"
 #include <QTextBlock>
 #include <QPainter>
+#include <QScrollBar>
 #include "linenumberarea.h"
 #include "syntaxhighlighter.h"
 #include "UI/uidefinitions.h"
@@ -17,7 +18,11 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent) {
     this->setFocus();
 
     setFont(UiDefinitions::getInstance()->getFont(FontId::Code));
-    this->setStyleSheet("QPlainTextEdit{selection-background-color:#b302d9}");
+    this->setStyleSheet(
+        "QPlainTextEdit{"
+            "selection-background-color:" + UiDefinitions::getInstance()->getColorRGB(ColorId::Primary) + ";"
+            "border:none;"
+        "}");
     setPlainText("# Type code here!");
     selectAll();
 
@@ -32,14 +37,18 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent) {
 }
 
 void CodeEditor::wheelEvent(QWheelEvent *event) {
-    QWheelEvent *wheel = static_cast<QWheelEvent*>(event);
-    if( wheel->modifiers() == Qt::ControlModifier )
+    if( event->modifiers() == Qt::ControlModifier )
     {
-        if(wheel->delta() > 0)
+        if(event->delta() > 0)
             zoomIn(1);
         else
             zoomOut(1);
     }
+    else
+    {
+        this->verticalScrollBar()->event(event);
+    }
+    event->accept();
 }
 
 int CodeEditor::lineNumberAreaWidth() {
@@ -96,20 +105,22 @@ void CodeEditor::highlightCurrentLine() {
 
 void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event) {
     QPainter painter(lineNumberArea);
-    painter.fillRect(event->rect(), QColor(UiDefinitions::getInstance()->getColor(ColorId::LightGray)));
+    painter.fillRect(event->rect(), QColor(UiDefinitions::getInstance()->getColor(ColorId::Lightest)));
     QTextBlock block = firstVisibleBlock();
     int blockNumber = block.blockNumber();
     int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
     int bottom = top + (int) blockBoundingRect(block).height();
+
+    auto font = UiDefinitions::getInstance()->getFont(FontId::Global);
+    font.setPixelSize(bottom-top-8);
+    font.setBold(true);
+
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible() && bottom >= event->rect().top()) {
             QString number = QString::number(blockNumber + 1);
-            painter.setPen(UiDefinitions::getInstance()->getColor(ColorId::Lightest));
-            auto font = UiDefinitions::getInstance()->getFont(FontId::Global);
-            font.setPixelSize(15);
-            font.setBold(true);
+            painter.setPen(UiDefinitions::getInstance()->getColor(ColorId::LightGray));
             painter.setFont(font);
-            painter.drawText(0, top+4, lineNumberArea->width()-4, painter.fontMetrics().height()+10,
+            painter.drawText(0, top+2, lineNumberArea->width()-4, painter.fontMetrics().height()+10,
                              Qt::AlignRight, number);
         }
         block = block.next();

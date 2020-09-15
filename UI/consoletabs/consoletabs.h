@@ -12,9 +12,6 @@ class ConsoleTabs : public QTabWidget {
     Q_OBJECT
 public:
     explicit ConsoleTabs(QWidget *parent = nullptr);
-private slots:
-    void minimize();
-    void maximize();
 };
 
 }
