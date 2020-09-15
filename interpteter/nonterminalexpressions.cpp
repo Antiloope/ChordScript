@@ -621,7 +621,7 @@ void ExecutionExpression::load(list<TerminalExpression*>* terminalExpressionsLis
         else
         {
             isValidMethod = false;
-            if ( terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",terminalExpressionsList->front()->getCodeReference());
+            if ( !terminalExpressionsList->front() || terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",tmp->getCodeReference());
         }
     }
 }
