@@ -27,6 +27,8 @@ private:
 protected slots:
     void playButton();
     void stopButton();
+    void openFile();
+    void exit();
 signals:
 
 };

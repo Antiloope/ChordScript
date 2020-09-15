@@ -35,6 +35,26 @@ const QString VIEW_MENU_TITLE = QString::fromUtf8("&View");
 const QString SERVER_MENU_TITLE = QString::fromUtf8("&Server");
 const QString FIND_MENU_TITLE = QString::fromUtf8("Fi&nd");
 const QString HELP_MENU_TITLE = QString::fromUtf8("&Help");
+const QString OPEN_ACTION_TITLE = QString::fromUtf8("&Open...");
+const QString OPEN_RECENT_ACTION_TITLE = QString::fromUtf8("Recent &Files");
+const QString SAVE_ACTION_TITLE = QString::fromUtf8("&Save");
+const QString SAVE_AS_ACTION_TITLE = QString::fromUtf8("Save As...");
+const QString CLOSE_FILE_ACTION_TITLE = QString::fromUtf8("&Close");
+const QString EXIT_ACTION_TITLE = QString::fromUtf8("E&xit");
+const QString UNDO_ACTION_TITLE = QString::fromUtf8("&Undo");
+const QString REDO_ACTION_TITLE = QString::fromUtf8("&Redo");
+const QString COPY_ACTION_TITLE = QString::fromUtf8("&Copy");
+const QString PASTE_ACTION_TITLE = QString::fromUtf8("&Paste");
+const QString CUT_ACTION_TITLE = QString::fromUtf8("Cu&t");
+const QString ZOOM_IN_ACTION_TITLE = QString::fromUtf8("Zoom In");
+const QString ZOOM_OUT_ACTION_TITLE = QString::fromUtf8("Zoom Out");
+const QString FIND_ACTION_TITLE = QString::fromUtf8("&Find...");
+const QString COMMENT_ACTION_TITLE = QString::fromUtf8("&Toggle Comment");
+const QString SERVER_CONFIG_ACTION_TITLE = QString::fromUtf8("Server &Config");
+const QString SERVER_KILL_ACTION_TITLE = QString::fromUtf8("&Kill Server");
+const QString SERVER_START_ACTION_TITLE = QString::fromUtf8("&Start Server");
+const QString SERVER_RESTART_ACTION_TITLE = QString::fromUtf8("&Restart Server");
+const QString SERVER_RECORD_ACTION_TITLE = QString::fromUtf8("Recording");
 
 }
 
@@ -106,16 +126,83 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
         "QMenuBar{"
             "background-color:" + UiDefinitions::getInstance()->getColorRGB(ColorId::Background) + ";"
         "}"
+        "QMenu::item:selected { "
+            "background: " + def->getColorRGB(ColorId::Primary) + ";"
+        "}"
         );
+
+    QAction* openAction = new QAction(OPEN_ACTION_TITLE,this);
+    openAction->setShortcut(tr("CTRL+O"));
+    QAction* openRecentAction = new QAction(OPEN_RECENT_ACTION_TITLE,this);
+    QAction* saveAction = new QAction(SAVE_ACTION_TITLE,this);
+    saveAction->setShortcut(tr("CTRL+S"));
+    QAction* saveAsAction = new QAction(SAVE_AS_ACTION_TITLE,this);
+    QAction* closeFileAction = new QAction(CLOSE_FILE_ACTION_TITLE,this);
+    closeFileAction->setShortcut(tr("CTRL+W"));
+    QAction* exitAction = new QAction(EXIT_ACTION_TITLE,this);
+    exitAction->setShortcut(tr("CTRL+Q"));
+    QAction* undoAction = new QAction(UNDO_ACTION_TITLE,this);
+    undoAction->setShortcut(tr("CTRL+Z"));
+    QAction* redoAction = new QAction(REDO_ACTION_TITLE,this);
+    redoAction->setShortcut(tr("CTRL+SHIFT+Z"));
+    QAction* copyAction = new QAction(COPY_ACTION_TITLE,this);
+    copyAction->setShortcut(tr("CTRL+C"));
+    QAction* cutAction = new QAction(CUT_ACTION_TITLE,this);
+    cutAction->setShortcut(tr("CTRL+X"));
+    QAction* pasteAction = new QAction(PASTE_ACTION_TITLE,this);
+    pasteAction->setShortcut(tr("CTRL+V"));
+    QAction* zoomInAction = new QAction(ZOOM_IN_ACTION_TITLE,this);
+    zoomInAction->setShortcut(tr("CTRL++"));
+    QAction* zoomOutAction = new QAction(ZOOM_OUT_ACTION_TITLE,this);
+    zoomOutAction->setShortcut(tr("CTRL+-"));
+    QAction* findAction = new QAction(FIND_ACTION_TITLE,this);
+    findAction->setShortcut(tr("CTRL+F"));
+    QAction* commentAction = new QAction(COMMENT_ACTION_TITLE,this);
+    commentAction->setShortcut(tr("CTRL+/"));
+    QAction* serverConfigAction = new QAction(SERVER_CONFIG_ACTION_TITLE,this);
+    QAction* serverKillAction = new QAction(SERVER_KILL_ACTION_TITLE,this);
+    QAction* serverStartAction = new QAction(SERVER_START_ACTION_TITLE,this);
+    QAction* serverRestartAction = new QAction(SERVER_RESTART_ACTION_TITLE,this);
+    serverRestartAction->setShortcut(tr("CTRL+T"));
+    QAction* serverRecordAction = new QAction(SERVER_RECORD_ACTION_TITLE,this);
+    serverRecordAction->setCheckable(true);
+    serverRecordAction->setShortcut(tr("CTRL+R"));
 
     QMenu* menuFile = new QMenu(menuBar);
     menuFile->setTitle(FILE_MENU_TITLE);
+    menuFile->addAction(openAction);
+    menuFile->addAction(openRecentAction);
+    menuFile->addSeparator();
+    menuFile->addAction(saveAction);
+    menuFile->addAction(saveAsAction);
+    menuFile->addSeparator();
+    menuFile->addAction(closeFileAction);
+    menuFile->addAction(exitAction);
     QMenu* menuEdit = new QMenu(menuBar);
     menuEdit->setTitle(EDIT_MENU_TITLE);
+    menuEdit->addAction(undoAction);
+    menuEdit->addAction(redoAction);
+    menuEdit->addSeparator();
+    menuEdit->addAction(copyAction);
+    menuEdit->addAction(cutAction);
+    menuEdit->addAction(pasteAction);
+    menuEdit->addSeparator();
+    menuEdit->addAction(zoomInAction);
+    menuEdit->addAction(zoomOutAction);
+    menuEdit->addSeparator();
+    menuEdit->addAction(findAction);
+    menuEdit->addAction(commentAction);
     QMenu* menuView = new QMenu(menuBar);
     menuView->setTitle(VIEW_MENU_TITLE);
     QMenu* menuServer = new QMenu(menuBar);
     menuServer->setTitle(SERVER_MENU_TITLE);
+    menuServer->addAction(serverStartAction);
+    menuServer->addAction(serverKillAction);
+    menuServer->addAction(serverRestartAction);
+    menuServer->addSeparator();
+    menuServer->addAction(serverRecordAction);
+    menuServer->addSeparator();
+    menuServer->addAction(serverConfigAction);
     QMenu* menuHelp = new QMenu(menuBar);
     menuHelp->setTitle(HELP_MENU_TITLE);
     QMenu* menuFind = new QMenu(menuBar);
@@ -226,6 +313,26 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
 
     connect(actionPlay,SIGNAL(triggered()),this,SLOT(playButton()));
     connect(actionStop,SIGNAL(triggered()),this,SLOT(stopButton()));
+    connect(openAction,SIGNAL(triggered()),this,SLOT(openFile()));
+//    connect(openRecentAction,SIGNAL(triggered()),this,SLOT(openRecentFile()));
+//    connect(saveAction,SIGNAL(triggered()),this,SLOT(saveFile()));
+//    connect(saveAsAction,SIGNAL(triggered()),this,SLOT(saveAsFile()));
+//    connect(closeFileAction,SIGNAL(triggered()),this,SLOT(closeFile()));
+    connect(exitAction,SIGNAL(triggered()),this,SLOT(exit()));
+//    connect(undoAction,SIGNAL(triggered()),this,SLOT(undo()));
+//    connect(redoAction,SIGNAL(triggered()),this,SLOT(redo()));
+//    connect(copyAction,SIGNAL(triggered()),this,SLOT(copy()));
+//    connect(cutAction,SIGNAL(triggered()),this,SLOT(cut()));
+//    connect(pasteAction,SIGNAL(triggered()),this,SLOT(paste()));
+//    connect(zoomInAction,SIGNAL(triggered()),this,SLOT(zoomIn()));
+//    connect(zoomOutAction,SIGNAL(triggered()),this,SLOT(zoomOut()));
+//    connect(findAction,SIGNAL(triggered()),this,SLOT(find()));
+//    connect(commentAction,SIGNAL(triggered()),this,SLOT(comment()));
+//    connect(serverStartAction,SIGNAL(triggered()),this,SLOT(startServer()));
+//    connect(serverKillAction,SIGNAL(triggered()),this,SLOT(killServer()));
+//    connect(serverRestartAction,SIGNAL(triggered()),this,SLOT(restartServer()));
+//    connect(serverRecordAction,SIGNAL(triggered()),this,SLOT(record()));
+//    connect(serverConfigAction,SIGNAL(triggered()),this,SLOT(configServer()));
 }
 
 MainInterface::~MainInterface() {
@@ -235,6 +342,14 @@ MainInterface::~MainInterface() {
 
 void MainInterface::stopButton() {
     _interpreter->interpret("STOP();");
+}
+
+void MainInterface::openFile() {
+    this->_editor->setPlainText("sound a = S_SIN;\na.play([440],1);\n");
+}
+
+void MainInterface::exit() {
+    this->close();
 }
 
 void MainInterface::playButton() {
