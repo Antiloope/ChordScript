@@ -11,7 +11,7 @@ namespace CS {
 class LiteralValue;
 class ArgumentLiteralValue;
 
-typedef LiteralValue* (*methodFunction_t)(LiteralValue*,LiteralValue*);
+typedef LiteralValue* (*methodFunction_t)(const LiteralValue*,const LiteralValue*);
 
 enum class DataTypesId {
     Sample,
@@ -33,7 +33,7 @@ public:
     static DataTypesId getDataTypeId(string);
     DataType();
     virtual ~DataType();
-    bool executeMethod(string,LiteralValue*,LiteralValue*);
+    bool executeMethod(string,const LiteralValue*,const LiteralValue*);
     virtual LiteralValue* cast(LiteralValue*) const = 0;
 protected:
     unordered_map<string,methodFunction_t> _methods;
@@ -46,9 +46,9 @@ public:
     ~SampleDataType();
     LiteralValue* cast(LiteralValue*) const;
 private:
-    static LiteralValue* play(LiteralValue*,LiteralValue*);
-    static LiteralValue* stop(LiteralValue*,LiteralValue*);
-    static LiteralValue* setPanning(LiteralValue*,LiteralValue*);
+    static LiteralValue* play(const LiteralValue*,const LiteralValue*);
+    static LiteralValue* stop(const LiteralValue*,const LiteralValue*);
+    static LiteralValue* setPanning(const LiteralValue*,const LiteralValue*);
 };
 
 class SoundDataType : public DataType
@@ -58,10 +58,10 @@ public:
     ~SoundDataType();
     LiteralValue* cast(LiteralValue*) const;
 private:
-    static LiteralValue* play(LiteralValue*,LiteralValue*);
-    static LiteralValue* stop(LiteralValue*,LiteralValue*);
-    static LiteralValue* setPanning(LiteralValue*,LiteralValue*);
-    static LiteralValue* constantFreq(LiteralValue*,LiteralValue*);
+    static LiteralValue* play(const LiteralValue*,const LiteralValue*);
+    static LiteralValue* stop(const LiteralValue*,const LiteralValue*);
+    static LiteralValue* setPanning(const LiteralValue*,const LiteralValue*);
+    static LiteralValue* constantFreq(const LiteralValue*,const LiteralValue*);
 };
 
 class NumericDataType : public DataType

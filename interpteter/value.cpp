@@ -1,6 +1,7 @@
 #include "value.h"
 #include <stack>
 #include "context.h"
+#include <memory>
 
 using namespace CS;
 using namespace std;
@@ -21,13 +22,22 @@ DataTypesId Value::getDataTypeId() const {
 ///     LiteralValue : Value
 ////////////////////////////////////////
 
-LiteralValue::LiteralValue(DataTypesId dataType) : Value(dataType) {}
+LiteralValue::LiteralValue(DataTypesId dataType) :
+    Value(dataType) {}
 
-LiteralValue::LiteralValue(const LiteralValue& e) : Value(e._dataType),_value(e._value) {}
+LiteralValue::LiteralValue(const LiteralValue& e) :
+    Value(e._dataType),
+    _value(e._value) {}
 
 LiteralValue::~LiteralValue() {}
 
-StringLiteralValue::StringLiteralValue(string text) : LiteralValue(DataTypesId::String) {
+////////////////////////////////////////
+///     LiteralValue : String
+////////////////////////////////////////
+
+StringLiteralValue::StringLiteralValue(string text) :
+    LiteralValue(DataTypesId::String) {
+
     _text = text;
     _value = &_text;
 }
@@ -38,7 +48,13 @@ LiteralValue* StringLiteralValue::clone() {
     return new StringLiteralValue(_text);
 }
 
-NumericLiteralValue::NumericLiteralValue(double number) : LiteralValue(DataTypesId::Numeric) {
+////////////////////////////////////////
+///     LiteralValue : Number
+////////////////////////////////////////
+
+NumericLiteralValue::NumericLiteralValue(double number) :
+    LiteralValue(DataTypesId::Numeric) {
+
     _number = number;
     _value = &_number;
 }
@@ -49,7 +65,12 @@ LiteralValue* NumericLiteralValue::clone() {
     return new NumericLiteralValue(_number);
 }
 
-BooleanLiteralValue::BooleanLiteralValue(bool boolean) : LiteralValue(DataTypesId::Boolean) {
+////////////////////////////////////////
+///     LiteralValue : Boolean
+////////////////////////////////////////
+
+BooleanLiteralValue::BooleanLiteralValue(bool boolean) :
+    LiteralValue(DataTypesId::Boolean) {
     _boolean = boolean;
     _value = &_boolean;
 }
@@ -60,7 +81,12 @@ LiteralValue* BooleanLiteralValue::clone() {
     return new BooleanLiteralValue(_boolean);
 }
 
-NullLiteralValue::NullLiteralValue() : LiteralValue(DataTypesId::Null) {
+////////////////////////////////////////
+///     LiteralValue : Null
+////////////////////////////////////////
+
+NullLiteralValue::NullLiteralValue() :
+    LiteralValue(DataTypesId::Null) {
     _value = nullptr;
 }
 
@@ -70,7 +96,12 @@ LiteralValue* NullLiteralValue::clone() {
     return new NullLiteralValue();
 }
 
-OperatorLiteralValue::OperatorLiteralValue(char op) : LiteralValue(DataTypesId::Operator) {
+////////////////////////////////////////
+///     LiteralValue : Operator
+////////////////////////////////////////
+
+OperatorLiteralValue::OperatorLiteralValue(char op) :
+    LiteralValue(DataTypesId::Operator) {
     _operator = op;
     _value = &_operator;
 }
@@ -81,49 +112,61 @@ LiteralValue* OperatorLiteralValue::clone() {
     return new OperatorLiteralValue(_operator);
 }
 
-ArrayLiteralValue::ArrayLiteralValue(list<LiteralValue*> literalValuesList) : LiteralValue(DataTypesId::Array) {
-    _literalValuesList = literalValuesList;
+////////////////////////////////////////
+///     LiteralValue : Array
+////////////////////////////////////////
+
+ArrayLiteralValue::ArrayLiteralValue(list<LiteralValue*> literalValuesList) :
+    LiteralValue(DataTypesId::Array) {
+    for( auto literalValue : literalValuesList )
+        _literalValuesList.push_back(literalValue->clone());
     _value = &_literalValuesList;
 }
 
 ArrayLiteralValue::~ArrayLiteralValue() {
-    while ( !_literalValuesList.empty() ) {
-        delete _literalValuesList.front();
+    while( !_literalValuesList.empty() )
+    {
+        if( _literalValuesList.front() )
+            delete _literalValuesList.front();
         _literalValuesList.pop_front();
     }
 }
 
 LiteralValue* ArrayLiteralValue::clone() {
-    list<LiteralValue*> tmp;
-    for( auto literalValue : _literalValuesList )
-    {
-        tmp.push_back(literalValue->clone());
-    }
-    return new ArrayLiteralValue(tmp);
+    return new ArrayLiteralValue(_literalValuesList);
 }
 
-ArgumentLiteralValue::ArgumentLiteralValue(list<LiteralValue*> literalValuesList) : LiteralValue(DataTypesId::Argument) {
-    _literalValuesList = literalValuesList;
+////////////////////////////////////////
+///     LiteralValue : Argument
+////////////////////////////////////////
+
+ArgumentLiteralValue::ArgumentLiteralValue(list<LiteralValue*> literalValuesList) :
+    LiteralValue(DataTypesId::Argument) {
+    for( auto literalValue : literalValuesList )
+    {
+        _literalValuesList.push_back(literalValue->clone());
+    }
     _value = &_literalValuesList;
 }
 
 ArgumentLiteralValue::~ArgumentLiteralValue() {
     while ( !_literalValuesList.empty() ) {
-        delete _literalValuesList.front();
+        if(_literalValuesList.front())
+            delete _literalValuesList.front();
         _literalValuesList.pop_front();
     }
 }
 
 LiteralValue* ArgumentLiteralValue::clone() {
-    list<LiteralValue*> tmp;
-    for( auto literalValue : _literalValuesList )
-    {
-        tmp.push_back(literalValue->clone());
-    }
-    return new ArgumentLiteralValue(tmp);
+    return new ArgumentLiteralValue(_literalValuesList);
 }
 
-SoundLiteralValue::SoundLiteralValue(SoundGenerator* generator) : LiteralValue(DataTypesId::Sound) {
+////////////////////////////////////////
+///     LiteralValue : Sound
+////////////////////////////////////////
+
+SoundLiteralValue::SoundLiteralValue(SoundGenerator* generator) :
+    LiteralValue(DataTypesId::Sound) {
     _soundGenerator = generator;
     _value = _soundGenerator;
 }
@@ -136,7 +179,12 @@ SoundLiteralValue::~SoundLiteralValue() {
     if( _soundGenerator ) delete _soundGenerator;
 }
 
-SampleLiteralValue::SampleLiteralValue(SamplePlayer* samplePlayer) : LiteralValue(DataTypesId::Sample) {
+////////////////////////////////////////
+///     LiteralValue : Sample
+////////////////////////////////////////
+
+SampleLiteralValue::SampleLiteralValue(SamplePlayer* samplePlayer) :
+    LiteralValue(DataTypesId::Sample) {
     _samplePlayer = samplePlayer;
     _value = samplePlayer;
 }
@@ -153,12 +201,17 @@ SampleLiteralValue::~SampleLiteralValue() {
 ///     LinkedValue : Value
 ////////////////////////////////////////
 
-LinkedValue::LinkedValue(size_t codeReference) : Value(DataTypesId::Null), _codeReference(codeReference) {}
+LinkedValue::LinkedValue(size_t codeReference) :
+    Value(DataTypesId::Null),
+    _codeReference(codeReference) {}
 
 LinkedValue::~LinkedValue() {}
 
-LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* terminalExpressionsList){
-    if( terminalExpressionsList->empty() ) throw SyntaxException("Expected a value");
+LinkedValue* LinkedValue::generateLinkedValue(
+    list<TerminalExpression*>* terminalExpressionsList
+    ){
+    if( terminalExpressionsList->empty() )
+        throw SyntaxException("Expected a value");
 
     TerminalExpression* tmp = terminalExpressionsList->front();
 
@@ -188,7 +241,10 @@ LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* termina
     {
         auto it = terminalExpressionsList->begin();
         advance(it,1);
-        if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
+        if( it == terminalExpressionsList->end() )
+            throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
         tmp = *it;
         switch (tmp->getType()) {
         case cCast(ExpressionTypes::Addition):
@@ -213,7 +269,10 @@ LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* termina
     {
         auto it = terminalExpressionsList->begin();
         advance(it,1);
-        if(it == terminalExpressionsList->end()) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
+        if(it == terminalExpressionsList->end())
+            throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
         tmp = *it;
         if(
             tmp->getType() == cCast(ExpressionTypes::Equal) ||
@@ -238,7 +297,9 @@ LinkedValue* LinkedValue::generateLinkedValue(list<TerminalExpression*>* termina
     return ret;
 }
 
-LinkedValue* LinkedValue::detectOperation(list<TerminalExpression*>* terminalExpressionsList) {
+LinkedValue* LinkedValue::detectOperation(
+    list<TerminalExpression*>* terminalExpressionsList
+    ) {
     TerminalExpression* tmp = terminalExpressionsList->front();
 
     LinkedValue* ret;
@@ -247,19 +308,28 @@ LinkedValue* LinkedValue::detectOperation(list<TerminalExpression*>* terminalExp
 
     auto it = terminalExpressionsList->begin();
     advance(it,1);
-    if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
+    if( it == terminalExpressionsList->end() )
+        throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
     tmp = *it;
 
     if( tmp->getType() == cCast(ExpressionTypes::MemberAccess) )
     {
         advance(it,1);
-        if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+        if( it == terminalExpressionsList->end() )
+            throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
         tmp = *it;
 
-        if( tmp->getType() != cCast(ExpressionTypes::Name) ) throw SyntaxException("Expected a method name",tmp->getCodeReference());
+        if( tmp->getType() != cCast(ExpressionTypes::Name) )
+            throw SyntaxException("Expected a method name",tmp->getCodeReference());
 
         advance(it,1);
-        if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
+        if( it == terminalExpressionsList->end() )
+            throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
         tmp = *it;
 
         if( tmp->getType() != cCast(ExpressionTypes::OpenParenthesis) ) throw SyntaxException("Expected open pharentesis",tmp->getCodeReference());
@@ -270,19 +340,25 @@ LinkedValue* LinkedValue::detectOperation(list<TerminalExpression*>* terminalExp
         while(1)
         {
             advance(it,1);
-            if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
+            if( it == terminalExpressionsList->end() )
+                throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
             tmp = *it;
 
-            if( tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) ) {
+            if( tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) )
                 pharentesisCounter++;
-            }
+
             else if( tmp->getType() == cCast(ExpressionTypes::CloseParenthesis) )
             {
                 pharentesisCounter--;
                 if(pharentesisCounter == 0)
                 {
                     advance(it,1);
-                    if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
+                    if( it == terminalExpressionsList->end() )
+                        throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
                     tmp = *it;
 
                     switch (tmp->getType()) {
@@ -308,15 +384,11 @@ LinkedValue* LinkedValue::detectOperation(list<TerminalExpression*>* terminalExp
                 }
             }
             else if( tmp->getType() == cCast(ExpressionTypes::EOE) )
-            {
                 throw SyntaxException("Expected a closed pharentesis",tmp->getCodeReference());
-            }
         }
     }
     else
-    {
         ret = new NameLinkedValue(codeReference);
-    }
 
     return ret;
 }
@@ -326,12 +398,14 @@ size_t LinkedValue::getCodeReference() const {
 }
 
 ////////////////////////////////////////
-///     String
+///     LinkedValue : String
 ////////////////////////////////////////
 
 StringLinkedValue::StringLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
 
-void StringLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
+void StringLinkedValue::load(
+    list<TerminalExpression*>* terminalExpressionsList
+    ) {
     TerminalExpression* tmp = terminalExpressionsList->front();
     if( tmp->getType() != cCast(ExpressionTypes::String) ) throw SyntaxException("Expected a string",tmp->getCodeReference());
 
@@ -345,29 +419,38 @@ LiteralValue* StringLinkedValue::getValue() const {
 }
 
 ////////////////////////////////////////
-///     Null
+///     LinkedValue : Null
 ////////////////////////////////////////
 
-NullLinkedValue::NullLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
+NullLinkedValue::NullLinkedValue(size_t codeReference) :
+    LinkedValue(codeReference) {}
 
 LiteralValue* NullLinkedValue::getValue() const {
     return new NullLiteralValue();
 }
 
-void NullLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
-    if( terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::Null) ) throw SyntaxException("Expected null", terminalExpressionsList->front()->getCodeReference());
+void NullLinkedValue::load(
+    list<TerminalExpression*>* terminalExpressionsList
+    ) {
+    if( terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::Null) )
+        throw SyntaxException("Expected null", terminalExpressionsList->front()->getCodeReference());
+
     terminalExpressionsList->pop_front();
 }
 
 ////////////////////////////////////////
-///     Numeric
+///     LinkedValue : Numeric
 ////////////////////////////////////////
 
-NumericLinkedValue::NumericLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
+NumericLinkedValue::NumericLinkedValue(size_t codeReference) :
+    LinkedValue(codeReference) {}
 
-void NumericLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
+void NumericLinkedValue::load(
+    list<TerminalExpression*>* terminalExpressionsList
+    ) {
     TerminalExpression* tmp = terminalExpressionsList->front();
-    if( tmp->getType() != cCast(ExpressionTypes::Numeric) ) throw SyntaxException("Expected a numeric value",tmp->getCodeReference());
+    if( tmp->getType() != cCast(ExpressionTypes::Numeric) )
+        throw SyntaxException("Expected a numeric value",tmp->getCodeReference());
 
     _value = ((NumericExpression*)tmp)->getValue();
 
@@ -379,21 +462,22 @@ LiteralValue* NumericLinkedValue::getValue() const {
 }
 
 ////////////////////////////////////////
-///     MathOperation
+///     LinkedValue : MathOperation
 ////////////////////////////////////////
 
-MathOperationLinkedValue::MathOperationLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
+MathOperationLinkedValue::MathOperationLinkedValue(size_t codeReference) :
+    LinkedValue(codeReference) {}
 
-void MathOperationLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
+void MathOperationLinkedValue::load(
+    list<TerminalExpression*>* terminalExpressionsList
+    ) {
     TerminalExpression* tmp = terminalExpressionsList->front();
 
     stack<char> RPNStack;
 
     //Check if first element of operation is a plus or minus sign to consider it or not in the operation
     if ( tmp->getType() == cCast(ExpressionTypes::Addition) )
-    {
         terminalExpressionsList->pop_front();
-    }
     else if ( tmp->getType() == cCast(ExpressionTypes::Substract) )
     {
         _linkedValuesList.push_back(new NumericLinkedValue(tmp->getCodeReference()));
@@ -482,16 +566,18 @@ void MathOperationLinkedValue::load(list<TerminalExpression*>* terminalExpressio
                 RPNStack.pop();
             }
             if ( !RPNStack.empty() && RPNStack.top() == cCast(MathSymbols::OpenParenthesis) )
-            {
                 RPNStack.pop();
-            }
-            if ( RPNStack.empty() ) isValidExpression = false;
+            if ( RPNStack.empty() )
+                isValidExpression = false;
             break;
         case cCast(ExpressionTypes::Name):
         {
             auto it = terminalExpressionsList->begin();
             advance(it,1);
-            if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
+            if( it == terminalExpressionsList->end() )
+                throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
             tmp = *it;
             if (
                 tmp->getType() == cCast(ExpressionTypes::MemberAccess) ||
@@ -511,9 +597,7 @@ void MathOperationLinkedValue::load(list<TerminalExpression*>* terminalExpressio
                     terminalExpressionsList->push_front(nullptr);
                 }
                 else
-                {
                     throw SemanticException("Unrecognized name", tmp->getCodeReference());
-                }
             }
             break;
         }
@@ -541,19 +625,16 @@ void MathOperationLinkedValue::load(list<TerminalExpression*>* terminalExpressio
             RPNStack.pop();
         }
         else if ( RPNStack.top() == cCast(MathSymbols::OpenParenthesis) )
-        {
             throw SyntaxException("Expected )",tmp->getCodeReference());
-        }
         else
-        {
             throw SyntaxException("Invalid symbol at mathematical operation",tmp->getCodeReference());
-        }
     }
 }
 
 MathOperationLinkedValue::~MathOperationLinkedValue() {
     while( !_linkedValuesList.empty() ) {
-        delete _linkedValuesList.front();
+        if( _linkedValuesList.front() )
+            delete _linkedValuesList.front();
         _linkedValuesList.pop_front();
     }
 }
@@ -563,22 +644,20 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
 
     for( LinkedValue* linkedValue : _linkedValuesList )
     {
-        LiteralValue* literalValue = linkedValue->getValue();
+        unique_ptr<LiteralValue> literalValue = unique_ptr<LiteralValue>(linkedValue->getValue());
 
         switch (literalValue->getDataTypeId())
         {
         case DataTypesId::Numeric:
         case DataTypesId::Sound:
         case DataTypesId::String:
-            RPNStack.push(literalValue);
+            RPNStack.push(literalValue->clone());
             break;
         case DataTypesId::Operator:
         {
             if( RPNStack.empty() )
-            {
-                delete literalValue;
                 throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
-            }
+
             switch( RPNStack.top()->getDataTypeId() )
             {
             case DataTypesId::Numeric:
@@ -589,10 +668,7 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                 RPNStack.pop();
 
                 if( RPNStack.empty() )
-                {
-                    delete literalValue;
                     throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
-                }
 
                 switch( *(char*)literalValue->getValue() )
                 {
@@ -602,14 +678,19 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                     case DataTypesId::Numeric:
                     {
                         double op1 = *(double*)RPNStack.top()->getValue();
+
                         delete RPNStack.top();
                         RPNStack.pop();
+
                         RPNStack.push(new NumericLiteralValue(op1 + op2));
                         break;
                     }
                     default:
-                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                        delete literalValue;
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
                         throw SyntaxException(
                             "Invalid addition operation between a number and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
                             linkedValue->getCodeReference());
@@ -622,14 +703,19 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                     case DataTypesId::Numeric:
                     {
                         double op1 = *(double*)RPNStack.top()->getValue();
+
                         delete RPNStack.top();
                         RPNStack.pop();
+
                         RPNStack.push(new NumericLiteralValue(op1 - op2));
                         break;
                     }
                     default:
-                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                        delete literalValue;
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
                         throw SyntaxException(
                             "Invalid substraction operation between a number and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
                             linkedValue->getCodeReference());
@@ -642,23 +728,29 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                     case DataTypesId::Numeric:
                     {
                         double op1 = *(double*)RPNStack.top()->getValue();
+
                         delete RPNStack.top();
                         RPNStack.pop();
+
                         RPNStack.push(new NumericLiteralValue(op1 * op2));
                         break;
                     }
                     case DataTypesId::Sound:
                     {
-                        SoundGenerator* op1 = ((SoundGenerator*)RPNStack.top()->getValue())->clone();
+                        unique_ptr<SoundGenerator> op1 = unique_ptr<SoundGenerator>(((SoundGenerator*)RPNStack.top()->getValue())->clone());
+
                         delete RPNStack.top();
                         RPNStack.pop();
-                        op1 = op1->operator*(op2).clone();
-                        RPNStack.push(new SoundLiteralValue(op1));
+
+                        RPNStack.push(new SoundLiteralValue(op1->operator*(op2).clone()));
                         break;
                     }
                     default:
-                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                        delete literalValue;
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
                         throw SyntaxException(
                             "Invalid multiplication operation between a number and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
                             linkedValue->getCodeReference());
@@ -677,8 +769,11 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                         break;
                     }
                     default:
-                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                        delete literalValue;
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
                         throw SyntaxException(
                             "Invalid divition operation between a number and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
                             linkedValue->getCodeReference());
@@ -686,8 +781,11 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                     }
                     break;
                 default:
-                    while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                    delete literalValue;
+                    while(!RPNStack.empty())
+                    {
+                        delete RPNStack.top();
+                        RPNStack.pop();
+                    }
                     throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
                     break;
                 }
@@ -701,10 +799,7 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                 RPNStack.pop();
 
                 if( RPNStack.empty() )
-                {
-                    delete literalValue;
                     throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
-                }
 
                 switch( *(char*)literalValue->getValue() )
                 {
@@ -714,14 +809,19 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                     case DataTypesId::String:
                     {
                         string op1 = *(string*)RPNStack.top()->getValue();
+
                         delete RPNStack.top();
                         RPNStack.pop();
+
                         RPNStack.push(new StringLiteralValue(op1 + op2));
                         break;
                     }
                     default:
-                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                        delete literalValue;
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
                         throw SyntaxException(
                             "Invalid addition operation between a string and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
                             linkedValue->getCodeReference());
@@ -729,8 +829,11 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                     }
                     break;
                 default:
-                    while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                    delete literalValue;
+                    while(!RPNStack.empty())
+                    {
+                        delete RPNStack.top();
+                        RPNStack.pop();
+                    }
                     throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
                     break;
                 }
@@ -738,16 +841,13 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
             }
             case DataTypesId::Sound:
             {
-                SoundGenerator* op2 = ((SoundGenerator*)RPNStack.top()->getValue())->clone();
+                unique_ptr<SoundGenerator> op2 = unique_ptr<SoundGenerator>(((SoundGenerator*)RPNStack.top()->getValue())->clone());
 
                 delete RPNStack.top();
                 RPNStack.pop();
 
                 if( RPNStack.empty() )
-                {
-                    delete literalValue;
                     throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
-                }
 
                 switch( *(char*)literalValue->getValue() )
                 {
@@ -756,16 +856,20 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                     {
                     case DataTypesId::Sound:
                     {
-                        SoundGenerator* op1 = ((SoundGenerator*)RPNStack.top()->getValue())->clone();
+                        unique_ptr<SoundGenerator> op1(((SoundGenerator*)RPNStack.top()->getValue())->clone());
+
                         delete RPNStack.top();
                         RPNStack.pop();
-                        op1 = (*op1 + *op2).clone();
-                        RPNStack.push(new SoundLiteralValue(op1));
+
+                        RPNStack.push(new SoundLiteralValue((*op1 + *op2).clone()));
                         break;
                     }
                     default:
-                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                        delete literalValue;
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
                         throw SyntaxException(
                             "Invalid addition operation between a sound and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
                             linkedValue->getCodeReference());
@@ -779,24 +883,29 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                     case DataTypesId::Numeric:
                     {
                         double op1 = *(double*)RPNStack.top()->getValue();
+
                         delete RPNStack.top();
                         RPNStack.pop();
-                        op2 = op2->operator*(op1).clone();
-                        RPNStack.push(new SoundLiteralValue(op2));
+
+                        RPNStack.push(new SoundLiteralValue(op2->operator*(op1).clone()));
                         break;
                     }
                     case DataTypesId::Sound:
                     {
-                        SoundGenerator* op1 = ((SoundGenerator*)RPNStack.top()->getValue())->clone();
+                        unique_ptr<SoundGenerator> op1 = unique_ptr<SoundGenerator>(((SoundGenerator*)RPNStack.top()->getValue())->clone());
+
                         delete RPNStack.top();
                         RPNStack.pop();
-                        op1 = op1->operator*(*op2).clone();
-                        RPNStack.push(new SoundLiteralValue(op1));
+
+                        RPNStack.push(new SoundLiteralValue(op1->operator*(*op2).clone()));
                         break;
                     }
                     default:
-                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                        delete literalValue;
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
                         throw SyntaxException(
                             "Invalid multiplication operation between a sound and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
                             linkedValue->getCodeReference());
@@ -811,15 +920,19 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                     case DataTypesId::Numeric:
                     {
                         double op1 = *(double*)RPNStack.top()->getValue();
+
                         delete RPNStack.top();
                         RPNStack.pop();
-                        op2 = op2->operator/(op1).clone();
-                        RPNStack.push(new SoundLiteralValue(op2));
+
+                        RPNStack.push(new SoundLiteralValue(op2->operator/(op1).clone()));
                         break;
                     }
                     default:
-                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                        delete literalValue;
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
                         throw SyntaxException(
                             "Invalid divition operation between a number and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
                             linkedValue->getCodeReference());
@@ -828,42 +941,60 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                     break;
                 }
                 default:
-                    while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                    delete literalValue;
+                    while(!RPNStack.empty())
+                    {
+                        delete RPNStack.top();
+                        RPNStack.pop();
+                    }
                     throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
                     break;
                 }
                 break;
             }
             default:
-                while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                delete literalValue;
+                while(!RPNStack.empty())
+                {
+                    delete RPNStack.top();
+                    RPNStack.pop();
+                }
                 throw SyntaxException("Unknown literal value",linkedValue->getCodeReference());
                 break;
             }
             break;
         default:
-            while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-            delete literalValue;
+            while(!RPNStack.empty())
+            {
+                delete RPNStack.top();
+                RPNStack.pop();
+            }
             throw SyntaxException("Unknown literal value",linkedValue->getCodeReference());
             break;
         }
         }
     }
-    if ( RPNStack.empty() ) throw SyntaxException("Invalid number of operands",this->getCodeReference());
+
+    if ( RPNStack.empty() )
+        throw SyntaxException("Invalid number of operands",this->getCodeReference());
+
     LiteralValue* ret = RPNStack.top();
     RPNStack.pop();
-    if ( !RPNStack.empty() ) throw SyntaxException("Invalid number of operands",this->getCodeReference());
+
+    if ( !RPNStack.empty() )
+        throw SyntaxException("Invalid number of operands",this->getCodeReference());
+
     return ret;
 }
 
 ////////////////////////////////////////
-///     Operator
+///     LinkedValue : Operator
 ////////////////////////////////////////
 
-OperatorLinkedValue::OperatorLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
+OperatorLinkedValue::OperatorLinkedValue(size_t codeReference) :
+    LinkedValue(codeReference) {}
 
-void OperatorLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
+void OperatorLinkedValue::load(
+    list<TerminalExpression*>* terminalExpressionsList
+    ) {
     // NOT IMPLEMENTED
     terminalExpressionsList->pop_front();
 }
@@ -877,18 +1008,21 @@ LiteralValue * OperatorLinkedValue::getValue() const {
 }
 
 ////////////////////////////////////////
-///     BooleanOperator
+///     LinkedValue : BooleanOperator
 ////////////////////////////////////////
 
-BooleanOperationLinkedValue::BooleanOperationLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
+BooleanOperationLinkedValue::BooleanOperationLinkedValue(size_t codeReference) :
+    LinkedValue(codeReference) {}
 
-void BooleanOperationLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
+void BooleanOperationLinkedValue::load(
+    list<TerminalExpression*>* terminalExpressionsList
+    ) {
     TerminalExpression* tmp = terminalExpressionsList->front();
 
     stack<char> RPNStack;
 
     bool isValidExpression = true;
-    while(isValidExpression)
+    while( isValidExpression )
     {
         // Check each kind of valid expression and store using RPN in _linkedValuesList.
         switch ( tmp->getType() )
@@ -922,9 +1056,8 @@ void BooleanOperationLinkedValue::load(list<TerminalExpression*>* terminalExpres
             break;
         case cCast(ExpressionTypes::Equal):
             if ( !RPNStack.empty() && RPNStack.top() != cCast(BooleanSymbols::OpenParenthesis) && RPNStack.top() != cCast(BooleanSymbols::And) && RPNStack.top() != cCast(BooleanSymbols::Or) && RPNStack.top() != cCast(BooleanSymbols::Negation) )
-            {
                 throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
-            }
+
             if ( !RPNStack.empty() && RPNStack.top() == cCast(BooleanSymbols::Negation) )
             {
                 auto op = new OperatorLinkedValue(tmp->getCodeReference());
@@ -934,28 +1067,36 @@ void BooleanOperationLinkedValue::load(list<TerminalExpression*>* terminalExpres
             }
             terminalExpressionsList->pop_front();
             tmp = terminalExpressionsList->front();
+
             if ( tmp->getType() == cCast(ExpressionTypes::Equal) )
-            {
                 RPNStack.push(cCast(BooleanSymbols::Equal));
-            }
             else
-            {
                 throw SyntaxException("Expected symbol ==",tmp->getCodeReference());
-            }
+
             break;
         case cCast(ExpressionTypes::Negation):
         {
             auto it = terminalExpressionsList->begin();
             advance(it,1);
-            if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
+            if( it == terminalExpressionsList->end() )
+                throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
             tmp = *it;
+
             if ( tmp->getType() == cCast(ExpressionTypes::Equal) )
             {
-                if ( !RPNStack.empty() && RPNStack.top() != cCast(BooleanSymbols::OpenParenthesis) && RPNStack.top() != cCast(BooleanSymbols::And) && RPNStack.top() != cCast(BooleanSymbols::Or) && RPNStack.top() != cCast(BooleanSymbols::Negation) )
-                {
+                if (
+                    !RPNStack.empty() && RPNStack.top() != cCast(BooleanSymbols::OpenParenthesis) &&
+                    RPNStack.top() != cCast(BooleanSymbols::And) &&
+                    RPNStack.top() != cCast(BooleanSymbols::Or) &&
+                    RPNStack.top() != cCast(BooleanSymbols::Negation)
+                    )
                     throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
-                }
-                if ( !RPNStack.empty() && RPNStack.top() == cCast(BooleanSymbols::Negation) )
+
+                if (
+                    !RPNStack.empty() &&
+                    RPNStack.top() == cCast(BooleanSymbols::Negation) )
                 {
                     auto op = new OperatorLinkedValue(tmp->getCodeReference());
                     _linkedValuesList.push_back(op);
@@ -974,58 +1115,79 @@ void BooleanOperationLinkedValue::load(list<TerminalExpression*>* terminalExpres
             break;
         case cCast(ExpressionTypes::GreaterThan):
         {
-            if ( !RPNStack.empty() && RPNStack.top() != cCast(BooleanSymbols::OpenParenthesis) && RPNStack.top() != cCast(BooleanSymbols::And) && RPNStack.top() != cCast(BooleanSymbols::Or) && RPNStack.top() != cCast(BooleanSymbols::Negation) )
-            {
+            if (
+                !RPNStack.empty() &&
+                RPNStack.top() != cCast(BooleanSymbols::OpenParenthesis) &&
+                RPNStack.top() != cCast(BooleanSymbols::And) &&
+                RPNStack.top() != cCast(BooleanSymbols::Or) &&
+                RPNStack.top() != cCast(BooleanSymbols::Negation)
+                )
                 throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
-            }
-            if ( !RPNStack.empty() && RPNStack.top() == cCast(BooleanSymbols::Negation) )
+
+            if (
+                !RPNStack.empty() &&
+                RPNStack.top() == cCast(BooleanSymbols::Negation) )
             {
                 auto op = new OperatorLinkedValue(tmp->getCodeReference());
                 _linkedValuesList.push_back(op);
                 op->load(RPNStack.top());
                 RPNStack.pop();
             }
+
             auto it = terminalExpressionsList->begin();
             advance(it,1);
-            if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
+            if( it == terminalExpressionsList->end() )
+                throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
             tmp = *it;
+
             if( tmp->getType() == cCast(ExpressionTypes::Equal) )
             {
                 terminalExpressionsList->pop_front();
                 RPNStack.push(cCast(BooleanSymbols::GreaterEqual));
             }
             else
-            {
                 RPNStack.push(cCast(BooleanSymbols::Greater));
-            }
+
         }
             break;
         case cCast(ExpressionTypes::LessThan):
         {
-            if ( !RPNStack.empty() && RPNStack.top() != cCast(BooleanSymbols::OpenParenthesis) && RPNStack.top() != cCast(BooleanSymbols::And) && RPNStack.top() != cCast(BooleanSymbols::Or) && RPNStack.top() != cCast(BooleanSymbols::Negation) )
-            {
+            if (
+                !RPNStack.empty() &&
+                RPNStack.top() != cCast(BooleanSymbols::OpenParenthesis) &&
+                RPNStack.top() != cCast(BooleanSymbols::And) &&
+                RPNStack.top() != cCast(BooleanSymbols::Or) &&
+                RPNStack.top() != cCast(BooleanSymbols::Negation)
+                )
                 throw SyntaxException("Invalid bool operation",tmp->getCodeReference());
-            }
-            if ( !RPNStack.empty() && RPNStack.top() == cCast(BooleanSymbols::Negation) )
+
+            if (
+                !RPNStack.empty() &&
+                RPNStack.top() == cCast(BooleanSymbols::Negation) )
             {
                 auto op = new OperatorLinkedValue(tmp->getCodeReference());
                 _linkedValuesList.push_back(op);
                 op->load(RPNStack.top());
                 RPNStack.pop();
             }
+
             auto it = terminalExpressionsList->begin();
             advance(it,1);
-            if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
+            if( it == terminalExpressionsList->end() )
+                throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
             tmp = *it;
+
             if( tmp->getType() == cCast(ExpressionTypes::Equal) )
             {
                 terminalExpressionsList->pop_front();
                 RPNStack.push(cCast(BooleanSymbols::LessEqual));
             }
             else
-            {
                 RPNStack.push(cCast(BooleanSymbols::Less));
-            }
         }
             break;
         case cCast(ExpressionTypes::String):
@@ -1052,18 +1214,25 @@ void BooleanOperationLinkedValue::load(list<TerminalExpression*>* terminalExpres
             terminalExpressionsList->push_front(nullptr);
             break;
         case cCast(ExpressionTypes::CloseParenthesis):
-            while( !RPNStack.empty() && RPNStack.top() != cCast(BooleanSymbols::OpenParenthesis) )
+            while(
+                !RPNStack.empty() &&
+                RPNStack.top() != cCast(BooleanSymbols::OpenParenthesis) )
             {
                 auto op = new OperatorLinkedValue(tmp->getCodeReference());
                 _linkedValuesList.push_back(op);
                 op->load(RPNStack.top());
                 RPNStack.pop();
             }
-            if ( !RPNStack.empty() && RPNStack.top() == cCast(BooleanSymbols::OpenParenthesis))
-            {
+
+            if (
+                !RPNStack.empty() &&
+                RPNStack.top() == cCast(BooleanSymbols::OpenParenthesis)
+                )
                 RPNStack.pop();
-            }
-            if ( RPNStack.empty() ) isValidExpression = false;
+
+            if ( RPNStack.empty() )
+                isValidExpression = false;
+
             break;
         default:
             isValidExpression = false;
@@ -1094,20 +1263,17 @@ void BooleanOperationLinkedValue::load(list<TerminalExpression*>* terminalExpres
             RPNStack.pop();
         }
         else if ( RPNStack.top() == cCast(BooleanSymbols::OpenParenthesis) )
-        {
             throw SyntaxException("Expected )",tmp->getCodeReference());
-        }
         else
-        {
             throw SyntaxException("Invalid symbol at mathematical operation",tmp->getCodeReference());
-        }
     }
 }
 
 BooleanOperationLinkedValue::~BooleanOperationLinkedValue() {
     while( !_linkedValuesList.empty() )
     {
-        delete _linkedValuesList.front();
+        if( _linkedValuesList.front() )
+            delete _linkedValuesList.front();
         _linkedValuesList.pop_front();
     }
 }
@@ -1116,22 +1282,21 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
     stack<LiteralValue*> RPNStack;
     for( LinkedValue* linkedValue : _linkedValuesList )
     {
-        LiteralValue* literalValue = linkedValue->getValue();
+        unique_ptr<LiteralValue> literalValue = unique_ptr<LiteralValue>(linkedValue->getValue());
 
-        switch (literalValue->getDataTypeId()) {
+        switch( literalValue->getDataTypeId() )
+        {
         case DataTypesId::Numeric:
         case DataTypesId::String:
         case DataTypesId::Null:
         case DataTypesId::Boolean:
-            RPNStack.push(literalValue);
+            RPNStack.push(literalValue->clone());
             break;
         case DataTypesId::Operator:
         {
             if( RPNStack.empty() )
-            {
-                delete literalValue;
                 throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
-            }
+
             if( *(char*)literalValue->getValue() == cCast(BooleanSymbols::Negation) )
             {
                 if( RPNStack.top()->getDataTypeId() == DataTypesId::Boolean )
@@ -1142,39 +1307,48 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
                 else if( RPNStack.top()->getDataTypeId() == DataTypesId::Numeric )
                 {
                     double tmp = (*(double*)RPNStack.top()->getValue());
+
                     delete RPNStack.top();
                     RPNStack.pop();
+
                     RPNStack.push(new BooleanLiteralValue(tmp==0));
                 }
                 else if( RPNStack.top()->getDataTypeId() == DataTypesId::String )
                 {
                     string tmp = (*(string*)RPNStack.top()->getValue());
+
                     delete RPNStack.top();
                     RPNStack.pop();
+
                     RPNStack.push(new BooleanLiteralValue(tmp.empty()));
                 }
                 else
                 {
-                    while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                    delete literalValue;
+                    while(!RPNStack.empty())
+                    {
+                        delete RPNStack.top();
+                        RPNStack.pop();
+                    }
                     throw SemanticException("Invalid conversion to boolean",linkedValue->getCodeReference());
                 }
             }
             else
             {
-                switch ( RPNStack.top()->getDataTypeId() ) {
+                switch ( RPNStack.top()->getDataTypeId() )
+                {
                 case DataTypesId::Numeric:
                 {
                     double op1, op2 = *(double*)RPNStack.top()->getValue();
                     bool isBoolean = false,bop1, bop2 = op2;
+
                     delete RPNStack.top();
                     RPNStack.pop();
+
                     if( RPNStack.empty() )
-                    {
-                        delete literalValue;
                         throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
-                    }
-                    switch ( RPNStack.top()->getDataTypeId() ) {
+
+                    switch( RPNStack.top()->getDataTypeId() )
+                    {
                     case DataTypesId::Numeric:
                         op1 = *(double*)RPNStack.top()->getValue();
                         break;
@@ -1183,14 +1357,19 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
                         bop1 = *(bool*)RPNStack.top()->getValue();
                         break;
                     default:
-                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                        delete literalValue;
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
                         throw SyntaxException("Invalid conversion",linkedValue->getCodeReference());
                         break;
                     }
+
                     delete RPNStack.top();
                     RPNStack.pop();
-                    switch ( *(char*)literalValue->getValue() )
+
+                    switch( *(char*)literalValue->getValue() )
                     {
                     case cCast(BooleanSymbols::Or):
                         RPNStack.push(new BooleanLiteralValue(!isBoolean?op1||op2:bop1||bop2));
@@ -1207,8 +1386,11 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
                     case cCast(BooleanSymbols::Greater):
                         if( isBoolean )
                         {
-                            while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                            delete literalValue;
+                            while(!RPNStack.empty())
+                            {
+                                delete RPNStack.top();
+                                RPNStack.pop();
+                            }
                             throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
                         }
                         RPNStack.push(new BooleanLiteralValue(op1>op2));
@@ -1216,8 +1398,11 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
                     case cCast(BooleanSymbols::GreaterEqual):
                         if( isBoolean )
                         {
-                            while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                            delete literalValue;
+                            while(!RPNStack.empty())
+                            {
+                                delete RPNStack.top();
+                                RPNStack.pop();
+                            }
                             throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
                         }
                         RPNStack.push(new BooleanLiteralValue(op1>=op2));
@@ -1225,8 +1410,11 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
                     case cCast(BooleanSymbols::Less):
                         if( isBoolean )
                         {
-                            while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                            delete literalValue;
+                            while(!RPNStack.empty())
+                            {
+                                delete RPNStack.top();
+                                RPNStack.pop();
+                            }
                             throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
                         }
                         RPNStack.push(new BooleanLiteralValue(op1<op2));
@@ -1234,15 +1422,21 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
                     case cCast(BooleanSymbols::LessEqual):
                         if( isBoolean )
                         {
-                            while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                            delete literalValue;
+                            while(!RPNStack.empty())
+                            {
+                                delete RPNStack.top();
+                                RPNStack.pop();
+                            }
                             throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
                         }
                         RPNStack.push(new BooleanLiteralValue(op1<=op2));
                         break;
                     default:
-                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                        delete literalValue;
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
                         throw SyntaxException("Unknown operator",linkedValue->getCodeReference());
                         break;
                     }
@@ -1252,14 +1446,15 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
                 {
                     string op1, op2 = *(string*)RPNStack.top()->getValue();
                     bool isBoolean = false,bop1, bop2 = !op2.empty();
+
                     delete RPNStack.top();
                     RPNStack.pop();
+
                     if( RPNStack.empty() )
-                    {
-                        delete literalValue;
                         throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
-                    }
-                    switch ( RPNStack.top()->getDataTypeId() ) {
+
+                    switch( RPNStack.top()->getDataTypeId() )
+                    {
                     case DataTypesId::String:
                         op1 = *(string*)RPNStack.top()->getValue();
                         break;
@@ -1272,14 +1467,19 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
                         bop1 = false;
                         break;
                     default:
-                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                        delete literalValue;
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
                         throw SyntaxException("Invalid conversion",linkedValue->getCodeReference());
                         break;
                     }
+
                     delete RPNStack.top();
                     RPNStack.pop();
-                    switch ( *(char*)literalValue->getValue() )
+
+                    switch( *(char*)literalValue->getValue() )
                     {
                     case cCast(BooleanSymbols::Or):
                         RPNStack.push(new BooleanLiteralValue(!isBoolean?op1.empty()||op2.empty():bop2||bop2));
@@ -1294,8 +1494,11 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
                         RPNStack.push(new BooleanLiteralValue(!isBoolean?op1!=op2:bop1!=bop2));
                         break;
                     default:
-                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                        delete literalValue;
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
                         throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
                         break;
                     }
@@ -1304,14 +1507,15 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
                 case DataTypesId::Null:
                 {
                     bool bop1, bop2 = false;
+
                     delete RPNStack.top();
                     RPNStack.pop();
+
                     if( RPNStack.empty() )
-                    {
-                        delete literalValue;
                         throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
-                    }
-                    switch ( RPNStack.top()->getDataTypeId() ) {
+
+                    switch( RPNStack.top()->getDataTypeId() )
+                    {
                     case DataTypesId::String:
                         bop1 = !(*(string*)RPNStack.top()->getValue()).empty();
                         break;
@@ -1325,14 +1529,19 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
                         bop1 = *(double*)RPNStack.top()->getValue();
                         break;
                     default:
-                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                        delete literalValue;
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
                         throw SyntaxException("Invalid conversion",linkedValue->getCodeReference());
                         break;
                     }
+
                     delete RPNStack.top();
                     RPNStack.pop();
-                    switch ( *(char*)literalValue->getValue() )
+
+                    switch( *(char*)literalValue->getValue() )
                     {
                     case cCast(BooleanSymbols::Or):
                         RPNStack.push(new BooleanLiteralValue(bop2||bop2));
@@ -1347,8 +1556,11 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
                         RPNStack.push(new BooleanLiteralValue(bop1!=bop2));
                         break;
                     default:
-                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                        delete literalValue;
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
                         throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
                         break;
                     }
@@ -1357,14 +1569,15 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
                 case DataTypesId::Boolean:
                 {
                     bool bop1, bop2 = *(bool*)RPNStack.top()->getValue();
+
                     delete RPNStack.top();
                     RPNStack.pop();
+
                     if( RPNStack.empty() )
-                    {
-                        delete literalValue;
                         throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
-                    }
-                    switch ( RPNStack.top()->getDataTypeId() ) {
+
+                    switch( RPNStack.top()->getDataTypeId() )
+                    {
                     case DataTypesId::String:
                         bop1 = !(*(string*)RPNStack.top()->getValue()).empty();
                         break;
@@ -1378,14 +1591,19 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
                         bop1 = *(double*)RPNStack.top()->getValue();
                         break;
                     default:
-                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                        delete literalValue;
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
                         throw SyntaxException("Invalid conversion",linkedValue->getCodeReference());
                         break;
                     }
+
                     delete RPNStack.top();
                     RPNStack.pop();
-                    switch ( *(char*)literalValue->getValue() )
+
+                    switch( *(char*)literalValue->getValue() )
                     {
                     case cCast(BooleanSymbols::Or):
                         RPNStack.push(new BooleanLiteralValue(bop2||bop2));
@@ -1400,16 +1618,22 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
                         RPNStack.push(new BooleanLiteralValue(bop1!=bop2));
                         break;
                     default:
-                        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                        delete literalValue;
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
                         throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
                         break;
                     }
                 }
                     break;
                 default:
-                    while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-                    delete literalValue;
+                    while(!RPNStack.empty())
+                    {
+                        delete RPNStack.top();
+                        RPNStack.pop();
+                    }
                     throw SyntaxException("Unknown literal value",linkedValue->getCodeReference());
                     break;
                 }
@@ -1420,52 +1644,63 @@ LiteralValue* BooleanOperationLinkedValue::getValue() const {
             string errorDescription = "Invalid convertion from ";
             errorDescription.append(DataType::getDataTypeString(literalValue->getDataTypeId()));
             errorDescription.append(" to boolean");
-            while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
-            delete literalValue;
+            while(!RPNStack.empty())
+            {
+                delete RPNStack.top();
+                RPNStack.pop();
+            }
             throw SemanticException(errorDescription,linkedValue->getCodeReference());
             break;
         }
     }
-    if ( RPNStack.empty() ) throw SyntaxException("Invalid number of operands",this->getCodeReference());
+
+    if ( RPNStack.empty() )
+        throw SyntaxException("Invalid number of operands",this->getCodeReference());
+
     bool ret = *(bool*)RPNStack.top()->getValue();
+
     delete RPNStack.top();
     RPNStack.pop();
+
     if ( !RPNStack.empty() )
     {
-        while(!RPNStack.empty()) {delete RPNStack.top();RPNStack.pop();}
+        while(!RPNStack.empty())
+        {
+            delete RPNStack.top();
+            RPNStack.pop();
+        }
         throw SyntaxException("Invalid number of operands",this->getCodeReference());
     }
     return new BooleanLiteralValue(ret);
 }
 
 ////////////////////////////////////////
-///     Array
+///     LinkedValue : Array
 ////////////////////////////////////////
 
-ArrayLinkedValue::ArrayLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
+ArrayLinkedValue::ArrayLinkedValue(size_t codeReference) :
+    LinkedValue(codeReference) {}
 
-void ArrayLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
+void ArrayLinkedValue::load(
+    list<TerminalExpression*>* terminalExpressionsList
+    ) {
     TerminalExpression* tmp = terminalExpressionsList->front();
 
     if( tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) )
-    {
         _type = DataTypesId::Argument;
-    }
     else if ( tmp->getType() == cCast(ExpressionTypes::OpenBracket) )
-    {
         _type = DataTypesId::Array;
-    }
     else
-    {
         throw SyntaxException("Expected ( or [",tmp->getCodeReference());
-    }
+
     terminalExpressionsList->pop_front();
 
     bool isValidValue = true;
+
     while( isValidValue )
     {
         tmp = terminalExpressionsList->front();
-        switch ( tmp->getType() )
+        switch( tmp->getType() )
         {
         case cCast(ExpressionTypes::String):
             _linkedValuesList.push_back(new StringLinkedValue(tmp->getCodeReference()));
@@ -1494,9 +1729,13 @@ void ArrayLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) 
         {
             auto it = terminalExpressionsList->begin();
             advance(it,1);
-            if(it == terminalExpressionsList->end()) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
+            if(it == terminalExpressionsList->end())
+                throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
             tmp = *it;
-            switch ( tmp->getType() )
+
+            switch( tmp->getType() )
             {
             case cCast(ExpressionTypes::Addition):
             case cCast(ExpressionTypes::Substract):
@@ -1523,8 +1762,12 @@ void ArrayLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) 
         {
             auto it = terminalExpressionsList->begin();
             advance(it,1);
-            if( it == terminalExpressionsList->end() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
+            if( it == terminalExpressionsList->end() )
+                throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+
             tmp = *it;
+
             if(
                 tmp->getType() == cCast(ExpressionTypes::Equal) ||
                 tmp->getType() == cCast(ExpressionTypes::GreaterThan) ||
@@ -1558,39 +1801,57 @@ void ArrayLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) 
 
 ArrayLinkedValue::~ArrayLinkedValue() {
     while ( !_linkedValuesList.empty() ) {
-        delete _linkedValuesList.front();
+        if( _linkedValuesList.front() )
+            delete _linkedValuesList.front();
         _linkedValuesList.pop_front();
     }
 }
 
 LiteralValue* ArrayLinkedValue::getValue() const {
     list<LiteralValue*> literalValuesList;
-    for( LinkedValue* linkedValue : _linkedValuesList ) {
+
+    for( LinkedValue* linkedValue : _linkedValuesList )
         literalValuesList.push_back(linkedValue->getValue());
-    }
-    if( _type == DataTypesId::Array ) return new ArrayLiteralValue(literalValuesList);
+
+    if( _type == DataTypesId::Array )
+        return new ArrayLiteralValue(literalValuesList);
+
     return new ArgumentLiteralValue(literalValuesList);
 }
 
 #include "functiondefinition.h"
 
 ////////////////////////////////////////
-///     Execution
+///     LinkedValue : Execution
 ////////////////////////////////////////
 
-ExecutionLinkedValue::ExecutionLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
+ExecutionLinkedValue::ExecutionLinkedValue(size_t codeReference) :
+    LinkedValue(codeReference) {}
 
-void ExecutionLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
+void ExecutionLinkedValue::load(
+    list<TerminalExpression*>* terminalExpressionsList
+    ) {
     TerminalExpression* tmp = terminalExpressionsList->front();
 
-    if ( tmp->getType() != cCast(ExpressionTypes::Name) ) throw SyntaxException("Expected a name", tmp->getCodeReference());
+    if( tmp->getType() != cCast(ExpressionTypes::Name) )
+        throw SyntaxException("Expected a name", tmp->getCodeReference());
 
     _name = ((NameExpression*)tmp)->getName();
-    if ( !Context::getInstance()->isValidName(_name) ) throw SyntaxException("Invalid name",tmp->getCodeReference());
-    if ( !Context::getInstance()->nameExist(_name) && !Context::getInstance()->functionNameExist(_name) ) throw SemanticException("Unrecognized name",tmp->getCodeReference());
+
+    if( !Context::getInstance()->isValidName(_name) )
+        throw SyntaxException("Invalid name",tmp->getCodeReference());
+
+    if(
+        !Context::getInstance()->nameExist(_name) &&
+        !Context::getInstance()->functionNameExist(_name)
+        )
+        throw SemanticException("Unrecognized name",tmp->getCodeReference());
 
     terminalExpressionsList->pop_front();
-    if ( terminalExpressionsList->empty() ) throw SyntaxException("Expected arguments",tmp->getCodeReference());
+
+    if( terminalExpressionsList->empty() )
+        throw SyntaxException("Expected arguments",tmp->getCodeReference());
+
     tmp = terminalExpressionsList->front();
 
     if ( tmp->getType() == cCast(ExpressionTypes::OpenParenthesis) )
@@ -1600,39 +1861,46 @@ void ExecutionLinkedValue::load(list<TerminalExpression*>* terminalExpressionsLi
         aux->load(terminalExpressionsList);
     }
     bool isValidMethod = true;
-    while(isValidMethod)
+    while( isValidMethod )
     {
         if( tmp->getType() == cCast(ExpressionTypes::MemberAccess) )
         {
             terminalExpressionsList->pop_front();
-            if ( terminalExpressionsList->empty() ) throw SyntaxException("Expected arguments",tmp->getCodeReference());
+
+            if ( terminalExpressionsList->empty() )
+                throw SyntaxException("Expected arguments",tmp->getCodeReference());
+
             tmp = terminalExpressionsList->front();
 
-            if ( tmp->getType() != cCast(ExpressionTypes::Name) ) throw SyntaxException("Expected a name", tmp->getCodeReference());
+            if ( tmp->getType() != cCast(ExpressionTypes::Name) )
+                throw SyntaxException("Expected a name", tmp->getCodeReference());
 
             string name = ((NameExpression*)tmp)->getName();
 
             terminalExpressionsList->pop_front();
-            if ( terminalExpressionsList->empty() ) throw SyntaxException("Expected (",tmp->getCodeReference());
+
+            if ( terminalExpressionsList->empty() )
+                throw SyntaxException("Expected (",tmp->getCodeReference());
+
             tmp = terminalExpressionsList->front();
 
-            if ( tmp->getType() != cCast(ExpressionTypes::OpenParenthesis) ) throw SyntaxException("Expected (",tmp->getCodeReference());
+            if ( tmp->getType() != cCast(ExpressionTypes::OpenParenthesis) )
+                throw SyntaxException("Expected (",tmp->getCodeReference());
 
             ArrayLinkedValue* aux = new ArrayLinkedValue(tmp->getCodeReference());
             _methodsList.push_back(tuple<string,ArrayLinkedValue*>(name,aux));
             aux->load(terminalExpressionsList);
         }
         else
-        {
             isValidMethod = false;
-        }
     }
 }
 
 ExecutionLinkedValue::~ExecutionLinkedValue() {
     while( !_methodsList.empty() )
     {
-        delete get<1>(_methodsList.front());
+        if( get<1>(_methodsList.front()) )
+            delete get<1>(_methodsList.front());
         _methodsList.pop_front();
     }
 }
@@ -1641,18 +1909,16 @@ LiteralValue* ExecutionLinkedValue::getValue() const {
     if( _name == get<0>(_methodsList.front()) )
     {
         if( !Context::getInstance()->executeFunction(_name,get<1>(_methodsList.front())->getValue()) )
-        {
             throw SemanticException("Unknown function name", this->getCodeReference());
-        }
     }
     else
     {
         for( auto method : _methodsList )
         {
-            if( !Context::getInstance()->executeMethod(_name,get<0>(method),get<1>(method)->getValue()) )
-            {
+            unique_ptr<LiteralValue> args = unique_ptr<LiteralValue>(get<1>(method)->getValue());
+
+            if( !Context::getInstance()->executeMethod(_name,get<0>(method),args.get()) )
                 throw SyntaxException("Unknown method name",get<1>(method)->getCodeReference());
-            }
         }
     }
 
@@ -1660,17 +1926,27 @@ LiteralValue* ExecutionLinkedValue::getValue() const {
 }
 
 ////////////////////////////////////////
-///     Name
+///     LinkedValue : Name
 ////////////////////////////////////////
 
-NameLinkedValue::NameLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
+NameLinkedValue::NameLinkedValue(size_t codeReference) :
+    LinkedValue(codeReference) {}
 
-void NameLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList){
-    if ( terminalExpressionsList->empty() ) throw SyntaxException("Expected a name");
+void NameLinkedValue::load(
+    list<TerminalExpression*>* terminalExpressionsList
+    ){
+    if( terminalExpressionsList->empty() )
+        throw SyntaxException("Expected a name");
+
     NameExpression* nameExpression = (NameExpression*)terminalExpressionsList->front();
     _name = nameExpression->getName();
-    if ( !Context::getInstance()->isValidName(_name) ) throw SyntaxException("Invalid name",nameExpression->getCodeReference());
-    if ( !Context::getInstance()->nameExist(_name) ) throw SemanticException("Unrecognized name",nameExpression->getCodeReference());
+
+    if( !Context::getInstance()->isValidName(_name) )
+        throw SyntaxException("Invalid name",nameExpression->getCodeReference());
+
+    if( !Context::getInstance()->nameExist(_name) )
+        throw SemanticException("Unrecognized name",nameExpression->getCodeReference());
+
     terminalExpressionsList->pop_front();
 }
 
@@ -1679,16 +1955,21 @@ LiteralValue* NameLinkedValue::getValue() const {
 }
 
 ////////////////////////////////////////
-///     BooleanValue
+///     LinkedValue : BooleanValue
 ////////////////////////////////////////
 
-BooleanLinkedValue::BooleanLinkedValue(size_t codeReference) : LinkedValue(codeReference) {}
+BooleanLinkedValue::BooleanLinkedValue(size_t codeReference) :
+    LinkedValue(codeReference) {}
 
-void BooleanLinkedValue::load(list<TerminalExpression*>* terminalExpressionsList) {
+void BooleanLinkedValue::load(
+    list<TerminalExpression*>* terminalExpressionsList
+    ) {
     TerminalExpression* tmp = terminalExpressionsList->front();
-    if( tmp->getType() != cCast(ExpressionTypes::Boolean) ) throw SyntaxException("Expected a boolean value",tmp->getCodeReference());
 
-    _value= ((BooleanExpression*)tmp)->getValue();
+    if( tmp->getType() != cCast(ExpressionTypes::Boolean) )
+        throw SyntaxException("Expected a boolean value",tmp->getCodeReference());
+
+    _value = ((BooleanExpression*)tmp)->getValue();
 
     terminalExpressionsList->pop_front();
 }

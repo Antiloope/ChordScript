@@ -14,8 +14,9 @@ public:
     void increaseTick(unsigned long ticks);
     bool configure(unsigned long sampleRate, unsigned long bufferSize);
     tick_t getCurrentTick() const;
-    tick_t msToTicks(unsigned long time_ms);
-    unsigned long ticksToMs(tick_t);
+    tick_t msToTicks(unsigned long time_ms) const;
+    tick_t segToTicks(unsigned long time_seg) const;
+    unsigned long ticksToMs(tick_t) const;
 private:
     TimeHandler();
     static TimeHandler *instance;

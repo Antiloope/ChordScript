@@ -222,7 +222,9 @@ public:
     const AudioFile<float>* getAudioFile(string) const;
 
     void setReturnValue(LiteralValue*);
+    void setReturnValue();
     LiteralValue* getReturnValue() const;
+    bool existReturnValue() const;
 private:
     static Context* _instance;
     Context();

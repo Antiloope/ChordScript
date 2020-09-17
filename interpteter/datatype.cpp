@@ -1,6 +1,7 @@
 #include "datatype.h"
 #include "languageConstants.h"
 #include "context.h"
+#include <memory>
 
 using namespace CS;
 using namespace CS::constants;
@@ -40,34 +41,63 @@ DataType::DataType() {}
 
 DataType::~DataType() {}
 
-bool DataType::executeMethod(string methodName,LiteralValue* value,LiteralValue* arguments) {
-    if( _methods.find(methodName) == _methods.end() ) return false;
+bool DataType::executeMethod(
+    string methodName,
+    const LiteralValue* value,
+    const LiteralValue* arguments
+    ) {
+
+    if( _methods.find(methodName) == _methods.end() )
+        return false;
+
     auto method = _methods.find(methodName)->second;
 
     LiteralValue* returnValue = method(value,arguments);
-    if( !returnValue ) return false;
+    if( !returnValue )
+        return false;
 
     Context::getInstance()->setReturnValue(returnValue);
+
+    delete returnValue;
+
     return true;
 }
 
 SampleDataType::SampleDataType() {
-    _methods.insert(pair<string,methodFunction_t>("play",&SampleDataType::play));
-    _methods.insert(pair<string,methodFunction_t>("stop",&SampleDataType::stop));
-    _methods.insert(pair<string,methodFunction_t>("setPanning",&SampleDataType::setPanning));
+    _methods.insert(
+        pair<string,methodFunction_t>(
+            "play",
+            &SampleDataType::play)
+        );
+    _methods.insert(
+        pair<string,methodFunction_t>(
+            "stop",
+            &SampleDataType::stop)
+        );
+    _methods.insert(
+        pair<string,methodFunction_t>(
+            "setPanning",
+            &SampleDataType::setPanning)
+        );
 }
 
 SampleDataType::~SampleDataType() {}
 
-LiteralValue* SampleDataType::stop(LiteralValue* value,LiteralValue* args) {
-    if( args->getDataTypeId() != DataTypesId::Argument ) return nullptr;
+LiteralValue* SampleDataType::stop(
+    const LiteralValue* value,
+    const LiteralValue* args
+    ) {
+
+    if( args->getDataTypeId() != DataTypesId::Argument )
+        return nullptr;
 
     auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
     if( !argumentValues->empty() )
-    {
         return nullptr;
-    }
+
+    if( !value )
+        return nullptr;
 
     SamplePlayer* player = (SamplePlayer*)value->getValue();
 
@@ -76,10 +106,18 @@ LiteralValue* SampleDataType::stop(LiteralValue* value,LiteralValue* args) {
     return new NullLiteralValue();
 }
 
-LiteralValue* SampleDataType::play(LiteralValue* value, LiteralValue* args) {
-    if( args->getDataTypeId() != DataTypesId::Argument ) return nullptr;
+LiteralValue* SampleDataType::play(
+    const LiteralValue* value,
+    const LiteralValue* args
+    ) {
+
+    if( args->getDataTypeId() != DataTypesId::Argument )
+        return nullptr;
 
     auto argumentValues = (list<LiteralValue*>*)args->getValue();
+
+    if( !value )
+        return nullptr;
 
     SamplePlayer* player = (SamplePlayer*)value->getValue();
 
@@ -113,7 +151,9 @@ LiteralValue* SampleDataType::play(LiteralValue* value, LiteralValue* args) {
         double duration = player->getDurationInSeconds();
         for( ; it != argumentValues->end(); it++ )
         {
-            list<LiteralValue*>* argumentList = (list<LiteralValue*>*)((ArgumentLiteralValue*)(*it))->getValue();
+            list<LiteralValue*>* argumentList =
+                (list<LiteralValue*>*)((ArgumentLiteralValue*)(*it))->getValue();
+
             auto argIt = argumentList->begin();
 
             if( (*argIt)->getDataTypeId() != DataTypesId::Numeric )
@@ -128,7 +168,7 @@ LiteralValue* SampleDataType::play(LiteralValue* value, LiteralValue* args) {
             if( argIt == argumentList->end() )
             {
                 player->play(timeFactor, startTick);
-                startTick += TimeHandler::getInstance()->msToTicks(duration*1000);
+                startTick += TimeHandler::getInstance()->segToTicks(duration);
                 continue;
             }
 
@@ -147,11 +187,11 @@ LiteralValue* SampleDataType::play(LiteralValue* value, LiteralValue* args) {
             }
             if( preFactor == 0 )
             {
-                startTick += TimeHandler::getInstance()->msToTicks(timeFactor*1000);
+                startTick += TimeHandler::getInstance()->segToTicks(timeFactor);
                 continue;
             }
             player->play(timeFactor,startTick);
-            startTick += TimeHandler::getInstance()->msToTicks(duration*preFactor*1000);
+            startTick += TimeHandler::getInstance()->segToTicks(duration*preFactor);
         }
         break;
     }
@@ -163,22 +203,23 @@ LiteralValue* SampleDataType::play(LiteralValue* value, LiteralValue* args) {
     return new NullLiteralValue();
 }
 
-LiteralValue* SampleDataType::setPanning(LiteralValue* value, LiteralValue* args) {
-    if( args->getDataTypeId() != DataTypesId::Argument ) return nullptr;
+LiteralValue* SampleDataType::setPanning(
+    const LiteralValue* value,
+    const LiteralValue* args
+    ) {
 
-    auto argumentValues = (list<LiteralValue*>*)args->getValue();
+    if( args->getDataTypeId() != DataTypesId::Argument )
+        return nullptr;
+
+    const auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
     SamplePlayer* player = (SamplePlayer*)value->getValue();
 
     if( argumentValues->empty() )
-    {
         throw SemanticException("Invalid call of method setPanning without arguments.");
-    }
 
     if( argumentValues->size() > 1 )
-    {
         throw SemanticException("Invalid call of method setPanning more than one parameter.");
-    }
 
     switch( argumentValues->front()->getDataTypeId() )
     {
@@ -215,10 +256,26 @@ LiteralValue* SampleDataType::cast(LiteralValue* value) const {
 }
 
 SoundDataType::SoundDataType() {
-    _methods.insert(pair<string,methodFunction_t>("play",&SoundDataType::play));
-    _methods.insert(pair<string,methodFunction_t>("stop",&SoundDataType::stop));
-    _methods.insert(pair<string,methodFunction_t>("setPanning",&SoundDataType::setPanning));
-    _methods.insert(pair<string,methodFunction_t>("constantFreq",&SoundDataType::constantFreq));
+    _methods.insert(
+        pair<string,methodFunction_t>(
+            "play",
+            &SoundDataType::play)
+        );
+    _methods.insert(
+        pair<string,methodFunction_t>(
+            "stop",
+            &SoundDataType::stop)
+        );
+    _methods.insert(
+        pair<string,methodFunction_t>(
+            "setPanning",
+            &SoundDataType::setPanning)
+        );
+    _methods.insert(
+        pair<string,methodFunction_t>(
+            "constantFreq",
+            &SoundDataType::constantFreq)
+        );
 }
 
 SoundDataType::~SoundDataType() {}
@@ -235,15 +292,21 @@ LiteralValue* SoundDataType::cast(LiteralValue* value) const {
     }
 }
 
-LiteralValue* SoundDataType::stop(LiteralValue* value,LiteralValue* args) {
-    if( args->getDataTypeId() != DataTypesId::Argument ) return nullptr;
+LiteralValue* SoundDataType::stop(
+    const LiteralValue* value,
+    const LiteralValue* args
+    ) {
 
-    auto argumentValues = (list<LiteralValue*>*)args->getValue();
+    if( args->getDataTypeId() != DataTypesId::Argument )
+        return nullptr;
+
+    const auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
     if( !argumentValues->empty() )
-    {
         return nullptr;
-    }
+
+    if( !value )
+        return nullptr;
 
     SoundGenerator* generator = (SoundGenerator*)value->getValue();
 
@@ -252,10 +315,18 @@ LiteralValue* SoundDataType::stop(LiteralValue* value,LiteralValue* args) {
     return new NullLiteralValue();
 }
 
-LiteralValue* SoundDataType::play(LiteralValue* value, LiteralValue* args) {
-    if( args->getDataTypeId() != DataTypesId::Argument ) return nullptr;
+LiteralValue* SoundDataType::play(
+    const LiteralValue* value,
+    const LiteralValue* args
+    ) {
+
+    if( args->getDataTypeId() != DataTypesId::Argument )
+        return nullptr;
 
     auto argumentValues = (list<LiteralValue*>*)args->getValue();
+
+    if( !value )
+        return nullptr;
 
     SoundGenerator* generator = (SoundGenerator*)value->getValue();
 
@@ -273,12 +344,14 @@ LiteralValue* SoundDataType::play(LiteralValue* value, LiteralValue* args) {
     {
     case DataTypesId::Array:
     {
-        list<LiteralValue*>* arrayValues = (list<LiteralValue*>*)((ArrayLiteralValue*)(*it))->getValue();
+        const list<LiteralValue*>* arrayValues = (list<LiteralValue*>*)((ArrayLiteralValue*)(*it))->getValue();
         list<double> freqList;
 
         for(auto arrayIt = arrayValues->begin(); arrayIt != arrayValues->end(); arrayIt++)
         {
-            if( (*arrayIt)->getDataTypeId() != DataTypesId::Numeric ) return nullptr;
+            if( (*arrayIt)->getDataTypeId() != DataTypesId::Numeric )
+                return nullptr;
+
             freqList.push_back(*(double*)(*arrayIt)->getValue());
         }
         it++;
@@ -289,16 +362,13 @@ LiteralValue* SoundDataType::play(LiteralValue* value, LiteralValue* args) {
         }
 
         if( (*it)->getDataTypeId() != DataTypesId::Numeric )
-        {
             return nullptr;
-        }
 
         double duration = *(double*)(*it)->getValue();
         it++;
+
         if( it != argumentValues->end() )
-        {
             return nullptr;
-        }
 
         generator->play(freqList,duration,startTick);
         break;
@@ -307,7 +377,7 @@ LiteralValue* SoundDataType::play(LiteralValue* value, LiteralValue* args) {
     {
         for( ; it != argumentValues->end(); it++ )
         {
-            list<LiteralValue*>* argumentList = (list<LiteralValue*>*)((ArgumentLiteralValue*)(*it))->getValue();
+            const list<LiteralValue*>* argumentList = (list<LiteralValue*>*)((ArgumentLiteralValue*)(*it))->getValue();
             auto argIt = argumentList->begin();
 
             if( (*argIt)->getDataTypeId() != DataTypesId::Array )
@@ -316,10 +386,10 @@ LiteralValue* SoundDataType::play(LiteralValue* value, LiteralValue* args) {
                 return nullptr;
             }
 
-            list<LiteralValue*>* arrayValues = (list<LiteralValue*>*)((ArrayLiteralValue*)(*argIt))->getValue();
+            const list<LiteralValue*>* arrayValues = (list<LiteralValue*>*)((ArrayLiteralValue*)(*argIt))->getValue();
             list<double> freqList;
 
-            for(auto arrayIt = arrayValues->begin(); arrayIt != arrayValues->end(); arrayIt++)
+            for( auto arrayIt = arrayValues->begin(); arrayIt != arrayValues->end(); arrayIt++ )
             {
                 if( (*arrayIt)->getDataTypeId() != DataTypesId::Numeric )
                 {
@@ -343,6 +413,7 @@ LiteralValue* SoundDataType::play(LiteralValue* value, LiteralValue* args) {
 
             double duration = *(double*)(*argIt)->getValue();
             argIt++;
+
             if( argIt != argumentList->end() )
             {
                 generator->stop();
@@ -350,7 +421,7 @@ LiteralValue* SoundDataType::play(LiteralValue* value, LiteralValue* args) {
             }
 
             generator->play(freqList,duration,startTick);
-            startTick += TimeHandler::getInstance()->msToTicks(duration*1000);
+            startTick += TimeHandler::getInstance()->segToTicks(duration);
         }
         break;
     }
@@ -362,22 +433,26 @@ LiteralValue* SoundDataType::play(LiteralValue* value, LiteralValue* args) {
     return new NullLiteralValue();
 }
 
-LiteralValue* SoundDataType::setPanning(LiteralValue* value, LiteralValue* args) {
-    if( args->getDataTypeId() != DataTypesId::Argument ) return nullptr;
+LiteralValue* SoundDataType::setPanning(
+    const LiteralValue* value,
+    const LiteralValue* args
+    ) {
 
-    auto argumentValues = (list<LiteralValue*>*)args->getValue();
+    if( args->getDataTypeId() != DataTypesId::Argument )
+        return nullptr;
+
+    const auto argumentValues = (list<LiteralValue*>*)args->getValue();
+
+    if( !value )
+        return nullptr;
 
     SoundGenerator* generator = (SoundGenerator*)value->getValue();
 
     if( argumentValues->empty() )
-    {
         throw SemanticException("Invalid call of method setPanning without arguments.");
-    }
 
     if( argumentValues->size() > 1 )
-    {
         throw SemanticException("Invalid call of method setPanning more than one parameter.");
-    }
 
     switch( argumentValues->front()->getDataTypeId() )
     {
@@ -401,24 +476,26 @@ LiteralValue* SoundDataType::setPanning(LiteralValue* value, LiteralValue* args)
     return new NullLiteralValue();
 }
 
-LiteralValue* SoundDataType::constantFreq(LiteralValue* value, LiteralValue* args) {
-    if( args->getDataTypeId() != DataTypesId::Argument ) return nullptr;
+LiteralValue* SoundDataType::constantFreq(
+    const LiteralValue* value,
+    const LiteralValue* args
+    ) {
 
-    auto argumentValues = (list<LiteralValue*>*)args->getValue();
+    if( args->getDataTypeId() != DataTypesId::Argument )
+        return nullptr;
 
-    SoundGenerator* generator = ((SoundGenerator*)value->getValue())->clone();
+    const auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
-    SoundLiteralValue* ret = new SoundLiteralValue(generator);
+    if( !value )
+        return nullptr;
 
     if( argumentValues->empty() )
-    {
         throw SemanticException("Invalid call of method constantFreq without arguments.");
-    }
 
     if( argumentValues->size() > 1 )
-    {
         throw SemanticException("Invalid call of method constantFreq more than one parameter.");
-    }
+
+    unique_ptr<SoundGenerator> generator = unique_ptr<SoundGenerator>(((SoundGenerator*)value->getValue())->clone());
 
     switch( argumentValues->front()->getDataTypeId() )
     {
@@ -439,7 +516,7 @@ LiteralValue* SoundDataType::constantFreq(LiteralValue* value, LiteralValue* arg
         break;
     }
 
-    return ret;
+    return new SoundLiteralValue(generator->clone());
 }
 
 NumericDataType::NumericDataType() {}
@@ -523,13 +600,9 @@ LiteralValue* BooleanDataType::cast(LiteralValue* value) const {
         string returnValue = *(string*)value->getValue();
         bool tmp;
         if( returnValue.length() )
-        {
             tmp = true;
-        }
         else
-        {
             tmp = false;
-        }
         delete value;
         return new BooleanLiteralValue(tmp);
     }

@@ -6,6 +6,8 @@
 #include "uimanager.h"
 #include "uidefinitions.h"
 #include <iostream>
+#include <thread>
+#include <mutex>
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -57,6 +59,8 @@ const QString SERVER_RESTART_ACTION_TITLE = QString::fromUtf8("&Restart Server")
 const QString SERVER_RECORD_ACTION_TITLE = QString::fromUtf8("Recording");
 
 }
+
+atomic_flag flag = ATOMIC_FLAG_INIT;
 
 MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     : QMainWindow(parent), _manager(manager) {
@@ -345,7 +349,7 @@ void MainInterface::stopButton() {
 }
 
 void MainInterface::openFile() {
-    this->_editor->setPlainText("sound a = S_SIN;\na.play([440],1);\n");
+    this->_editor->setPlainText("sound a = S_SIN+S_SIN.constantFreq(1000);\na.play([440],1);\n");
 }
 
 void MainInterface::exit() {
@@ -353,26 +357,30 @@ void MainInterface::exit() {
 }
 
 void MainInterface::playButton() {
-    string code = _editor->getText().replace(QRegExp("[ \t]")," ").toStdString();
-    try {
-        _interpreter->interpret(code);
-    } catch (CS::SyntaxException& e) {
-        string log = e.what();
-        log += ". At character: " + to_string(e.getCharacterRefference()) + ". Close to: ";
-        log += e.getCharacterRefference()==0?"":&code[e.getCharacterRefference()-1];
-        log += code[e.getCharacterRefference()];
-        log += e.getCharacterRefference()>=code.size()-1?"":&code[e.getCharacterRefference()+1];
-        CS::Log::getInstance().write(log,CS::Log::info_t);
-    } catch (CS::SemanticException& e) {
-        string log = e.what();
-        log += ". At character: " + to_string(e.getCharacterRefference()) + ". Close to: ";
-        log += e.getCharacterRefference()==0?"":&code[e.getCharacterRefference()-1];
-        log += code[e.getCharacterRefference()];
-        log += e.getCharacterRefference()>=code.size()-1?"":&code[e.getCharacterRefference()+1];
-        CS::Log::getInstance().write(log,CS::Log::info_t);
-    } catch (exception& e) {
-        CS::Log::getInstance().write(e.what(),CS::Log::info_t);
-    }
+    if(!flag.test_and_set())
+    {
+        string code = _editor->getText().replace(QRegExp("[ \t]")," ").toStdString();
+        try {
+            _interpreter->interpret(code);
+        } catch (CS::SyntaxException& e) {
+            string log = e.what();
+            log += ". At character: " + to_string(e.getCharacterRefference()) + ". Close to: ";
+            log += e.getCharacterRefference()==0?"":&code[e.getCharacterRefference()-1];
+            log += code[e.getCharacterRefference()];
+            log += e.getCharacterRefference()>=code.size()-1?"":&code[e.getCharacterRefference()+1];
+            CS::Log::getInstance().write(log,CS::Log::info_t);
+        } catch (CS::SemanticException& e) {
+            string log = e.what();
+            log += ". At character: " + to_string(e.getCharacterRefference()) + ". Close to: ";
+            log += e.getCharacterRefference()==0?"":&code[e.getCharacterRefference()-1];
+            log += code[e.getCharacterRefference()];
+            log += e.getCharacterRefference()>=code.size()-1?"":&code[e.getCharacterRefference()+1];
+            CS::Log::getInstance().write(log,CS::Log::info_t);
+        } catch (exception& e) {
+            CS::Log::getInstance().write(e.what(),CS::Log::info_t);
+        }
 
-    ((QTextBrowser*)_consoleTabs->widget(0))->reload();
+        ((QTextBrowser*)_consoleTabs->widget(0))->reload();
+        flag.clear();
+    }
 }

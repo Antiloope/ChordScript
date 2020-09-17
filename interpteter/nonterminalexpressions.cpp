@@ -1,6 +1,7 @@
 #include "nonterminalexpressions.h"
 #include "utils/Exceptions/exception.h"
 #include "context.h"
+#include <memory>
 
 using namespace CS;
 using namespace std;
@@ -50,7 +51,8 @@ void ProgramExpression::interpret(){
     for( InstructionExpression* instruction : _instructionsList )
     {
         instruction->interpret();
-        if( Context::getInstance()->getReturnValue() ) break;
+        if( Context::getInstance()->existReturnValue() )
+            break;
     }
 }
 
@@ -245,12 +247,13 @@ ForInstructionExpression::~ForInstructionExpression(){
 void ForInstructionExpression::interpret(){
     _runningContext = Context::getInstance()->switchScope(_context);
     scope_index tmp = _runningContext;
-    if( !_runningContext ) throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
+    if( !_runningContext )
+        throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
 
     Context::getInstance()->setReturnValue(nullptr);
     _assignation->interpret();
     while(
-        !Context::getInstance()->getReturnValue() &&
+        !Context::getInstance()->existReturnValue() &&
         *(bool*)_booleanOperation->getValue()->getValue() )
     {
         _function->interpret();
@@ -357,17 +360,24 @@ void IfInstructionExpression::interpret(){
     {
         _runningContext = Context::getInstance()->switchScope(_context);
         scope_index tmp = _runningContext;
-        if( !_runningContext ) throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
+        if( !_runningContext )
+            throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
+
         _function->interpret();
+
         Context::getInstance()->removeScope(tmp);
     }
     else
     {
-        if( _elseFunction ) {
+        if( _elseFunction )
+        {
             _runningElseContext = Context::getInstance()->switchScope(_elseContext);
             scope_index tmp = _runningElseContext;
-            if( !_runningElseContext ) throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
+            if( !_runningElseContext )
+                throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
+
             _elseFunction->interpret();
+
             Context::getInstance()->removeScope(tmp);
         }
     }
@@ -380,15 +390,20 @@ void IfInstructionExpression::interpret(){
 BreakInstructionExpression::BreakInstructionExpression(size_t codeReference) : NonTerminalExpression(codeReference) {}
 
 void BreakInstructionExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
-    if(Context::getInstance()->getCurrentScope() == GlobalScope) throw SyntaxException("Break is not valid in global scope",terminalExpressionsList->front()->getCodeReference());
+    if(Context::getInstance()->getCurrentScope() == GlobalScope)
+        throw SyntaxException("Break is not valid in global scope",terminalExpressionsList->front()->getCodeReference());
+
     terminalExpressionsList->pop_front();
-    if( terminalExpressionsList->empty() || terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::EOE) ) throw SyntaxException("Expected ;",terminalExpressionsList->front()->getCodeReference());
+    if( terminalExpressionsList->empty() ||
+        terminalExpressionsList->front()->getType() != cCast(ExpressionTypes::EOE)
+        )
+        throw SyntaxException("Expected ;",terminalExpressionsList->front()->getCodeReference());
 }
 
 BreakInstructionExpression::~BreakInstructionExpression() {}
 
 void BreakInstructionExpression::interpret() {
-    Context::getInstance()->setReturnValue(new NullLiteralValue());
+    Context::getInstance()->setReturnValue();
 }
 
 ////////////////////////////////////////
@@ -468,7 +483,7 @@ AssignationExpression::~AssignationExpression() {
 }
 
 void AssignationExpression::interpret() {
-    if( !Context::getInstance()->setVariableValue(_varName,_value->getValue()->clone()) )
+    if( !Context::getInstance()->setVariableValue(_varName,_value->getValue()) )
     {
         string errorDescription = "Invalid conversion from ";
         errorDescription.append(DataType::getDataTypeString(_value->getDataTypeId()));
@@ -567,7 +582,9 @@ ReturnInstructionExpression::~ReturnInstructionExpression() {
 }
 
 void ReturnInstructionExpression::interpret() {
-    Context::getInstance()->setReturnValue(_returnValue->getValue()->clone());
+    auto ret = _returnValue->getValue();
+    Context::getInstance()->setReturnValue(ret);
+    if( ret ) delete ret;
 }
 
 ////////////////////////////////////////
@@ -647,7 +664,8 @@ void ExecutionExpression::interpret() {
     {
         for( auto method : _methodsList )
         {
-            if( !Context::getInstance()->executeMethod(_name,get<0>(method),get<1>(method)->getValue()) )
+            unique_ptr<LiteralValue> args = unique_ptr<LiteralValue>(get<1>(method)->getValue());
+            if( !Context::getInstance()->executeMethod(_name,get<0>(method),args.get()) )
             {
                 throw SyntaxException("Unknown method name",get<1>(method)->getCodeReference());
             }

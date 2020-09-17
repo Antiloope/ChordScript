@@ -29,9 +29,8 @@ void CS::Functions::sample() {
 
     LiteralValue* argValue = ctx->getArgumentValue("fileName");
     if( argValue->getDataTypeId() != DataTypesId::String )
-    {
         throw new SemanticException("Invalid argument for sample function. Expected a file name");
-    }
+
     string fileName = *(string*)argValue->getValue();
 
     AudioFile<float> a;
@@ -42,6 +41,8 @@ void CS::Functions::sample() {
     SampleLiteralValue* ret = new SampleLiteralValue(new SamplePlayer(tmp));
 
     ctx->setReturnValue(ret);
+
+    delete ret;
 }
 
 void CS::Functions::stop() {
@@ -63,5 +64,5 @@ void CS::Functions::stop() {
         }
     }
 
-    ctx->setReturnValue(new NullLiteralValue());
+    ctx->setReturnValue();
 }

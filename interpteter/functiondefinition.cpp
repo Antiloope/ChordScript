@@ -119,11 +119,13 @@ void FunctionDefinition::load(list<TerminalExpression*>* terminalExpressionsList
 }
 
 void FunctionDefinition::interpret(LiteralValue* literalArgs) {
-    if( literalArgs->getDataTypeId() != DataTypesId::Argument ) throw SyntaxException("Invalid arguments");
+    if( literalArgs->getDataTypeId() != DataTypesId::Argument )
+        throw SyntaxException("Invalid arguments");
 
     list<LiteralValue*> args = *(list<LiteralValue*>*)literalArgs->getValue();
 
-    if( args.size() != _argumentsDefinitionList.size() ) throw SyntaxException("Invalid number of arguments");
+    if( args.size() != _argumentsDefinitionList.size() )
+        throw SyntaxException("Invalid number of arguments");
 
     Context* ctx = Context::getInstance();
     _runningContext = ctx->switchScope(_context);
@@ -131,18 +133,20 @@ void FunctionDefinition::interpret(LiteralValue* literalArgs) {
 
     for( auto argumentDefinition : _argumentsDefinitionList )
     {
-        ctx->setVariableValue(argumentDefinition.getName(),args.front()->clone());
+        ctx->setVariableValue(argumentDefinition.getName(),args.front());
         args.pop_front();
     }
 
     _function->interpret();
 
-    if( !ctx->getReturnValue() ) ctx->setReturnValue(new NullLiteralValue());
+    if( !ctx->existReturnValue() )
+        ctx->setReturnValue();
     ctx->removeScope(tmp);
 }
 
 FunctionDefinition::~FunctionDefinition() {
-    if( _function ) delete _function;
+    if( _function )
+        delete _function;
 
     Context::getInstance()->removeScope(_runningContext);
     Context::getInstance()->removeScope(_context);
@@ -170,11 +174,13 @@ void BaseFunction::load(list<ArgumentDefinition> arguments,void (*function)()) {
 }
 
 void BaseFunction::interpret(LiteralValue* literalArgs) {
-    if( literalArgs->getDataTypeId() != DataTypesId::Argument ) throw SyntaxException("Invalid arguments");
+    if( literalArgs->getDataTypeId() != DataTypesId::Argument )
+        throw SyntaxException("Invalid arguments");
 
     list<LiteralValue*> args = *(list<LiteralValue*>*)literalArgs->getValue();
 
-    if( args.size() != _argumentsDefinitionList.size() ) throw SyntaxException("Invalid number of arguments");
+    if( args.size() != _argumentsDefinitionList.size() )
+        throw SyntaxException("Invalid number of arguments");
 
     Context* ctx = Context::getInstance();
     _runningContext = ctx->switchScope(_context);
@@ -182,12 +188,14 @@ void BaseFunction::interpret(LiteralValue* literalArgs) {
 
     for( auto argumentDefinition : _argumentsDefinitionList )
     {
-        ctx->setVariableValue(argumentDefinition.getName(),args.front()->clone());
+        ctx->setVariableValue(argumentDefinition.getName(),args.front());
         args.pop_front();
     }
 
     _functionPointer();
 
-    if( !ctx->getReturnValue() ) ctx->setReturnValue(new NullLiteralValue());
+    if( !ctx->existReturnValue() )
+        ctx->setReturnValue();
+
     ctx->removeScope(tmp);
 }

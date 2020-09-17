@@ -29,7 +29,7 @@ public:
     LiteralValue(DataTypesId);
     LiteralValue(const LiteralValue&);
     virtual ~LiteralValue();
-    void* getValue() const {return _value;}
+    void* getValue() const { return _value; }
     virtual LiteralValue* clone() = 0;
 protected:
     void* _value;
