@@ -711,13 +711,14 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                         break;
                     }
                     default:
+                        DataTypesId dataTypeId = RPNStack.top()->getDataTypeId();
                         while(!RPNStack.empty())
                         {
                             delete RPNStack.top();
                             RPNStack.pop();
                         }
                         throw SyntaxException(
-                            "Invalid substraction operation between a number and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
+                            "Invalid substraction operation between a number and a " + DataType::getDataTypeString(dataTypeId),
                             linkedValue->getCodeReference());
                         break;
                     }
