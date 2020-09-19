@@ -66,3 +66,11 @@ void CS::Functions::stop() {
 
     ctx->setReturnValue();
 }
+
+void CS::Functions::startRecording() {
+    ExecutorInterface::startRecording();
+}
+
+void CS::Functions::stopRecording() {
+    ExecutorInterface::stopRecording();
+}

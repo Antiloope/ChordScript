@@ -26,7 +26,7 @@ public:
     Buffer();
     Buffer(AudioBuffer);
     virtual ~Buffer();
-
+    AudioBuffer* getBuffer();
     BufferChannel& operator[](Channel a);
 protected:
     AudioBuffer *_buffer;

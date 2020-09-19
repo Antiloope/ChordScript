@@ -50,6 +50,8 @@ const string squareSound = "S_SQUARE";
 
 const string sampleFunction = "SAMPLE";
 const string stopFunction = "STOP";
+const string startRecordingFunction = "START_RECORDING";
+const string stopRecordingFunction = "STOP_RECORDING";
 }
 
 namespace Functions {
@@ -63,6 +65,8 @@ double square(double);
 void sample();
 
 void stop();
+void startRecording();
+void stopRecording();
 
 }
 

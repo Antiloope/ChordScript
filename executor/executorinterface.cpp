@@ -35,3 +35,10 @@ void ExecutorInterface::removeAllSounds() {
 void ExecutorInterface::closeAll() {
     Executor::getInstance()->closeAll();
 }
+void ExecutorInterface::startRecording() {
+    Executor::getInstance()->startRecording();
+}
+
+void ExecutorInterface::stopRecording() {
+    Executor::getInstance()->stopRecording();
+}

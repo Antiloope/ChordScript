@@ -23,12 +23,6 @@ enum ChannelMode {
 };
 
 /**
- * @brief DUAL_BUFFER_MODE constant used to define
- * dual buffer mode
- */
-const char DUAL_BUFFER_MODE = 2;
-
-/**
  * @brief The DualBuffer enum is used to choose a buffer
  * in a dual buffer
  */
@@ -36,6 +30,12 @@ enum DualBuffer {
     First = 0,
     Second = 1
 } currentBuffer = First;
+
+/**
+ * @brief DUAL_BUFFER_MODE constant used to define
+ * dual buffer mode
+ */
+const char DUAL_BUFFER_MODE = 2;
 
 /**
  * @brief DEFAULT_BATCH_SIZE is the number of samples per batch
@@ -93,6 +93,7 @@ mutex mutexQueues;
 bool removeAll = false;
 
 atomic_flag isRunning = ATOMIC_FLAG_INIT;
+mutex recordingFile;
 
 ///////////////////////////////////////////////////
 ///
@@ -152,7 +153,7 @@ void processShutdown(void*) {}
  * load soundsList with sounds from soundsToAdd queue.
  * @param soundsList A pointer to a list of sounds to be played
  */
-void loadBuffer(list<Playable*>* soundsList) {
+void Executor::loadBuffer(list<Playable*>* soundsList) {
     isRunning.test_and_set();
     while( isRunning.test_and_set() )
     {
@@ -209,6 +210,13 @@ void loadBuffer(list<Playable*>* soundsList) {
                 i = soundsList->erase(i);
             }
         }
+
+        if( recordingFile.try_lock() )
+        {
+            Executor::getInstance()->addToRecord();
+            recordingFile.unlock();
+        }
+
         lockBuffer.test_and_set();
     }
 }
@@ -242,6 +250,15 @@ Executor::Executor() {
         _availableSounds.push(i);
 }
 
+void Executor::startRecording() {
+    recordingFile.unlock();
+}
+
+void Executor::stopRecording() {
+    recordingFile.lock();
+    _record.save("hola.wav");
+}
+
 void Executor::addSound(Playable* newSound) const {
     mutexQueues.lock();
     soundsToAdd.push(newSound);
@@ -258,6 +275,18 @@ void Executor::removeAllSounds() const {
     mutexQueues.lock();
     removeAll = true;
     mutexQueues.unlock();
+}
+
+void Executor::addToRecord() {
+    _record.samples[Channel::right].insert(
+        _record.samples[Channel::right].end(),
+        outputBuffer[currentBuffer][Channel::right].begin(),
+        outputBuffer[currentBuffer][Channel::right].end());
+
+    _record.samples[Channel::left].insert(
+        _record.samples[Channel::left].end(),
+        outputBuffer[currentBuffer][Channel::left].begin(),
+        outputBuffer[currentBuffer][Channel::left].end());
 }
 
 unsigned int Executor::getSampleRate() const {
@@ -487,6 +516,8 @@ void Executor::init() {
     outputBuffer[Channel::right].setSize(outputBufferSize);
     outputBuffer[Channel::left].setSize(outputBufferSize);
 
+    recordingFile.lock();
+
     // Start the trhead
     bufferHandlerThread = thread(loadBuffer,&_soundsList);
 
@@ -499,6 +530,9 @@ void Executor::init() {
         );
 
     clientInit();
+
+    _record.setSampleRate(sampleRate);
+    _record.setAudioBufferSize(ChannelMode::Stereo,0);
 
     Log::getInstance().write("AudioServerAdapter correctly initilized",Log::info_t);
 }

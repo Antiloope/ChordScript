@@ -317,6 +317,7 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
 
     connect(actionPlay,SIGNAL(triggered()),this,SLOT(playButton()));
     connect(actionStop,SIGNAL(triggered()),this,SLOT(stopButton()));
+    connect(actionRecord,SIGNAL(triggered(bool)),this,SLOT(recordButton(bool)));
     connect(openAction,SIGNAL(triggered()),this,SLOT(openFile()));
 //    connect(openRecentAction,SIGNAL(triggered()),this,SLOT(openRecentFile()));
 //    connect(saveAction,SIGNAL(triggered()),this,SLOT(saveFile()));
@@ -346,6 +347,13 @@ MainInterface::~MainInterface() {
 
 void MainInterface::stopButton() {
     _interpreter->interpret("STOP();");
+}
+
+void MainInterface::recordButton(bool checked) {
+    if( checked )
+        _interpreter->interpret("START_RECORDING();");
+    else
+        _interpreter->interpret("STOP_RECORDING();");
 }
 
 void MainInterface::openFile() {

@@ -19,6 +19,10 @@ Buffer::~Buffer() {
         delete _buffer;
 }
 
+AudioBuffer* Buffer::getBuffer() {
+    return _buffer;
+}
+
 vector<float>& Buffer::operator[](Channel a) {
     return (*_buffer)[a];
 }

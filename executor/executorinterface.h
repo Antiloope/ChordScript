@@ -20,6 +20,10 @@ public:
     static void removeSound(Playable*);
     static void removeAllSounds();
     static void closeAll();
+    static void startRecording();
+    static void stopRecording();
+private:
+    ExecutorInterface();
 };
 
 }

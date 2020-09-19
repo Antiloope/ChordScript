@@ -39,14 +39,25 @@ public:
     void closeAll();
     void serverRestart();
     void clientRestart();
+
+    void startRecording();
+    void stopRecording();
 private:
+    static void loadBuffer(list<Playable*>* soundsList);
+
     void clientInit();
     bool serverInit();
+
+    void addToRecord();
+
     Executor();
+
     static Executor* _instance;
 
     list<Playable*> _soundsList;
     stack<char> _availableSounds;
+
+    AudioFile<float> _record;
 };
 
 }
