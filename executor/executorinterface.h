@@ -19,6 +19,7 @@ public:
     static void addSound(Playable*);
     static void removeSound(Playable*);
     static void removeAllSounds();
+    static void closeAll();
 };
 
 }

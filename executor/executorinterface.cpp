@@ -31,3 +31,7 @@ void ExecutorInterface::removeSound(Playable* sound) {
 void ExecutorInterface::removeAllSounds() {
     Executor::getInstance()->removeAllSounds();
 }
+
+void ExecutorInterface::closeAll() {
+    Executor::getInstance()->closeAll();
+}

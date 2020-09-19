@@ -35,7 +35,13 @@ public:
 
     unsigned int getSampleRate() const;
     char getSoundId();
+
+    void closeAll();
+    void serverRestart();
+    void clientRestart();
 private:
+    void clientInit();
+    bool serverInit();
     Executor();
     static Executor* _instance;
 

@@ -26,6 +26,8 @@ int main(int argc, char *argv[])
     ui.init(a);
 
     int ret = a.exec();
+
+    audio->closeAll();
     Log::getInstance().close("Program closed");
     return ret;
     return 0;
