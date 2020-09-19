@@ -9,7 +9,7 @@
 #include <cstring>
 #include <jack/jack.h>
 #include <jack/control.h>
-#include <math.h>
+#include <ctime>
 
 using namespace CS;
 
@@ -256,7 +256,22 @@ void Executor::startRecording() {
 
 void Executor::stopRecording() {
     recordingFile.lock();
-    _record.save("hola.wav");
+
+    try
+    {
+        time_t now = time(0);
+        char stringTime[17];
+        strftime(stringTime,20,"%g_%m_%d_%H_%M_%S",localtime(&now));
+        string fileName = "records/rec_";
+        fileName.append(stringTime);
+        fileName += ".wav";
+        _record.save(fileName);
+    }
+    catch (exception &e)
+    {
+        Log::getInstance().write(e.what(),Log::logType::error_t);
+    }
+
 }
 
 void Executor::addSound(Playable* newSound) const {
