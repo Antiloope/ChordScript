@@ -430,6 +430,9 @@ LiteralValue* Context::getArgumentValue(string name) {
 }
 
 bool Context::executeFunction(string name,LiteralValue* arguments) {
+    if( executeVariableFunction(name,arguments) )
+        return true;
+
     auto tmp = _functions.find(name);
     if( tmp == _functions.end() )
         return false;
@@ -438,6 +441,22 @@ bool Context::executeFunction(string name,LiteralValue* arguments) {
 
     get<1>(_functions.find(name)->second)->interpret(arguments);
 
+    return true;
+}
+
+bool Context::executeVariableFunction(string name,LiteralValue* arguments) {
+    auto tmp = getVariableValue(name);
+    if( !tmp )
+        return false;
+    switch( tmp->getDataTypeId() )
+    {
+    case DataTypesId::Sound:
+        executeMethod(name,"constantFreq",arguments);
+        break;
+    default:
+        // TODO: Must throw?
+        return false;
+    }
     return true;
 }
 

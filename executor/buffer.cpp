@@ -181,6 +181,11 @@ void Sound::setAbsoluteFreq(double freq) {
     _absoluteFreq = new ConstModifier(freq);
 }
 
+void Sound::clearAbsoluteFreq() {
+    if( _absoluteFreq )
+        delete _absoluteFreq;
+}
+
 void Sound::setPanning(double pan) {
     if( _panning )
         delete _panning;

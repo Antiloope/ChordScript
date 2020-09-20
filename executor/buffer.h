@@ -64,6 +64,7 @@ public:
     void setFreqFactor(double);
     void setFreqModulation(Sound);
     void setAbsoluteFreq(double);
+    void clearAbsoluteFreq();
     void setPanning(double);
     void setPanning(Sound);
 

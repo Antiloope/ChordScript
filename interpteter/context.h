@@ -228,6 +228,9 @@ public:
 private:
     static Context* _instance;
     Context();
+
+    bool executeVariableFunction(string,LiteralValue*);
+
     stack<scope_index> _freeScopesIndexes;
     stack<scope_index> _scopeStack;
     data_types_map _dataTypes;

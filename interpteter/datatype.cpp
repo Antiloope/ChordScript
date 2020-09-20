@@ -283,8 +283,8 @@ SoundDataType::SoundDataType() {
         );
     _methods.insert(
         pair<string,methodFunction_t>(
-            "freqOffset",
-            &SoundDataType::freqOffset)
+            "freqModulation",
+            &SoundDataType::freqModulation)
         );
     _methods.insert(
         pair<string,methodFunction_t>(
@@ -504,26 +504,23 @@ LiteralValue* SoundDataType::constantFreq(
     if( !value )
         return nullptr;
 
+    unique_ptr<SoundGenerator> generator = unique_ptr<SoundGenerator>(((SoundGenerator*)value->getValue())->clone());
+
     if( argumentValues->empty() )
-        throw SemanticException("Invalid call of method constantFreq without arguments.");
+    {
+        generator->_baseSound.clearAbsoluteFreq();
+        return new SoundLiteralValue(generator->clone());
+    }
 
     if( argumentValues->size() > 1 )
         throw SemanticException("Invalid call of method constantFreq more than one parameter.");
 
-    unique_ptr<SoundGenerator> generator = unique_ptr<SoundGenerator>(((SoundGenerator*)value->getValue())->clone());
-
     switch( argumentValues->front()->getDataTypeId() )
     {
-    case DataTypesId::Sound:
-    {
-        Sound panningValue = ((SoundGenerator*)argumentValues->front()->getValue())->getSound();
-        generator->_baseSound.setAbsoluteFreq(panningValue);
-        break;
-    }
     case DataTypesId::Numeric:
     {
-        double panningValue = *(double*)argumentValues->front()->getValue();
-        generator->_baseSound.setAbsoluteFreq(panningValue);
+        double freqValue = *(double*)argumentValues->front()->getValue();
+        generator->_baseSound.setAbsoluteFreq(freqValue);
         break;
     }
     default:
@@ -557,12 +554,6 @@ LiteralValue* SoundDataType::freqFactor(
 
     switch( argumentValues->front()->getDataTypeId() )
     {
-    case DataTypesId::Sound:
-    {
-        Sound factorValue = ((SoundGenerator*)argumentValues->front()->getValue())->getSound();
-        generator->_baseSound.setFreqFactor(factorValue);
-        break;
-    }
     case DataTypesId::Numeric:
     {
         double factorValue = *(double*)argumentValues->front()->getValue();
@@ -577,7 +568,7 @@ LiteralValue* SoundDataType::freqFactor(
     return new SoundLiteralValue(generator->clone());
 }
 
-LiteralValue* SoundDataType::freqOffset(
+LiteralValue* SoundDataType::freqModulation(
     const LiteralValue* value,
     const LiteralValue* args
     ) {
@@ -603,13 +594,7 @@ LiteralValue* SoundDataType::freqOffset(
     case DataTypesId::Sound:
     {
         Sound offsetValue = ((SoundGenerator*)argumentValues->front()->getValue())->getSound();
-        generator->_baseSound.setFreqOffset(offsetValue);
-        break;
-    }
-    case DataTypesId::Numeric:
-    {
-        double offsetValue = *(double*)argumentValues->front()->getValue();
-        generator->_baseSound.setFreqOffset(offsetValue);
+        generator->_baseSound.setFreqModulation(offsetValue);
         break;
     }
     default:

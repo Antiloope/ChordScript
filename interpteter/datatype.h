@@ -63,7 +63,7 @@ private:
     static LiteralValue* setPanning(const LiteralValue*,const LiteralValue*);
     static LiteralValue* constantFreq(const LiteralValue*,const LiteralValue*);
     static LiteralValue* freqFactor(const LiteralValue*,const LiteralValue*);
-    static LiteralValue* freqOffset(const LiteralValue*,const LiteralValue*);
+    static LiteralValue* freqModulation(const LiteralValue*,const LiteralValue*);
     static LiteralValue* ampFactor(const LiteralValue*,const LiteralValue*);
 };
 
