@@ -220,6 +220,7 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     // Tool bar
     QToolBar* toolBar = new QToolBar(centralWidget);
     toolBar->setOrientation(Qt::Vertical);
+    toolBar->setMovable(false);
     QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Fixed);
     sizePolicy1.setHorizontalStretch(0);
     sizePolicy1.setVerticalStretch(0);
@@ -230,8 +231,9 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     this->addToolBar(Qt::LeftToolBarArea, toolBar);
     toolBar->setStyleSheet(
         "QToolBar{"
-        "background-color:"+UiDefinitions::getInstance()->getColorRGB(ColorId::Background)+";"
+            "background-color:" + UiDefinitions::getInstance()->getColorRGB(ColorId::Background)+";"
             "border:none;"
+            "margin:5px;"
         "} "
         "QToolButton{"
             "border:none;"

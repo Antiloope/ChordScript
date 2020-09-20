@@ -15,7 +15,8 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent) {
 
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
-    this->setFocus();
+    setFocus();
+    setLineWrapMode(LineWrapMode::NoWrap);
 
     setFont(UiDefinitions::getInstance()->getFont(FontId::Code));
     this->setStyleSheet(
@@ -44,8 +45,14 @@ void CodeEditor::wheelEvent(QWheelEvent *event) {
         else
             zoomOut(1);
     }
+    else if( event->modifiers() == Qt::AltModifier )
+    {
+        this->horizontalScrollBar()->event(event);
+    }
     else
     {
+        if( event->angleDelta().x() )
+            this->horizontalScrollBar()->event(event);
         this->verticalScrollBar()->event(event);
     }
     event->accept();
