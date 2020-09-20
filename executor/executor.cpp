@@ -541,7 +541,7 @@ void Executor::init() {
     // Set conficuration for TimeHandler
     TimeHandler::getInstance()->configure(
         sampleRate,
-        DEFAULT_OUTPUT_BUFFER_SIZE
+        DEFAULT_BATCH_SIZE
         );
 
     clientInit();

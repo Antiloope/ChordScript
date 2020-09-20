@@ -55,17 +55,15 @@ public:
 
     void play(tick_t, Buffer&) override;
     inline double getInstantValue(double);
+    inline double getPositiveInstantValue(double);
 
     void setAmplitudeFactor(double);
     void setAmplitudeFactor(Sound);
     void setAmplitudeOffset(double);
     void setAmplitudeOffset(Sound);
     void setFreqFactor(double);
-    void setFreqFactor(Sound);
-    void setFreqOffset(double);
-    void setFreqOffset(Sound);
+    void setFreqModulation(Sound);
     void setAbsoluteFreq(double);
-    void setAbsoluteFreq(Sound);
     void setPanning(double);
     void setPanning(Sound);
 
@@ -81,7 +79,7 @@ protected:
     Modifier* _amplitudeFactor;
     Modifier* _amplitudeOffset;
     Modifier* _freqFactor;
-    Modifier* _freqOffset;
+    Modifier* _freqModulation;
     Modifier* _absoluteFreq = nullptr;
 private:
 };
@@ -133,6 +131,8 @@ public:
     virtual ~Modifier() {};
     virtual double getValue(double) = 0;
     virtual double getPositiveValue(double) = 0;
+    virtual bool setAmplitudeOffset(Sound) = 0;
+    virtual bool setAmplitudeFactor(Sound) = 0;
     virtual Modifier* clone() = 0;
 private:
 };
@@ -144,6 +144,8 @@ public:
     ~ConstModifier();
     double getValue(double) override;
     double getPositiveValue(double) override;
+    bool setAmplitudeOffset(Sound) override;
+    bool setAmplitudeFactor(Sound) override;
     Modifier * clone() override;
 private:
     double _value;
@@ -156,6 +158,8 @@ public:
     ~SoundModifier();
     double getValue(double) override;
     double getPositiveValue(double) override;
+    bool setAmplitudeOffset(Sound) override;
+    bool setAmplitudeFactor(Sound) override;
     Modifier * clone() override;
 private:
     Sound _sound;

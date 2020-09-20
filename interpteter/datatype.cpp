@@ -276,6 +276,21 @@ SoundDataType::SoundDataType() {
             "constantFreq",
             &SoundDataType::constantFreq)
         );
+    _methods.insert(
+        pair<string,methodFunction_t>(
+            "freqFactor",
+            &SoundDataType::freqFactor)
+        );
+    _methods.insert(
+        pair<string,methodFunction_t>(
+            "freqOffset",
+            &SoundDataType::freqOffset)
+        );
+    _methods.insert(
+        pair<string,methodFunction_t>(
+            "ampFactor",
+            &SoundDataType::ampFactor)
+        );
 }
 
 SoundDataType::~SoundDataType() {}
@@ -513,6 +528,135 @@ LiteralValue* SoundDataType::constantFreq(
     }
     default:
         throw SemanticException("Invalid cast parameter data type in setPanning method. Must be a number or a sound.");
+        break;
+    }
+
+    return new SoundLiteralValue(generator->clone());
+}
+
+LiteralValue* SoundDataType::freqFactor(
+    const LiteralValue* value,
+    const LiteralValue* args
+    ) {
+
+    if( args->getDataTypeId() != DataTypesId::Argument )
+        return nullptr;
+
+    const auto argumentValues = (list<LiteralValue*>*)args->getValue();
+
+    if( !value )
+        return nullptr;
+
+    if( argumentValues->empty() )
+        throw SemanticException("Invalid call of method freqFactor without arguments.");
+
+    if( argumentValues->size() > 1 )
+        throw SemanticException("Invalid call of method freqFactor more than one parameter.");
+
+    unique_ptr<SoundGenerator> generator = unique_ptr<SoundGenerator>(((SoundGenerator*)value->getValue())->clone());
+
+    switch( argumentValues->front()->getDataTypeId() )
+    {
+    case DataTypesId::Sound:
+    {
+        Sound factorValue = ((SoundGenerator*)argumentValues->front()->getValue())->getSound();
+        generator->_baseSound.setFreqFactor(factorValue);
+        break;
+    }
+    case DataTypesId::Numeric:
+    {
+        double factorValue = *(double*)argumentValues->front()->getValue();
+        generator->_baseSound.setFreqFactor(factorValue);
+        break;
+    }
+    default:
+        throw SemanticException("Invalid cast parameter data type in freqFactor method. Must be a number or a sound.");
+        break;
+    }
+
+    return new SoundLiteralValue(generator->clone());
+}
+
+LiteralValue* SoundDataType::freqOffset(
+    const LiteralValue* value,
+    const LiteralValue* args
+    ) {
+
+    if( args->getDataTypeId() != DataTypesId::Argument )
+        return nullptr;
+
+    const auto argumentValues = (list<LiteralValue*>*)args->getValue();
+
+    if( !value )
+        return nullptr;
+
+    if( argumentValues->empty() )
+        throw SemanticException("Invalid call of method freqOffset without arguments.");
+
+    if( argumentValues->size() > 1 )
+        throw SemanticException("Invalid call of method freqOffset more than one parameter.");
+
+    unique_ptr<SoundGenerator> generator = unique_ptr<SoundGenerator>(((SoundGenerator*)value->getValue())->clone());
+
+    switch( argumentValues->front()->getDataTypeId() )
+    {
+    case DataTypesId::Sound:
+    {
+        Sound offsetValue = ((SoundGenerator*)argumentValues->front()->getValue())->getSound();
+        generator->_baseSound.setFreqOffset(offsetValue);
+        break;
+    }
+    case DataTypesId::Numeric:
+    {
+        double offsetValue = *(double*)argumentValues->front()->getValue();
+        generator->_baseSound.setFreqOffset(offsetValue);
+        break;
+    }
+    default:
+        throw SemanticException("Invalid cast parameter data type in freqOffset method. Must be a number or a sound.");
+        break;
+    }
+
+    return new SoundLiteralValue(generator->clone());
+}
+
+LiteralValue* SoundDataType::ampFactor(
+    const LiteralValue* value,
+    const LiteralValue* args
+    ) {
+
+    if( args->getDataTypeId() != DataTypesId::Argument )
+        return nullptr;
+
+    const auto argumentValues = (list<LiteralValue*>*)args->getValue();
+
+    if( !value )
+        return nullptr;
+
+    if( argumentValues->empty() )
+        throw SemanticException("Invalid call of method ampFactor without arguments.");
+
+    if( argumentValues->size() > 1 )
+        throw SemanticException("Invalid call of method ampFactor more than one parameter.");
+
+    unique_ptr<SoundGenerator> generator = unique_ptr<SoundGenerator>(((SoundGenerator*)value->getValue())->clone());
+
+    switch( argumentValues->front()->getDataTypeId() )
+    {
+    case DataTypesId::Sound:
+    {
+        Sound factorValue = ((SoundGenerator*)argumentValues->front()->getValue())->getSound();
+        generator->_baseSound.setAmplitudeFactor(factorValue);
+        break;
+    }
+    case DataTypesId::Numeric:
+    {
+        double factorValue = *(double*)argumentValues->front()->getValue();
+        generator->_baseSound.setAmplitudeFactor(factorValue);
+        break;
+    }
+    default:
+        throw SemanticException("Invalid cast parameter data type in ampFactor method. Must be a number or a sound.");
         break;
     }
 

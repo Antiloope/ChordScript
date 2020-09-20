@@ -84,7 +84,7 @@ Sound::Sound(const Sound& sound) {
     _amplitudeFactor = sound._amplitudeFactor->clone();
     _amplitudeOffset = sound._amplitudeOffset->clone();
     _freqFactor = sound._freqFactor->clone();
-    _freqOffset = sound._freqOffset->clone();
+    _freqModulation= sound._freqModulation->clone();
     _absoluteFreq = sound._absoluteFreq ? sound._absoluteFreq->clone() :  nullptr;
     _panning = sound._panning->clone();
 }
@@ -94,7 +94,7 @@ Sound::Sound(double(*function)(double)) {
     _amplitudeFactor = new ConstModifier(1);
     _amplitudeOffset = new ConstModifier(0);
     _freqFactor = new ConstModifier(1);
-    _freqOffset = new ConstModifier(0);
+    _freqModulation = new ConstModifier(0);
     _panning = new ConstModifier(0.5);
 }
 
@@ -106,7 +106,7 @@ Sound::Sound(double(*function)(double), double freq, double duration, tick_t sta
     _amplitudeFactor = new ConstModifier(1);
     _amplitudeOffset = new ConstModifier(0);
     _freqFactor = new ConstModifier(1);
-    _freqOffset = new ConstModifier(0);
+    _freqModulation = new ConstModifier(0);
     _panning = new ConstModifier(0.5);
 }
 
@@ -114,7 +114,7 @@ Sound::~Sound() {
     if( _amplitudeFactor ) delete _amplitudeFactor;
     if( _freqFactor ) delete _freqFactor;
     if( _amplitudeOffset ) delete _amplitudeOffset;
-    if( _freqOffset ) delete _freqOffset;
+    if( _freqModulation ) delete _freqModulation;
     if( _absoluteFreq ) delete _absoluteFreq;
     if( _panning ) delete _panning;
 }
@@ -132,7 +132,12 @@ void Sound::setAmplitudeFactor(double factor) {
 
 void Sound::setAmplitudeFactor(Sound sound) {
     if( _amplitudeFactor )
-        delete _amplitudeFactor;
+    {
+        if( _amplitudeFactor->setAmplitudeFactor(sound) )
+            return;
+        else
+            delete _amplitudeFactor;
+    }
 
     _amplitudeFactor = new SoundModifier(sound);
 }
@@ -146,8 +151,12 @@ void Sound::setAmplitudeOffset(double offset) {
 
 void Sound::setAmplitudeOffset(Sound sound) {
     if( _amplitudeOffset )
-        delete _amplitudeOffset;
-
+    {
+        if( _amplitudeOffset->setAmplitudeOffset(sound) )
+            return;
+        else
+            delete _amplitudeOffset;
+    }
     _amplitudeOffset = new SoundModifier(sound);
 }
 
@@ -158,25 +167,11 @@ void Sound::setFreqFactor(double factor) {
     _freqFactor = new ConstModifier(factor);
 }
 
-void Sound::setFreqFactor(Sound sound) {
+void Sound::setFreqModulation(Sound sound) {
     if( _freqFactor )
         delete _freqFactor;
 
     _freqFactor = new SoundModifier(sound);
-}
-
-void Sound::setFreqOffset(double offset) {
-    if( _freqOffset )
-        delete _freqOffset;
-
-    _freqOffset = new ConstModifier(offset);
-}
-
-void Sound::setFreqOffset(Sound sound) {
-    if( _freqOffset )
-        delete _freqOffset;
-
-    _freqOffset = new SoundModifier(sound);
 }
 
 void Sound::setAbsoluteFreq(double freq) {
@@ -184,13 +179,6 @@ void Sound::setAbsoluteFreq(double freq) {
         delete _absoluteFreq;
 
     _absoluteFreq = new ConstModifier(freq);
-}
-
-void Sound::setAbsoluteFreq(Sound sound) {
-    if( _absoluteFreq )
-        delete _absoluteFreq;
-
-    _absoluteFreq = new SoundModifier(sound);
 }
 
 void Sound::setPanning(double pan) {
@@ -222,6 +210,8 @@ void Sound::load(double freq, double duration, tick_t startTick) {
 }
 
 void Sound::play(tick_t currentTick,Buffer& bufferToLoad) {
+    static double sampleRate = ExecutorInterface::getSampleRate();
+
     size_t bufferSize = bufferToLoad[Channel::right].size();
 
     signed long span = currentTick - _startTick;
@@ -236,22 +226,25 @@ void Sound::play(tick_t currentTick,Buffer& bufferToLoad) {
             return;
         cursor = -span;
     }
-    size_t sampleRate = ExecutorInterface::getSampleRate();
+
+    double freq;
+
     for( ; cursor < bufferSize; cursor++ )
     {
-        double freq;
-
         if( _absoluteFreq )
             freq = _absoluteFreq->getPositiveValue(_freq);
         else
-            freq = _freq * _freqFactor->getPositiveValue(_freq) + _freqOffset->getValue(_freq);
+            freq = _freq * _freqFactor->getPositiveValue(_freq);
 
         double value =
             _function(
                 2. * M_PI * freq *
-                ((double)_progress / (double)sampleRate)
-                ) *
-                _amplitudeFactor->getPositiveValue(_freq) + _amplitudeOffset->getValue(_freq);
+                std::fmod(
+                        (double)_progress / sampleRate,
+                        1./freq) +
+                _freqModulation->getValue(_freq) ) *
+                ( 1 + _amplitudeFactor->getPositiveValue(_freq)) +
+            _amplitudeOffset->getValue(_freq);
 
         if( _progress >= durationTicks - 1000 )
         {
@@ -260,7 +253,7 @@ void Sound::play(tick_t currentTick,Buffer& bufferToLoad) {
         }
         if( _progress < 1000 )
         {
-            double factor = (double)((double)_progress) / (1000);
+            double factor = ((double)_progress) / (1000.);
             value = value * factor;
         }
         if( _progress >= durationTicks )
@@ -279,22 +272,53 @@ void Sound::play(tick_t currentTick,Buffer& bufferToLoad) {
 }
 
 double Sound::getInstantValue(double freq) {
-    static double sampleRate = ExecutorInterface::getSampleRate();
+    static size_t sampleRate = ExecutorInterface::getSampleRate();
     double f;
 
     if( _absoluteFreq )
         f = _absoluteFreq->getPositiveValue(freq);
     else
-        f = freq * _freqFactor->getPositiveValue(freq) + _freqOffset->getValue(freq);
+        f = freq * _freqFactor->getPositiveValue(freq);
 
     double ret =
         _function(
-            2. * M_PI * f *( (double)_progress / (double)sampleRate )
-            ) *
-            _amplitudeFactor->getPositiveValue(freq) + _amplitudeOffset->getValue(freq);
+                2. * M_PI * f *
+                std::fmod(
+                    ((double)_progress / (double)sampleRate),
+                    1./f) +
+                _freqModulation->getValue(freq)) *
+            ( 1 + _amplitudeFactor->getPositiveValue(freq)) +
+        _amplitudeOffset->getValue(freq);
+
     _progress++;
 
-    return ret > 1. ? 1 : ret < 0. ? 0 : ret;
+    return ret;
+}
+
+double Sound::getPositiveInstantValue(double freq) {
+    static size_t sampleRate = ExecutorInterface::getSampleRate();
+    double f;
+
+    if( _absoluteFreq )
+        f = _absoluteFreq->getPositiveValue(freq);
+    else
+        f = freq * _freqFactor->getPositiveValue(freq);
+
+    double ampOffset = _amplitudeOffset->getValue(freq);
+    double ampFactor = _amplitudeFactor->getPositiveValue(freq);
+    double ret =
+        _function(
+            2. * M_PI * f *
+                std::fmod(
+                    ((double)_progress / (double)sampleRate),
+                    1./f) +
+            _freqModulation->getValue(freq)) *
+            ( 1 + ampFactor) +
+        ampOffset;
+
+    _progress++;
+
+    return ( ret + ampFactor - ampOffset ) / 2;
 }
 
 Sample::Sample(string fileName) {
@@ -449,6 +473,14 @@ double ConstModifier::getPositiveValue(double) {
     return - _value;
 }
 
+bool ConstModifier::setAmplitudeOffset(Sound) {
+    return false;
+}
+
+bool ConstModifier::setAmplitudeFactor(Sound) {
+    return false;
+}
+
 Modifier* ConstModifier::clone() {
     return new ConstModifier(_value);
 }
@@ -462,7 +494,17 @@ double SoundModifier::getValue(double freq) {
 }
 
 double SoundModifier::getPositiveValue(double freq) {
-    return (_sound.getInstantValue(freq) + 1.) / 2 ;
+    return _sound.getPositiveInstantValue(freq);
+}
+
+bool SoundModifier::setAmplitudeOffset(Sound sound) {
+    _sound.setAmplitudeOffset(sound);
+    return true;
+}
+
+bool SoundModifier::setAmplitudeFactor(Sound sound) {
+    _sound.setAmplitudeFactor(sound);
+    return true;
 }
 
 Modifier* SoundModifier::clone() {

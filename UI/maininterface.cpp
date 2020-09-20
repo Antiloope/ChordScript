@@ -357,7 +357,7 @@ void MainInterface::recordButton(bool checked) {
 }
 
 void MainInterface::openFile() {
-    this->_editor->setPlainText("sound a = S_SIN+S_SIN.constantFreq(1000);\na.play([440],1);\n");
+    this->_editor->setPlainText("sound a = S_SIN + S_SIN.freqFactor(3) + S_SIN.freqFactor(5) + S_SIN.freqFactor(7);\na.play(([550],10));\n");
 }
 
 void MainInterface::exit() {

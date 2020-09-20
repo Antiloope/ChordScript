@@ -2,7 +2,7 @@
 #include "context.h"
 #include "value.h"
 #include "executor/executorinterface.h"
-#include <math.h>
+#include <cmath>
 
 #include <string>
 
