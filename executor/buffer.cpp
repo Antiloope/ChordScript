@@ -59,7 +59,7 @@ OutputBuffer::OutputBuffer() {
     _buffer->resize(2);
 }
 
-void OutputBuffer::setSize(unsigned long size) {
+void OutputBuffer::setSize(size_t size) {
     (*_buffer)[0].resize(size);
     (*_buffer)[1].resize(size);
 }
