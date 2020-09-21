@@ -248,7 +248,7 @@ void Sound::play(tick_t currentTick,Buffer& bufferToLoad) {
                         (double)_progress / sampleRate,
                         1./freq) +
                 _freqModulation->getValue(_freq) ) *
-                ( 1 + _amplitudeFactor->getPositiveValue(_freq)) +
+                _amplitudeFactor->getPositiveValue(_freq) +
             _amplitudeOffset->getValue(_freq);
 
         if( _progress >= durationTicks - 1000 )
@@ -292,7 +292,7 @@ double Sound::getInstantValue(double freq) {
                     ((double)_progress / (double)sampleRate),
                     1./f) +
                 _freqModulation->getValue(freq)) *
-            ( 1 + _amplitudeFactor->getPositiveValue(freq)) +
+            _amplitudeFactor->getPositiveValue(freq) +
         _amplitudeOffset->getValue(freq);
 
     _progress++;
@@ -318,7 +318,7 @@ double Sound::getPositiveInstantValue(double freq) {
                     ((double)_progress / (double)sampleRate),
                     1./f) +
             _freqModulation->getValue(freq)) *
-            ( 1 + ampFactor) +
+            ampFactor +
         ampOffset;
 
     _progress++;

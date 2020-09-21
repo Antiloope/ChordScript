@@ -252,10 +252,13 @@ void ForInstructionExpression::interpret(){
 
     Context::getInstance()->setReturnValue(nullptr);
     _assignation->interpret();
+
+    unique_ptr<LiteralValue> booleanCondition = unique_ptr<LiteralValue>(_booleanOperation->getValue());
     while(
         !Context::getInstance()->existReturnValue() &&
-        *(bool*)_booleanOperation->getValue()->getValue() )
+        *(bool*)booleanCondition->getValue() )
     {
+        booleanCondition = unique_ptr<LiteralValue>(_booleanOperation->getValue());
         _function->interpret();
         _endAssignation->interpret();
     }
@@ -491,6 +494,7 @@ void AssignationExpression::interpret() {
         errorDescription.append(DataType::getDataTypeString(Context::getInstance()->getVariableDataType(_varName)));
         throw SemanticException(errorDescription,this->getCodeReference());
     }
+    Context::getInstance()->setReturnValue(nullptr);
 }
 
 ////////////////////////////////////////
@@ -671,4 +675,5 @@ void ExecutionExpression::interpret() {
             }
         }
     }
+    Context::getInstance()->setReturnValue(nullptr);
 }
