@@ -38,8 +38,8 @@ tick_t TimeHandler::msToTicks(unsigned long time_ms) const {
     return (tick_t)((double)time_ms / _tickTime);
 }
 
-tick_t TimeHandler::segToTicks(unsigned long time_seg) const {
-    return (tick_t)((double)(time_seg)*1000 / _tickTime);
+tick_t TimeHandler::segToTicks(double time_seg) const {
+    return (tick_t)((double)(time_seg)*1000. / _tickTime);
 }
 
 unsigned long TimeHandler::ticksToMs(tick_t ticks) const {
