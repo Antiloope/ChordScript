@@ -26,6 +26,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     UI/consoletabs/consoletabs.cpp \
     UI/editor/codeeditor.cpp \
+    UI/editor/codeeditortabs.cpp \
     UI/editor/linenumberarea.cpp \
     UI/editor/syntaxhighlighter.cpp \
     UI/maininterface.cpp \
@@ -55,6 +56,7 @@ SOURCES += \
 HEADERS += \
     UI/consoletabs/consoletabs.h \
     UI/editor/codeeditor.h \
+    UI/editor/codeeditortabs.h \
     UI/editor/linenumberarea.h \
     UI/editor/syntaxhighlighter.h \
     UI/maininterface.h \

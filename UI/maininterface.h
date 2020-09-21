@@ -9,7 +9,7 @@ class Interpreter;
 
 namespace UI {
 
-class CodeEditor;
+class CodeEditorTabs;
 class UiManager;
 class ConsoleTabs;
 
@@ -21,7 +21,7 @@ public:
     ~MainInterface();
 private:
     UiManager* _manager;
-    CodeEditor* _editor;
+    CodeEditorTabs* _editorTabs;
     ConsoleTabs* _consoleTabs;
     Interpreter* _interpreter;
 protected slots:

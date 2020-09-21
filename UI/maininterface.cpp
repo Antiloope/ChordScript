@@ -1,4 +1,5 @@
 #include "maininterface.h"
+#include "editor/codeeditortabs.h"
 #include "editor/codeeditor.h"
 #include "toolbox/toolbox.h"
 #include "consoletabs/consoletabs.h"
@@ -17,6 +18,7 @@
 #include <QToolBar>
 #include <QTextBrowser>
 #include <QSplitter>
+#include <QFileDialog>
 
 using namespace CS::UI;
 
@@ -29,7 +31,6 @@ const QString ACTION_PLAY_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/p
 const QString ACTION_STOP_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/stop.svg");
 const QString ACTION_RECORD_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/record.svg");
 const QString ACTION_RECORDING_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/recording.svg");
-const QString ACTION_RESTART_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/restart.svg");
 const int DEFAULT_MENU_BAR_HEIGHT = 20;
 const QString FILE_MENU_TITLE = QString::fromUtf8("&File");
 const QString EDIT_MENU_TITLE = QString::fromUtf8("&Edit");
@@ -106,14 +107,6 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     icon3.addFile(ACTION_RECORDING_ICON_RESOURCE, QSize(), QIcon::Normal, QIcon::On);
     actionRecord->setIcon(icon3);
     actionRecord->setShortcutVisibleInContextMenu(true);
-    actionRecord->setShortcut(QString("Ctrl+R"));
-
-    QAction* actionRestart = new QAction(this);
-    QIcon icon4;
-    icon4.addFile(ACTION_RESTART_ICON_RESOURCE, QSize(), QIcon::Normal, QIcon::Off);
-    actionRestart->setIcon(icon4);
-    actionRestart->setShortcutVisibleInContextMenu(true);
-    actionRestart->setShortcut(QString("Ctrl+T"));
 
     // Central widget
     QWidget* centralWidget = new QWidget(this);
@@ -255,7 +248,6 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     toolBar->addAction(actionStop);
     toolBar->addSeparator();
     toolBar->addAction(actionRecord);
-    toolBar->addAction(actionRestart);
 
     // Creating layout divition
     QHBoxLayout* horizontalLayout = new QHBoxLayout();
@@ -271,8 +263,8 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     horizontalLayout->addWidget(hSplitter);
 
     // Insert the code editor on the top side
-    _editor = new CodeEditor();
-    hSplitter->addWidget(_editor);
+    _editorTabs = new CodeEditorTabs();
+    hSplitter->addWidget(_editorTabs);
 
     // Adding a frame in the left side
     QFrame* toolBoxFrame = new QFrame();
@@ -320,6 +312,7 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     connect(actionPlay,SIGNAL(triggered()),this,SLOT(playButton()));
     connect(actionStop,SIGNAL(triggered()),this,SLOT(stopButton()));
     connect(actionRecord,SIGNAL(triggered(bool)),this,SLOT(recordButton(bool)));
+    connect(actionRecord,SIGNAL(triggered(bool)),serverRecordAction,SLOT(setChecked(bool)));
     connect(openAction,SIGNAL(triggered()),this,SLOT(openFile()));
 //    connect(openRecentAction,SIGNAL(triggered()),this,SLOT(openRecentFile()));
 //    connect(saveAction,SIGNAL(triggered()),this,SLOT(saveFile()));
@@ -338,7 +331,8 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
 //    connect(serverStartAction,SIGNAL(triggered()),this,SLOT(startServer()));
 //    connect(serverKillAction,SIGNAL(triggered()),this,SLOT(killServer()));
 //    connect(serverRestartAction,SIGNAL(triggered()),this,SLOT(restartServer()));
-//    connect(serverRecordAction,SIGNAL(triggered()),this,SLOT(record()));
+    connect(serverRecordAction,SIGNAL(triggered(bool)),this,SLOT(recordButton(bool)));
+    connect(serverRecordAction,SIGNAL(triggered(bool)),actionRecord,SLOT(setChecked(bool)));
 //    connect(serverConfigAction,SIGNAL(triggered()),this,SLOT(configServer()));
 }
 
@@ -359,7 +353,14 @@ void MainInterface::recordButton(bool checked) {
 }
 
 void MainInterface::openFile() {
-    this->_editor->setPlainText("sound a = S_SIN + S_SIN.freqFactor(3) + S_SIN.freqFactor(5) + S_SIN.freqFactor(7);\na.play(([550],10));\n");
+    QString fileName = QFileDialog::getOpenFileName(
+        this,
+        tr("Open File"),
+        "..",
+        tr("Source (*.csf);; Text file (*.txt)"));
+
+    if( !fileName.isNull() )
+        _editorTabs->openFile(fileName);
 }
 
 void MainInterface::exit() {
@@ -369,7 +370,7 @@ void MainInterface::exit() {
 void MainInterface::playButton() {
     if(!flag.test_and_set())
     {
-        string code = _editor->getText().replace(QRegExp("[ \t]")," ").toStdString();
+        string code = ((CodeEditor*)_editorTabs->currentWidget())->getText().replace(QRegExp("[ \t]")," ").toStdString();
         try {
             _interpreter->interpret(code);
         } catch (CS::SyntaxException& e) {

@@ -19,7 +19,7 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent) {
     setLineWrapMode(LineWrapMode::NoWrap);
 
     setFont(UiDefinitions::getInstance()->getFont(FontId::Code));
-    this->setStyleSheet(
+    setStyleSheet(
         "QPlainTextEdit{"
             "selection-background-color:" + UiDefinitions::getInstance()->getColorRGB(ColorId::Primary) + ";"
             "border:none;"
@@ -28,6 +28,8 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent) {
     selectAll();
 
     zoomIn(5);
+
+    setSizePolicy(QSizePolicy::Policy::Maximum,QSizePolicy::Policy::Maximum);
 
     setTabStopDistance( 4 * fontMetrics().horizontalAdvance(' ') );
 
