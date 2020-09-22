@@ -10,5 +10,6 @@
         <file>resources/open.svg</file>
         <file>resources/closeTab.svg</file>
         <file>resources/closeTabHover.svg</file>
+        <file>resources/modified.svg</file>
     </qresource>
 </RCC>

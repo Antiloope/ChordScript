@@ -17,7 +17,7 @@ public:
     explicit CodeEditorTabs(QWidget *parent = nullptr);
     void newFile();
     void openFile(QString file);
-    bool closeFile(int index = -1);
+    bool closeFile(int index = -1,bool force = false);
     bool saveFile(int index = -1);
     void saveFile(QString file, int index = -1);
     ~CodeEditorTabs();

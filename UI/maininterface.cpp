@@ -18,6 +18,7 @@
 #include <QToolBar>
 #include <QTextBrowser>
 #include <QSplitter>
+#include <QMessageBox>
 #include <QFileDialog>
 
 using namespace CS::UI;
@@ -361,7 +362,7 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     connect(closeFileAction,SIGNAL(triggered()),this,SLOT(closeFile()));
 //    connect(openRecentAction,SIGNAL(triggered()),this,SLOT(openRecentFile()));
     connect(saveAction,SIGNAL(triggered()),this,SLOT(saveFile()));
-//    connect(saveAsAction,SIGNAL(triggered()),this,SLOT(saveAsFile()));
+    connect(saveAsAction,SIGNAL(triggered()),this,SLOT(saveAsFile()));
     connect(exitAction,SIGNAL(triggered()),this,SLOT(exit()));
 //    connect(undoAction,SIGNAL(triggered()),this,SLOT(undo()));
 //    connect(redoAction,SIGNAL(triggered()),this,SLOT(redo()));
@@ -411,13 +412,46 @@ void MainInterface::openFile() {
 void MainInterface::closeFile(int index) {
     if( !_editorTabs->closeFile(index) )
     {
-        saveFile(index);
-        _editorTabs->closeFile(index);
+        int ret = QMessageBox::question(
+            this,
+            "Closing file",
+            "Do you want to save unsaved changes?",
+            QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
+            QMessageBox::Save);
+
+        switch( ret )
+        {
+        case QMessageBox::Save:
+            saveAsFile();
+            _editorTabs->closeFile(index);
+            break;
+        case QMessageBox::Discard:
+            _editorTabs->closeFile(index,true);
+            break;
+        default:
+            // should never be reached
+            break;
+        }
     }
 }
 
 void MainInterface::newFile() {
     _editorTabs->newFile();
+}
+
+void MainInterface::saveAsFile(int index) {
+    QString fileName = QFileDialog::getSaveFileName(
+        this,
+        tr("Save As"),
+        "..",
+        tr("Source (*.csf)")
+        );
+
+    if( !fileName.isNull() )
+    {
+        fileName = fileName.contains(".")?fileName:(fileName + ".csf");
+        _editorTabs->saveFile(fileName,index);
+    }
 }
 
 void MainInterface::saveFile(int index) {

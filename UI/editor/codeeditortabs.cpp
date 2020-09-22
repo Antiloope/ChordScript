@@ -9,6 +9,7 @@ namespace  {
 
 const QString CLOSE_TAB_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/closeTab.svg");
 const QString CLOSE_TAB_HOVER_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/closeTabHover.svg");
+const QString MODIFIED_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/modified.svg");
 const QString NEW_FILE_NAME = "new_file_";
 
 }
@@ -59,6 +60,7 @@ CodeEditorTabs::CodeEditorTabs(QWidget* parent) :
 
 void CodeEditorTabs::tabModified() {
     std::get<1>(_openFiles.find(tabText(currentIndex()))->second) = false;
+    setTabIcon(currentIndex(),QIcon(MODIFIED_ICON_RESOURCE));
 }
 
 CodeEditorTabs::~CodeEditorTabs() {}
@@ -99,11 +101,11 @@ void CodeEditorTabs::openFile(QString file) {
     connect(editor,SIGNAL(textChanged()),this,SLOT(tabModified()));
 }
 
-bool CodeEditorTabs::closeFile(int index) {
+bool CodeEditorTabs::closeFile(int index, bool force) {
     if( index < 0 )
     {
         auto file = _openFiles.find(tabText(currentIndex()));
-        if( std::get<1>(file->second) )
+        if( force || std::get<1>(file->second) )
         {
             QString name = tabText(currentIndex());
             removeTab(currentIndex());
@@ -112,7 +114,7 @@ bool CodeEditorTabs::closeFile(int index) {
         }
         return false;
     }
-    if( index < count() && std::get<1>(_openFiles.find(tabText(index))->second) )
+    if( index < count() && (force || std::get<1>(_openFiles.find(tabText(index))->second)) )
     {
         QString name = tabText(index);
         removeTab(index);
@@ -172,12 +174,12 @@ void CodeEditorTabs::saveFile(QString fileName, int index) {
             source << editor->getText().toStdString() << std::endl;
             source.close();
 
+            std::get<1>(file->second) = true;
+
             fileName.replace('\\','/').remove(QRegExp(".*\\/"));
             std::swap(_openFiles[fileName], file->second);
             _openFiles.erase(file);
             setTabText(currentIndex(),fileName);
-
-            std::get<1>(file->second) = true;
         }
         return;
     }
@@ -190,11 +192,11 @@ void CodeEditorTabs::saveFile(QString fileName, int index) {
         source << editor->getText().toStdString() << std::endl;
         source.close();
 
+        std::get<1>(file->second) = true;
+
         fileName.replace('\\','/').remove(QRegExp(".*\\/"));
         std::swap(_openFiles[fileName], file->second);
         _openFiles.erase(file);
         setTabText(index,fileName);
-
-        std::get<1>(file->second) = true;
     }
 }
