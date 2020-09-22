@@ -141,6 +141,7 @@ bool CodeEditorTabs::saveFile(int index) {
             source.close();
 
             std::get<1>(file->second) = true;
+            setTabIcon(currentIndex(),QIcon());
         }
         return true;
     }
@@ -158,6 +159,7 @@ bool CodeEditorTabs::saveFile(int index) {
         source.close();
 
         std::get<1>(file->second) = true;
+        setTabIcon(index,QIcon());
     }
     return true;
 }
@@ -175,6 +177,7 @@ void CodeEditorTabs::saveFile(QString fileName, int index) {
             source.close();
 
             std::get<1>(file->second) = true;
+            setTabIcon(currentIndex(),QIcon());
 
             fileName.replace('\\','/').remove(QRegExp(".*\\/"));
             std::swap(_openFiles[fileName], file->second);
@@ -193,6 +196,7 @@ void CodeEditorTabs::saveFile(QString fileName, int index) {
         source.close();
 
         std::get<1>(file->second) = true;
+        setTabIcon(index,QIcon());
 
         fileName.replace('\\','/').remove(QRegExp(".*\\/"));
         std::swap(_openFiles[fileName], file->second);
