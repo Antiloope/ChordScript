@@ -24,6 +24,8 @@ public:
 private:
     std::map<QString,std::tuple<std::unique_ptr<CodeEditor>,bool,QString>> _openFiles;
     size_t _newFileIndex = 0;
+private slots:
+    void tabModified();
 };
 
 }

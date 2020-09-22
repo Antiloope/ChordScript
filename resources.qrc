@@ -8,5 +8,7 @@
         <file>resources/save.svg</file>
         <file>resources/new.svg</file>
         <file>resources/open.svg</file>
+        <file>resources/closeTab.svg</file>
+        <file>resources/closeTabHover.svg</file>
     </qresource>
 </RCC>

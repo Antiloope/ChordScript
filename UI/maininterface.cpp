@@ -42,6 +42,7 @@ const QString SERVER_MENU_TITLE = QString::fromUtf8("&Server");
 const QString FIND_MENU_TITLE = QString::fromUtf8("Fi&nd");
 const QString HELP_MENU_TITLE = QString::fromUtf8("&Help");
 const QString OPEN_ACTION_TITLE = QString::fromUtf8("&Open...");
+const QString NEW_FILE_ACTION_TITLE = QString::fromUtf8("&New File");
 const QString OPEN_RECENT_ACTION_TITLE = QString::fromUtf8("Recent &Files");
 const QString SAVE_ACTION_TITLE = QString::fromUtf8("&Save");
 const QString SAVE_AS_ACTION_TITLE = QString::fromUtf8("Save As...");
@@ -61,7 +62,6 @@ const QString SERVER_KILL_ACTION_TITLE = QString::fromUtf8("&Kill Server");
 const QString SERVER_START_ACTION_TITLE = QString::fromUtf8("&Start Server");
 const QString SERVER_RESTART_ACTION_TITLE = QString::fromUtf8("&Restart Server");
 const QString SERVER_RECORD_ACTION_TITLE = QString::fromUtf8("Recording");
-
 }
 
 atomic_flag flag = ATOMIC_FLAG_INIT;
@@ -157,6 +157,8 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
 
     QAction* openAction = new QAction(OPEN_ACTION_TITLE,this);
     openAction->setShortcut(tr("CTRL+O"));
+    QAction* newFileAction = new QAction(NEW_FILE_ACTION_TITLE,this);
+    newFileAction->setShortcut(tr("CTRL+T"));
     QAction* openRecentAction = new QAction(OPEN_RECENT_ACTION_TITLE,this);
     QAction* saveAction = new QAction(SAVE_ACTION_TITLE,this);
     saveAction->setShortcut(tr("CTRL+S"));
@@ -187,13 +189,14 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     QAction* serverKillAction = new QAction(SERVER_KILL_ACTION_TITLE,this);
     QAction* serverStartAction = new QAction(SERVER_START_ACTION_TITLE,this);
     QAction* serverRestartAction = new QAction(SERVER_RESTART_ACTION_TITLE,this);
-    serverRestartAction->setShortcut(tr("CTRL+T"));
     QAction* serverRecordAction = new QAction(SERVER_RECORD_ACTION_TITLE,this);
     serverRecordAction->setCheckable(true);
     serverRecordAction->setShortcut(tr("CTRL+R"));
 
     QMenu* menuFile = new QMenu(menuBar);
     menuFile->setTitle(FILE_MENU_TITLE);
+    menuFile->addAction(newFileAction);
+    menuFile->addSeparator();
     menuFile->addAction(openAction);
     menuFile->addAction(openRecentAction);
     menuFile->addSeparator();
@@ -301,6 +304,7 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     // Insert the code editor on the top side
     _editorTabs = new CodeEditorTabs();
     hSplitter->addWidget(_editorTabs);
+    _editorTabs->widget(_editorTabs->currentIndex())->setFocus();
 
     // Adding a frame in the left side
     QFrame* toolBoxFrame = new QFrame();
@@ -349,12 +353,15 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     connect(actionStop,SIGNAL(triggered()),this,SLOT(stopButton()));
     connect(actionRecord,SIGNAL(triggered(bool)),this,SLOT(recordButton(bool)));
     connect(actionRecord,SIGNAL(triggered(bool)),serverRecordAction,SLOT(setChecked(bool)));
+    connect(actionOpen,SIGNAL(triggered()),this,SLOT(openFile()));
     connect(openAction,SIGNAL(triggered()),this,SLOT(openFile()));
     connect(actionSave,SIGNAL(triggered()),this,SLOT(saveFile()));
+    connect(actionNewFile,SIGNAL(triggered()),this,SLOT(newFile()));
+    connect(newFileAction,SIGNAL(triggered()),this,SLOT(newFile()));
+    connect(closeFileAction,SIGNAL(triggered()),this,SLOT(closeFile()));
 //    connect(openRecentAction,SIGNAL(triggered()),this,SLOT(openRecentFile()));
     connect(saveAction,SIGNAL(triggered()),this,SLOT(saveFile()));
 //    connect(saveAsAction,SIGNAL(triggered()),this,SLOT(saveAsFile()));
-//    connect(closeFileAction,SIGNAL(triggered()),this,SLOT(closeFile()));
     connect(exitAction,SIGNAL(triggered()),this,SLOT(exit()));
 //    connect(undoAction,SIGNAL(triggered()),this,SLOT(undo()));
 //    connect(redoAction,SIGNAL(triggered()),this,SLOT(redo()));
@@ -371,6 +378,7 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     connect(serverRecordAction,SIGNAL(triggered(bool)),this,SLOT(recordButton(bool)));
     connect(serverRecordAction,SIGNAL(triggered(bool)),actionRecord,SLOT(setChecked(bool)));
 //    connect(serverConfigAction,SIGNAL(triggered()),this,SLOT(configServer()));
+    connect(_editorTabs,SIGNAL(tabCloseRequested(int)),this,SLOT(closeFile(int)));
 }
 
 MainInterface::~MainInterface() {
@@ -400,8 +408,20 @@ void MainInterface::openFile() {
         _editorTabs->openFile(fileName);
 }
 
-void MainInterface::saveFile() {
-    if( !_editorTabs->saveFile() )
+void MainInterface::closeFile(int index) {
+    if( !_editorTabs->closeFile(index) )
+    {
+        saveFile(index);
+        _editorTabs->closeFile(index);
+    }
+}
+
+void MainInterface::newFile() {
+    _editorTabs->newFile();
+}
+
+void MainInterface::saveFile(int index) {
+    if( !_editorTabs->saveFile(index) )
     {
         QString fileName = QFileDialog::getSaveFileName(
             this,
@@ -411,7 +431,10 @@ void MainInterface::saveFile() {
             );
 
         if( !fileName.isNull() )
-            _editorTabs->saveFile(fileName);
+        {
+            fileName = fileName.contains(".")?fileName:(fileName + ".csf");
+            _editorTabs->saveFile(fileName,index);
+        }
     }
 }
 

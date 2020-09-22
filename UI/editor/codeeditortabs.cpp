@@ -5,7 +5,13 @@
 
 using namespace CS::UI;
 
-const QString newFileName = "new_file_";
+namespace  {
+
+const QString CLOSE_TAB_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/closeTab.svg");
+const QString CLOSE_TAB_HOVER_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/closeTabHover.svg");
+const QString NEW_FILE_NAME = "new_file_";
+
+}
 
 CodeEditorTabs::CodeEditorTabs(QWidget* parent) :
     QTabWidget(parent) {
@@ -32,23 +38,38 @@ CodeEditorTabs::CodeEditorTabs(QWidget* parent) :
             "background: "+ def->getColorRGB(ColorId::Dark) + ";"
             "color: " + def->getColorRGB(ColorId::Lightest) + ";"
         "}"
+        "QTabBar::close-button {"
+            "image: url(" + CLOSE_TAB_ICON_RESOURCE + ");"
+        "}"
+        "QTabBar::close-button:hover {"
+            "image: url(" + CLOSE_TAB_HOVER_ICON_RESOURCE + ");"
+        "}"
         );
 
     setMovable(true);
-    setTabBarAutoHide(true);
     setTabsClosable(true);
-    QString fileName = newFileName + QString(std::to_string(_newFileIndex++).c_str());
+
+    QString fileName = NEW_FILE_NAME + QString(std::to_string(_newFileIndex++).c_str());
     auto file = _openFiles.insert({fileName,std::tuple<std::unique_ptr<CodeEditor>,bool,QString>(std::unique_ptr<CodeEditor>(new CodeEditor(this)), false,"")});
     addTab(std::get<0>(file.first->second).get(),fileName);
+    widget(currentIndex())->setFocus(Qt::FocusReason::TabFocusReason);
+
+    connect(std::get<0>(file.first->second).get(),SIGNAL(textChanged()),this,SLOT(tabModified()));
+}
+
+void CodeEditorTabs::tabModified() {
+    std::get<1>(_openFiles.find(tabText(currentIndex()))->second) = false;
 }
 
 CodeEditorTabs::~CodeEditorTabs() {}
 
 void CodeEditorTabs::newFile() {
-    QString fileName = newFileName + QString(std::to_string(_newFileIndex++).c_str());
+    QString fileName = NEW_FILE_NAME + QString(std::to_string(_newFileIndex++).c_str());
     auto file = _openFiles.insert({fileName,std::tuple<std::unique_ptr<CodeEditor>,bool,QString>(std::unique_ptr<CodeEditor>(new CodeEditor(this)), false, "")});
     addTab(std::get<0>(file.first->second).get(),fileName);
     setCurrentIndex(count()-1);
+
+    connect(std::get<0>(file.first->second).get(),SIGNAL(textChanged()),this,SLOT(tabModified()));
 }
 
 void CodeEditorTabs::openFile(QString file) {
@@ -64,7 +85,7 @@ void CodeEditorTabs::openFile(QString file) {
 
     std::ifstream source(file.toStdString(), std::ifstream::in);
     CodeEditor* editor = new CodeEditor(this);
-    _openFiles.insert({fileName,std::tuple<std::unique_ptr<CodeEditor>,bool,QString>(std::unique_ptr<CodeEditor>(editor), false, file)});
+    _openFiles.insert({fileName,std::tuple<std::unique_ptr<CodeEditor>,bool,QString>(std::unique_ptr<CodeEditor>(editor), true, file)});
     addTab(editor,fileName);
     std::string sourceCode;
     editor->clear();
@@ -74,6 +95,8 @@ void CodeEditorTabs::openFile(QString file) {
 
     source.close();
     setCurrentIndex(count()-1);
+
+    connect(editor,SIGNAL(textChanged()),this,SLOT(tabModified()));
 }
 
 bool CodeEditorTabs::closeFile(int index) {
@@ -82,16 +105,18 @@ bool CodeEditorTabs::closeFile(int index) {
         auto file = _openFiles.find(tabText(currentIndex()));
         if( std::get<1>(file->second) )
         {
-            _openFiles.erase(tabText(currentIndex()));
+            QString name = tabText(currentIndex());
             removeTab(currentIndex());
+            _openFiles.erase(name);
             return true;
         }
         return false;
     }
     if( index < count() && std::get<1>(_openFiles.find(tabText(index))->second) )
     {
-        _openFiles.erase(tabText(currentIndex()));
-        removeTab(currentIndex());
+        QString name = tabText(index);
+        removeTab(index);
+        _openFiles.erase(name);
         return true;
     }
     return false;
@@ -117,8 +142,8 @@ bool CodeEditorTabs::saveFile(int index) {
         }
         return true;
     }
-    auto file = _openFiles.find(tabText(currentIndex()));
-    if( index < count() && std::get<1>(file->second) )
+    auto file = _openFiles.find(tabText(index));
+    if( index < count() && !std::get<1>(file->second) )
     {
         std::ifstream f(std::get<2>(file->second).toStdString());
         if( !f.good() )
@@ -147,17 +172,28 @@ void CodeEditorTabs::saveFile(QString fileName, int index) {
             source << editor->getText().toStdString() << std::endl;
             source.close();
 
+            fileName.replace('\\','/').remove(QRegExp(".*\\/"));
+            std::swap(_openFiles[fileName], file->second);
+            _openFiles.erase(file);
+            setTabText(currentIndex(),fileName);
+
             std::get<1>(file->second) = true;
         }
+        return;
     }
-    auto file = _openFiles.find(tabText(currentIndex()));
-    if( index < count() && std::get<1>(file->second) )
+    auto file = _openFiles.find(tabText(index));
+    if( index < count() && !std::get<1>(file->second) )
     {
         auto editor = std::get<0>(file->second).get();
         std::get<2>(file->second) = fileName;
         std::ofstream source(std::get<2>(file->second).toStdString(),std::ofstream::trunc);
         source << editor->getText().toStdString() << std::endl;
         source.close();
+
+        fileName.replace('\\','/').remove(QRegExp(".*\\/"));
+        std::swap(_openFiles[fileName], file->second);
+        _openFiles.erase(file);
+        setTabText(index,fileName);
 
         std::get<1>(file->second) = true;
     }

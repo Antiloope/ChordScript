@@ -15,7 +15,6 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent) {
 
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
-    setFocus();
     setLineWrapMode(LineWrapMode::NoWrap);
 
     setFont(UiDefinitions::getInstance()->getFont(FontId::Code));
@@ -32,6 +31,7 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent) {
     setSizePolicy(QSizePolicy::Policy::Maximum,QSizePolicy::Policy::Maximum);
 
     setTabStopDistance( 4 * fontMetrics().horizontalAdvance(' ') );
+    setFocus();
 
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
     connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
