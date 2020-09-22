@@ -29,6 +29,7 @@ protected slots:
     void stopButton();
     void recordButton(bool);
     void openFile();
+    void saveFile();
     void exit();
 signals:
 

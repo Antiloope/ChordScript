@@ -18,7 +18,8 @@ public:
     void newFile();
     void openFile(QString file);
     bool closeFile(int index = -1);
-    void saveFile(int index = -1);
+    bool saveFile(int index = -1);
+    void saveFile(QString file, int index = -1);
     ~CodeEditorTabs();
 private:
     std::map<QString,std::tuple<std::unique_ptr<CodeEditor>,bool,QString>> _openFiles;

@@ -5,5 +5,8 @@
         <file>resources/record.svg</file>
         <file>resources/circulo.svg</file>
         <file>resources/recording.svg</file>
+        <file>resources/save.svg</file>
+        <file>resources/new.svg</file>
+        <file>resources/open.svg</file>
     </qresource>
 </RCC>

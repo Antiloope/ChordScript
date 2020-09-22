@@ -52,17 +52,26 @@ void CodeEditorTabs::newFile() {
 }
 
 void CodeEditorTabs::openFile(QString file) {
+    QString fileName = file;
+    fileName.replace('\\','/').remove(QRegExp(".*\\/"));
+    if( _openFiles.find(fileName) != _openFiles.end() )
+        for( int i = 0; i < count();i++  )
+            if( tabText(i) == fileName )
+            {
+                setCurrentIndex(i);
+                return;
+            }
+
     std::ifstream source(file.toStdString(), std::ifstream::in);
     CodeEditor* editor = new CodeEditor(this);
-    QString fileName = file.replace('\\','/').remove(QRegExp(".*\\/"));
     _openFiles.insert({fileName,std::tuple<std::unique_ptr<CodeEditor>,bool,QString>(std::unique_ptr<CodeEditor>(editor), false, file)});
     addTab(editor,fileName);
     std::string sourceCode;
     editor->clear();
+
     while( !getline(source,sourceCode).eof() )
-    {
         editor->appendPlainText(sourceCode.c_str());
-    }
+
     source.close();
     setCurrentIndex(count()-1);
 }
@@ -88,29 +97,66 @@ bool CodeEditorTabs::closeFile(int index) {
     return false;
 }
 
-void CodeEditorTabs::saveFile(int index) {
+bool CodeEditorTabs::saveFile(int index) {
+    if( index < 0 )
+    {
+        auto file = _openFiles.find(tabText(currentIndex()));
+        if( !std::get<1>(file->second) )
+        {
+            std::ifstream f(std::get<2>(file->second).toStdString());
+            if( !f.good() )
+                return false;
+
+            auto editor = std::get<0>(file->second).get();
+
+            std::ofstream source(std::get<2>(file->second).toStdString(),std::ofstream::trunc);
+            source << editor->getText().toStdString() << std::endl;
+            source.close();
+
+            std::get<1>(file->second) = true;
+        }
+        return true;
+    }
+    auto file = _openFiles.find(tabText(currentIndex()));
+    if( index < count() && std::get<1>(file->second) )
+    {
+        std::ifstream f(std::get<2>(file->second).toStdString());
+        if( !f.good() )
+            return false;
+
+        auto editor = std::get<0>(file->second).get();
+
+        std::ofstream source(std::get<2>(file->second).toStdString(),std::ofstream::trunc);
+        source << editor->getText().toStdString() << std::endl;
+        source.close();
+
+        std::get<1>(file->second) = true;
+    }
+    return true;
+}
+
+void CodeEditorTabs::saveFile(QString fileName, int index) {
     if( index < 0 )
     {
         auto file = _openFiles.find(tabText(currentIndex()));
         if( !std::get<1>(file->second) )
         {
             auto editor = std::get<0>(file->second).get();
-
+            std::get<2>(file->second) = fileName;
             std::ofstream source(std::get<2>(file->second).toStdString(),std::ofstream::trunc);
-            source << editor->getText().toStdString();
+            source << editor->getText().toStdString() << std::endl;
             source.close();
 
             std::get<1>(file->second) = true;
         }
-        return;
     }
     auto file = _openFiles.find(tabText(currentIndex()));
     if( index < count() && std::get<1>(file->second) )
     {
         auto editor = std::get<0>(file->second).get();
-
+        std::get<2>(file->second) = fileName;
         std::ofstream source(std::get<2>(file->second).toStdString(),std::ofstream::trunc);
-        source << editor->getText().toStdString();
+        source << editor->getText().toStdString() << std::endl;
         source.close();
 
         std::get<1>(file->second) = true;

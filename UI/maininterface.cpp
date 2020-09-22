@@ -31,6 +31,9 @@ const QString ACTION_PLAY_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/p
 const QString ACTION_STOP_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/stop.svg");
 const QString ACTION_RECORD_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/record.svg");
 const QString ACTION_RECORDING_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/recording.svg");
+const QString ACTION_SAVE_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/save.svg");
+const QString ACTION_NEW_FILE_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/new.svg");
+const QString ACTION_OPEN_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/open.svg");
 const int DEFAULT_MENU_BAR_HEIGHT = 20;
 const QString FILE_MENU_TITLE = QString::fromUtf8("&File");
 const QString EDIT_MENU_TITLE = QString::fromUtf8("&Edit");
@@ -92,6 +95,7 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     actionPlay->setIcon(icon1);
     actionPlay->setShortcutVisibleInContextMenu(true);
     actionPlay->setShortcut(QString("Ctrl+Space"));
+    actionPlay->setToolTip("Run");
 
     QAction* actionStop = new QAction(this);
     QIcon icon2;
@@ -99,6 +103,7 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     actionStop->setIcon(icon2);
     actionStop->setShortcutVisibleInContextMenu(true);
     actionStop->setShortcut(QString("Ctrl+P"));
+    actionStop->setToolTip("Stop All");
 
     QAction* actionRecord = new QAction(this);
     actionRecord->setCheckable(true);
@@ -107,6 +112,28 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     icon3.addFile(ACTION_RECORDING_ICON_RESOURCE, QSize(), QIcon::Normal, QIcon::On);
     actionRecord->setIcon(icon3);
     actionRecord->setShortcutVisibleInContextMenu(true);
+    actionRecord->setToolTip("Start/Stop Recording");
+
+    QAction* actionSave = new QAction(this);
+    QIcon icon4;
+    icon4.addFile(ACTION_SAVE_ICON_RESOURCE, QSize(), QIcon::Normal, QIcon::On);
+    actionSave->setIcon(icon4);
+    actionSave->setShortcutVisibleInContextMenu(true);
+    actionSave->setToolTip("Save File");
+
+    QAction* actionNewFile = new QAction(this);
+    QIcon icon5;
+    icon5.addFile(ACTION_NEW_FILE_ICON_RESOURCE, QSize(), QIcon::Normal, QIcon::On);
+    actionNewFile->setIcon(icon5);
+    actionNewFile->setShortcutVisibleInContextMenu(true);
+    actionNewFile->setToolTip("New File");
+
+    QAction* actionOpen= new QAction(this);
+    QIcon icon6;
+    icon6.addFile(ACTION_OPEN_ICON_RESOURCE, QSize(), QIcon::Normal, QIcon::On);
+    actionOpen->setIcon(icon6);
+    actionOpen->setShortcutVisibleInContextMenu(true);
+    actionOpen->setToolTip("Open File");
 
     // Central widget
     QWidget* centralWidget = new QWidget(this);
@@ -235,6 +262,11 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
         "QToolButton:hover{"
             "border-radius:6px;"
             "background-color:#1a1a1aff;"
+        "}"
+        "QToolTip {"
+            "border: 1px solid #f7d5fe;"
+            "background-color: #ffffff;"
+            "padding:3px;"
         "}");
 
     menuBar->addAction(menuFile->menuAction());
@@ -248,6 +280,10 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     toolBar->addAction(actionStop);
     toolBar->addSeparator();
     toolBar->addAction(actionRecord);
+    toolBar->addSeparator();
+    toolBar->addAction(actionNewFile);
+    toolBar->addAction(actionOpen);
+    toolBar->addAction(actionSave);
 
     // Creating layout divition
     QHBoxLayout* horizontalLayout = new QHBoxLayout();
@@ -314,8 +350,9 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     connect(actionRecord,SIGNAL(triggered(bool)),this,SLOT(recordButton(bool)));
     connect(actionRecord,SIGNAL(triggered(bool)),serverRecordAction,SLOT(setChecked(bool)));
     connect(openAction,SIGNAL(triggered()),this,SLOT(openFile()));
+    connect(actionSave,SIGNAL(triggered()),this,SLOT(saveFile()));
 //    connect(openRecentAction,SIGNAL(triggered()),this,SLOT(openRecentFile()));
-//    connect(saveAction,SIGNAL(triggered()),this,SLOT(saveFile()));
+    connect(saveAction,SIGNAL(triggered()),this,SLOT(saveFile()));
 //    connect(saveAsAction,SIGNAL(triggered()),this,SLOT(saveAsFile()));
 //    connect(closeFileAction,SIGNAL(triggered()),this,SLOT(closeFile()));
     connect(exitAction,SIGNAL(triggered()),this,SLOT(exit()));
@@ -361,6 +398,21 @@ void MainInterface::openFile() {
 
     if( !fileName.isNull() )
         _editorTabs->openFile(fileName);
+}
+
+void MainInterface::saveFile() {
+    if( !_editorTabs->saveFile() )
+    {
+        QString fileName = QFileDialog::getSaveFileName(
+            this,
+            tr("Save As"),
+            "..",
+            tr("Source (*.csf)")
+            );
+
+        if( !fileName.isNull() )
+            _editorTabs->saveFile(fileName);
+    }
 }
 
 void MainInterface::exit() {
