@@ -415,14 +415,15 @@ void MainInterface::closeFile(int index) {
         int ret = QMessageBox::question(
             this,
             "Closing file",
-            "Do you want to save unsaved changes?",
+            "Do you want to save unsaved changes on " + (index > 0 ? _editorTabs->tabText(index) : _editorTabs->tabText(_editorTabs->currentIndex())) + "?",
             QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
             QMessageBox::Save);
 
         switch( ret )
         {
         case QMessageBox::Save:
-            saveAsFile();
+            if( !_editorTabs->saveFile(index) )
+                saveAsFile();
             _editorTabs->closeFile(index);
             break;
         case QMessageBox::Discard:
