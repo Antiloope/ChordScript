@@ -204,3 +204,21 @@ void CodeEditorTabs::saveFile(QString fileName, int index) {
         setTabText(index,fileName);
     }
 }
+
+void CodeEditorTabs::find(bool reverse,bool caseSensitive, bool wholeWords, QString textToFind) {
+    if( currentIndex() == -1 )
+        return;
+
+    CodeEditor* editor = std::get<0>(_openFiles.find(tabText(currentIndex()))->second).get();
+
+    QTextDocument::FindFlags findFlags = 0;
+
+    if( reverse )
+        findFlags |= QTextDocument::FindBackward;
+    if ( caseSensitive )
+        findFlags |= QTextDocument::FindCaseSensitively;
+    if ( wholeWords )
+        findFlags |= QTextDocument::FindWholeWords;
+
+    editor->find(textToFind,findFlags);
+}

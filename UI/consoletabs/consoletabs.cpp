@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QTabBar>
 #include <QSplitter>
+#include "finder.h"
 
 using namespace CS::UI;
 
@@ -44,23 +45,23 @@ ConsoleTabs::ConsoleTabs(QWidget *parent)
         "}"
         );
 
-    QTextBrowser* log = new QTextBrowser(this);
-    log->setSource(QUrl("log.md"),QTextDocument::MarkdownResource);
-    log->setFont(UiDefinitions::getInstance()->getFont(FontId::Code));
-    log->setAcceptRichText(true);
-    this->addTab(log,"Output Log");
+    _outputLog = new QTextBrowser(this);
+    _outputLog->setSource(QUrl("log.md"),QTextDocument::MarkdownResource);
+    _outputLog->setFont(UiDefinitions::getInstance()->getFont(FontId::Code));
+    _outputLog->setAcceptRichText(true);
+    this->addTab(_outputLog,"Output Log");
 
-    QTextBrowser* searchResult = new QTextBrowser(this);
-    searchResult->setSource(QUrl("log.md"),QTextDocument::MarkdownResource);
-    searchResult->setFont(UiDefinitions::getInstance()->getFont(FontId::Code));
-    searchResult->setAcceptRichText(true);
+    _finder = new Finder(this);
+    this->addTab(_finder,"Find");
 
-    this->addTab(searchResult,"Search Results");
+    connect(_finder,SIGNAL(find(bool,bool,bool,QString)),this,SLOT(findRequested(bool,bool,bool,QString)));
+}
 
-    QTextBrowser* serverLog = new QTextBrowser(this);
-    serverLog->setSource(QUrl("log.md"),QTextDocument::MarkdownResource);
-    serverLog->setFont(UiDefinitions::getInstance()->getFont(FontId::Code));
-    serverLog->setAcceptRichText(true);
-    this->addTab(serverLog,"Server Log");
+void ConsoleTabs::findRequested(bool reverse,bool caseSensitive,bool wholeWords,QString textToFind) {
+    emit find(reverse,caseSensitive,wholeWords,textToFind);
+}
 
+void ConsoleTabs::setFocusFind() {
+    setCurrentIndex(1);
+    _finder->setFocusFind();
 }

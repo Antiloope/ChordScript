@@ -3,6 +3,7 @@
 
 #include <QPlainTextEdit>
 #include <QWidget>
+#include <list>
 
 namespace CS {
 namespace UI {

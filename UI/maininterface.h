@@ -29,6 +29,7 @@ protected slots:
     void stopButton();
     void recordButton(bool);
     void openFile();
+    void find();
     void saveFile(int index = -1);
     void saveAsFile(int index = -1);
     void newFile();

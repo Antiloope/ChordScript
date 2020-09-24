@@ -26,6 +26,8 @@ private:
     size_t _newFileIndex = 0;
 private slots:
     void tabModified();
+public slots:
+    void find(bool,bool,bool,QString);
 };
 
 }

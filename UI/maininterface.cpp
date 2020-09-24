@@ -233,8 +233,6 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     menuServer->addAction(serverConfigAction);
     QMenu* menuHelp = new QMenu(menuBar);
     menuHelp->setTitle(HELP_MENU_TITLE);
-    QMenu* menuFind = new QMenu(menuBar);
-    menuFind->setTitle(FIND_MENU_TITLE);
     this->setMenuBar(menuBar);
 
     // Status bar
@@ -276,7 +274,6 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     menuBar->addAction(menuFile->menuAction());
     menuBar->addAction(menuEdit->menuAction());
     menuBar->addAction(menuView->menuAction());
-    menuBar->addAction(menuFind->menuAction());
     menuBar->addAction(menuServer->menuAction());
     menuBar->addAction(menuHelp->menuAction());
 
@@ -350,6 +347,7 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     vSplitter->addWidget(_consoleTabs);
     vSplitter->setStretchFactor(0,2);
 
+    connect(_consoleTabs,SIGNAL(find(bool,bool,bool,QString)),_editorTabs,SLOT(find(bool,bool,bool,QString)));
     connect(actionPlay,SIGNAL(triggered()),this,SLOT(playButton()));
     connect(actionStop,SIGNAL(triggered()),this,SLOT(stopButton()));
     connect(actionRecord,SIGNAL(triggered(bool)),this,SLOT(recordButton(bool)));
@@ -371,7 +369,7 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
 //    connect(pasteAction,SIGNAL(triggered()),this,SLOT(paste()));
 //    connect(zoomInAction,SIGNAL(triggered()),this,SLOT(zoomIn()));
 //    connect(zoomOutAction,SIGNAL(triggered()),this,SLOT(zoomOut()));
-//    connect(findAction,SIGNAL(triggered()),this,SLOT(find()));
+    connect(findAction,SIGNAL(triggered()),this,SLOT(find()));
 //    connect(commentAction,SIGNAL(triggered()),this,SLOT(comment()));
 //    connect(serverStartAction,SIGNAL(triggered()),this,SLOT(startServer()));
 //    connect(serverKillAction,SIGNAL(triggered()),this,SLOT(killServer()));
@@ -389,6 +387,10 @@ MainInterface::~MainInterface() {
 
 void MainInterface::stopButton() {
     _interpreter->interpret("STOP();");
+}
+
+void MainInterface::find() {
+    _consoleTabs->setFocusFind();
 }
 
 void MainInterface::recordButton(bool checked) {
