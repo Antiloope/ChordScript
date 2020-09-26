@@ -53,6 +53,8 @@ void Scope::newVariable(string name, DataTypesId dataType) {
 }
 
 LiteralValue* Scope::getVariableValue(string name) {
+    if( !get<1>(_scope.find(name)->second) )
+        return nullptr;
     return get<1>(_scope.find(name)->second)->clone();
 }
 
