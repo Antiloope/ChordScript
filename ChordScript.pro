@@ -1,5 +1,5 @@
 QT       += core gui
-
+QT       += charts
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 # remove possible other optimization flags
@@ -31,6 +31,7 @@ SOURCES += \
     UI/editor/linenumberarea.cpp \
     UI/editor/syntaxhighlighter.cpp \
     UI/maininterface.cpp \
+    UI/toolbox/soundanalyzer.cpp \
     UI/toolbox/toolbox.cpp \
     UI/uidefinitions.cpp \
     UI/uimanager.cpp \
@@ -62,6 +63,7 @@ HEADERS += \
     UI/editor/linenumberarea.h \
     UI/editor/syntaxhighlighter.h \
     UI/maininterface.h \
+    UI/toolbox/soundanalyzer.h \
     UI/toolbox/toolbox.h \
     UI/uidefinitions.h \
     UI/uimanager.h \

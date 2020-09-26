@@ -4,6 +4,7 @@
 #include <list>
 #include <stack>
 #include "buffer.h"
+#include <functional>
 
 using namespace std;
 
@@ -42,8 +43,12 @@ public:
 
     void startRecording();
     void stopRecording();
+
+    int addObserver(function<void(const AudioBuffer&)>);
+    void removeObserver(int);
 private:
     static void loadBuffer(list<Playable*>* soundsList);
+    void notify();
 
     void clientInit();
     bool serverInit();
@@ -57,6 +62,7 @@ private:
     list<Playable*> _soundsList;
     stack<char> _availableSounds;
 
+    list<tuple<int,function<void(const AudioBuffer&)>>> _observerList;
     AudioFile<float> _record;
 };
 

@@ -10,6 +10,7 @@
 #include <jack/jack.h>
 #include <jack/control.h>
 #include <ctime>
+#include <future>
 
 using namespace CS;
 
@@ -217,6 +218,8 @@ void Executor::loadBuffer(list<Playable*>* soundsList) {
             recordingFile.unlock();
         }
 
+        std::thread([](){Executor::getInstance()->notify();}).detach();
+
         lockBuffer.test_and_set();
     }
 }
@@ -248,6 +251,32 @@ Executor* Executor::getInstance() {
 Executor::Executor() {
     for( char i = 0; i < MAX_NUMBER_OF_SOUNDS; i++)
         _availableSounds.push(i);
+}
+
+void Executor::notify() {
+    if( !_observerList.empty() )
+        for(auto observer : _observerList)
+            std::thread([observer](){get<1>(observer)(*outputBuffer[currentBuffer].getBuffer());}).detach();
+}
+
+int Executor::addObserver(function<void(const AudioBuffer&)> callback) {
+    static int index = 0;
+    if( _observerList.empty() )
+    {
+        _observerList.push_back(tuple<int,function<void(const AudioBuffer&)>>(index++,callback));
+        return 0;
+    }
+    _observerList.push_back(tuple<int,function<void(const AudioBuffer&)>>(++index,callback));
+    return index-1;
+}
+
+void Executor::removeObserver(int index) {
+    for( auto it = _observerList.begin(); it != _observerList.end(); it++ )
+        if( get<0>(*it) == index )
+        {
+            _observerList.erase(it);
+            return;
+        }
 }
 
 void Executor::startRecording() {

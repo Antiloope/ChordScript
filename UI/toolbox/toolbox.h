@@ -7,14 +7,16 @@
 namespace CS {
 namespace UI {
 
+class SoundAnalyzer;
+
 class ToolBox : public QToolBox
 {
     Q_OBJECT
 public:
     explicit ToolBox(QWidget *parent = nullptr);
-protected:
 private slots:
 private:
+    SoundAnalyzer* _soundAnalyzer;
 
 signals:
 
