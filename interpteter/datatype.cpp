@@ -461,7 +461,7 @@ LiteralValue* SoundDataType::setPanning(
     if( !value )
         return nullptr;
 
-    SoundGenerator* generator = (SoundGenerator*)value->getValue();
+    unique_ptr<SoundGenerator> generator = unique_ptr<SoundGenerator>(((SoundGenerator*)value->getValue())->clone());
 
     if( argumentValues->empty() )
         throw SemanticException("Invalid call of method setPanning without arguments.");
@@ -488,7 +488,7 @@ LiteralValue* SoundDataType::setPanning(
         break;
     }
 
-    return new NullLiteralValue();
+    return new SoundLiteralValue(generator->clone());
 }
 
 LiteralValue* SoundDataType::constantFreq(
