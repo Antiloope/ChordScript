@@ -7,7 +7,7 @@
 namespace CS {
 namespace UI {
 
-class SoundAnalyzer;
+class SoundVisualizer;
 
 class ToolBox : public QToolBox
 {
@@ -16,7 +16,7 @@ public:
     explicit ToolBox(QWidget *parent = nullptr);
 private slots:
 private:
-    SoundAnalyzer* _soundAnalyzer;
+    SoundVisualizer* _soundVisualizer;
 
 signals:
 

@@ -31,7 +31,8 @@ SOURCES += \
     UI/editor/linenumberarea.cpp \
     UI/editor/syntaxhighlighter.cpp \
     UI/maininterface.cpp \
-    UI/toolbox/soundanalyzer.cpp \
+    UI/toolbox/plotsettingsdialog.cpp \
+    UI/toolbox/soundvisualizer.cpp \
     UI/toolbox/toolbox.cpp \
     UI/uidefinitions.cpp \
     UI/uimanager.cpp \
@@ -63,7 +64,8 @@ HEADERS += \
     UI/editor/linenumberarea.h \
     UI/editor/syntaxhighlighter.h \
     UI/maininterface.h \
-    UI/toolbox/soundanalyzer.h \
+    UI/toolbox/plotsettingsdialog.h \
+    UI/toolbox/soundvisualizer.h \
     UI/toolbox/toolbox.h \
     UI/uidefinitions.h \
     UI/uimanager.h \

@@ -1,7 +1,7 @@
 #include "toolbox.h"
 #include "UI/uidefinitions.h"
 #include <QPushButton>
-#include "soundanalyzer.h"
+#include "soundvisualizer.h"
 
 using namespace CS::UI;
 
@@ -24,8 +24,8 @@ ToolBox::ToolBox(QWidget *parent)
         "}"
         );
 
-    _soundAnalyzer = new SoundAnalyzer(this);
-    this->addItem(_soundAnalyzer,"Sound Analizer");
+    _soundVisualizer = new SoundVisualizer(this);
+    this->addItem(_soundVisualizer,"Sound Visualizer");
     this->addItem(new QPushButton(this),"Language Documentation");
     this->addItem(new QPushButton(this),"Help");
 }
