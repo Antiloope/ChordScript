@@ -38,9 +38,7 @@ const QString ACTION_OPEN_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/o
 const int DEFAULT_MENU_BAR_HEIGHT = 20;
 const QString FILE_MENU_TITLE = QString::fromUtf8("&File");
 const QString EDIT_MENU_TITLE = QString::fromUtf8("&Edit");
-const QString VIEW_MENU_TITLE = QString::fromUtf8("&View");
 const QString SERVER_MENU_TITLE = QString::fromUtf8("&Server");
-const QString FIND_MENU_TITLE = QString::fromUtf8("Fi&nd");
 const QString HELP_MENU_TITLE = QString::fromUtf8("&Help");
 const QString OPEN_ACTION_TITLE = QString::fromUtf8("&Open...");
 const QString NEW_FILE_ACTION_TITLE = QString::fromUtf8("&New File");
@@ -63,6 +61,12 @@ const QString SERVER_KILL_ACTION_TITLE = QString::fromUtf8("&Kill Server");
 const QString SERVER_START_ACTION_TITLE = QString::fromUtf8("&Start Server");
 const QString SERVER_RESTART_ACTION_TITLE = QString::fromUtf8("&Restart Server");
 const QString SERVER_RECORD_ACTION_TITLE = QString::fromUtf8("Recording");
+const QString TUTORIAL_ACTION_TITLE = QString::fromUtf8("&Tutorial");
+const QString ABOUT_ACTION_TITLE = QString::fromUtf8("&About ChordScript");
+const QString CHECK_UPDATES_ACTION_TITLE = QString::fromUtf8("Check for &Updates");
+const QString REPORT_BUG_ACTION_TITLE = QString::fromUtf8("&Report Bug");
+const QString DOCUMENTATION_ACTION_TITLE = QString::fromUtf8("Open &Documentation Website");
+
 }
 
 atomic_flag flag = ATOMIC_FLAG_INIT;
@@ -193,6 +197,11 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     QAction* serverRecordAction = new QAction(SERVER_RECORD_ACTION_TITLE,this);
     serverRecordAction->setCheckable(true);
     serverRecordAction->setShortcut(tr("CTRL+R"));
+    QAction* tutorialAction = new QAction(TUTORIAL_ACTION_TITLE,this);
+    QAction* aboutAction = new QAction(ABOUT_ACTION_TITLE,this);
+    QAction* checkUpdatesAction = new QAction(CHECK_UPDATES_ACTION_TITLE,this);
+    QAction* reportBugAction = new QAction(REPORT_BUG_ACTION_TITLE,this);
+    QAction* documentationAction = new QAction(DOCUMENTATION_ACTION_TITLE,this);
 
     QMenu* menuFile = new QMenu(menuBar);
     menuFile->setTitle(FILE_MENU_TITLE);
@@ -220,8 +229,6 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     menuEdit->addSeparator();
     menuEdit->addAction(findAction);
     menuEdit->addAction(commentAction);
-    QMenu* menuView = new QMenu(menuBar);
-    menuView->setTitle(VIEW_MENU_TITLE);
     QMenu* menuServer = new QMenu(menuBar);
     menuServer->setTitle(SERVER_MENU_TITLE);
     menuServer->addAction(serverStartAction);
@@ -233,6 +240,13 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     menuServer->addAction(serverConfigAction);
     QMenu* menuHelp = new QMenu(menuBar);
     menuHelp->setTitle(HELP_MENU_TITLE);
+    menuHelp->addAction(documentationAction);
+    menuHelp->addAction(tutorialAction);
+    menuHelp->addSeparator();
+    menuHelp->addAction(aboutAction);
+    menuHelp->addAction(reportBugAction);
+    menuHelp->addSeparator();
+    menuHelp->addAction(checkUpdatesAction);
     this->setMenuBar(menuBar);
 
     // Status bar
@@ -273,7 +287,6 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
 
     menuBar->addAction(menuFile->menuAction());
     menuBar->addAction(menuEdit->menuAction());
-    menuBar->addAction(menuView->menuAction());
     menuBar->addAction(menuServer->menuAction());
     menuBar->addAction(menuHelp->menuAction());
 
