@@ -15,7 +15,6 @@ const QString CLOSE_TAB_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/clo
 
 ConsoleTabs::ConsoleTabs(QWidget *parent)
     : QTabWidget(parent) {
-    //this->setDocumentMode(true);
     UiDefinitions* def = UiDefinitions::getInstance();
 
     this->setFont(def->getFont(FontId::Global));

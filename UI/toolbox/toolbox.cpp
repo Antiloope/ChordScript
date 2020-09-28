@@ -26,6 +26,38 @@ ToolBox::ToolBox(QWidget *parent)
 
     _soundVisualizer = new SoundVisualizer(this);
     this->addItem(_soundVisualizer,"Sound Visualizer");
-    this->addItem(new QPushButton(this),"Language Documentation");
-    this->addItem(new QPushButton(this),"Help");
+
+    QTextBrowser* documentation = new QTextBrowser(this);
+    documentation->setSearchPaths({"/home/antiloope/Documents/tesis/ChordScript/doc/html/"});
+    documentation->setSource(QUrl("/home/antiloope/Documents/tesis/ChordScript/doc/html/annotated.html"),QTextDocument::HtmlResource);
+    documentation->setOpenExternalLinks(true);
+    documentation->setStyleSheet(
+        "QTextBrowser {"
+            "border:none;"
+        "}");
+    this->addItem(documentation,"Language Documentation");
+
+    QFrame* learnButtons = new QFrame(this);
+    learnButtons->setStyleSheet(
+        "QFrame {"
+            "border:none;"
+            "background-color: " + def->getColorRGB(ColorId::Background) + ";"
+        "}"
+        "QPushButton {"
+            "border: 3px solid " + def->getColorRGB(ColorId::Dark) + ";"
+            "background-color: transparent;"
+            "padding: 3px;"
+        "}"
+        "QPushButton:hover {"
+            "background-color: " + def->getColorRGB(ColorId::Light) + ";"
+        "}"
+        "QPushButton:pressed {"
+            "background-color: " + def->getColorRGB(ColorId::Dark) + ";"
+            "color: " + def->getColorRGB(ColorId::Lightest) + ";"
+        "}");
+    QGridLayout* learnButtonsLayout = new QGridLayout(learnButtons);
+    learnButtons->setLayout(learnButtonsLayout);
+    learnButtonsLayout->addWidget(new QPushButton("Start Tutorial",learnButtons),0,0,1,1);
+    learnButtonsLayout->addWidget(new QPushButton("Go To ChordScript Page",learnButtons),1,0,1,1,Qt::AlignTop);
+    this->addItem(learnButtons,"Learn more");
 }
