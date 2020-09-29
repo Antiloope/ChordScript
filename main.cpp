@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    Log::getInstance().title("Program started");
+    Log::getInstance().write("Program started",Log::info_t);
 
     Context::getInstance()->load();
 
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     int ret = a.exec();
 
     audio->closeAll();
-    Log::getInstance().close("Program closed");
+    Log::getInstance().write("Program closed",Log::info_t);
     return ret;
     return 0;
 }

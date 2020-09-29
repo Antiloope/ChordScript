@@ -499,19 +499,11 @@ void MainInterface::playButton() {
         try {
             _interpreter->interpret(code);
         } catch (CS::SyntaxException& e) {
-            string log = e.what();
-            log += ". At character: " + to_string(e.getCharacterRefference()) + ". Close to: ";
-            log += e.getCharacterRefference()==0?"":&code[e.getCharacterRefference()-1];
-            log += code[e.getCharacterRefference()];
-            log += e.getCharacterRefference()>=code.size()-1?"":&code[e.getCharacterRefference()+1];
-            CS::Log::getInstance().write(log,CS::Log::info_t);
+            _editorTabs->setError(e.getCharacterRefference());
+            CS::Log::getInstance().write(e.what(),CS::Log::info_t);
         } catch (CS::SemanticException& e) {
-            string log = e.what();
-            log += ". At character: " + to_string(e.getCharacterRefference()) + ". Close to: ";
-            log += e.getCharacterRefference()==0?"":&code[e.getCharacterRefference()-1];
-            log += code[e.getCharacterRefference()];
-            log += e.getCharacterRefference()>=code.size()-1?"":&code[e.getCharacterRefference()+1];
-            CS::Log::getInstance().write(log,CS::Log::info_t);
+            _editorTabs->setError(e.getCharacterRefference());
+            CS::Log::getInstance().write(e.what(),CS::Log::info_t);
         } catch (exception& e) {
             CS::Log::getInstance().write(e.what(),CS::Log::info_t);
         }

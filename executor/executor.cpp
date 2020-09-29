@@ -224,13 +224,11 @@ void Executor::loadBuffer(list<Playable*>* soundsList) {
     }
 }
 
-bool serverDeviceAcquire(const char *name) {
-    Log::getInstance().write(name,Log::logType::info_t);
+bool serverDeviceAcquire(const char *) {
     return true;
 }
 
 void serverDeviceRelease(const char *) {
-    Log::getInstance().write("salienod",Log::logType::info_t);
 }
 
 ///////////////////////////////////////////////////
@@ -424,6 +422,8 @@ void Executor::clientInit() {
         throw new LogException("Cannot connect output ports");
 
     free (ports);
+
+    Log::getInstance().write("Jack client connected.",Log::info_t);
 }
 
 bool Executor::serverInit() {
@@ -486,6 +486,8 @@ bool Executor::serverInit() {
 
     if( !jackctl_server_start(jackServer) )
         return false;
+
+    Log::getInstance().write("Jack server started.",Log::info_t);
 
     return true;
 }
@@ -577,6 +579,4 @@ void Executor::init() {
 
     _record.setSampleRate(sampleRate);
     _record.setAudioBufferSize(ChannelMode::Stereo,0);
-
-    Log::getInstance().write("AudioServerAdapter correctly initilized",Log::info_t);
 }

@@ -30,6 +30,7 @@ UiDefinitions::UiDefinitions() {
     _colors[iCast(ColorId::Dark)] = QColor(71,33,79,255);
     _colors[iCast(ColorId::Shadow)] = QColor(170,170,170,153);
     _colors[iCast(ColorId::LightGray)] = QColor(210,210,210,255);
+    _colors[iCast(ColorId::Error)] = QColor(230,53,59,220);
     _colors[iCast(ColorId::H_DataType)] = QColor(93,1,111,255);
     _colors[iCast(ColorId::H_ReservedKeyword)] = QColor(132,2,161,255);
     _colors[iCast(ColorId::H_Comment)] = QColor(102,102,102,255);

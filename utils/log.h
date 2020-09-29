@@ -20,16 +20,9 @@ public:
     void write(std::string, logType);
     void write(std::exception, logType);
 
-    void title(std::string);
-    void subtitle(std::string);
-    void close(std::string);
-
     Log& operator=(const Log&);
 private:
-    void _write(std::string, logType);
-    void _title(std::string);
-    void _subtitle(std::string);
-    void _close(std::string);
+    inline void _write(std::string, logType);
     Log();
 };
 

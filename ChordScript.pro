@@ -10,7 +10,7 @@ QMAKE_CXXFLAGS_RELEASE -= -O2
 # add the desired -O3 if not present
 QMAKE_CXXFLAGS_RELEASE *= -O3
 
-CONFIG += c++11
+CONFIG += c++17
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings

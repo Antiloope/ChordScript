@@ -222,3 +222,17 @@ void CodeEditorTabs::find(bool reverse,bool caseSensitive, bool wholeWords, QStr
 
     editor->find(textToFind,findFlags);
 }
+
+void CodeEditorTabs::setError(int charReference) {
+    auto editor = std::get<0>(_openFiles.find(tabText(currentIndex()))->second).get();
+    QList<QTextEdit::ExtraSelection> selections;
+    QTextEdit::ExtraSelection selection;
+    selection.cursor = editor->textCursor();
+    selection.cursor.setPosition(charReference);
+    selection.cursor.movePosition(QTextCursor::WordLeft,QTextCursor::MoveMode::MoveAnchor);
+    selection.cursor.movePosition(QTextCursor::EndOfWord,QTextCursor::MoveMode::KeepAnchor);
+    selection.format = QTextCharFormat();
+    selection.format.setBackground(UiDefinitions::getInstance()->getColor(ColorId::Error));
+    selections.append(selection);
+    editor->setExtraSelections(selections);
+}

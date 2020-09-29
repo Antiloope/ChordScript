@@ -21,6 +21,7 @@ public:
     bool saveFile(int index = -1);
     void saveFile(QString file, int index = -1);
     ~CodeEditorTabs();
+    void setError(int);
 private:
     std::map<QString,std::tuple<std::unique_ptr<CodeEditor>,bool,QString>> _openFiles;
     size_t _newFileIndex = 0;

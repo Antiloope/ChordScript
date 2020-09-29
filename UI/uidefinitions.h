@@ -31,6 +31,7 @@ enum struct ColorId : char {
     Darkest,
     Shadow,
     LightGray,
+    Error,
     H_DataType,
     H_ReservedKeyword,
     H_Comment,
@@ -53,7 +54,7 @@ public:
 private:
     QPalette _palettes[1];
     QFont _fonts[3];
-    QColor _colors[15];
+    QColor _colors[16];
     QIcon _icons[1];
     static UiDefinitions* instance;
     UiDefinitions();
