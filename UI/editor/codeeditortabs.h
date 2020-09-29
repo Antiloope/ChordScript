@@ -20,6 +20,7 @@ public:
     bool closeFile(int index = -1,bool force = false);
     bool saveFile(int index = -1);
     void saveFile(QString file, int index = -1);
+    void saveAsFile(QString file, int index = -1);
     ~CodeEditorTabs();
     void setError(int);
 private:

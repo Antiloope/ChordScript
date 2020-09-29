@@ -466,7 +466,7 @@ void MainInterface::saveAsFile(int index) {
     if( !fileName.isNull() )
     {
         fileName = fileName.contains(".")?fileName:(fileName + ".csf");
-        _editorTabs->saveFile(fileName,index);
+        _editorTabs->saveAsFile(fileName,index);
     }
 }
 

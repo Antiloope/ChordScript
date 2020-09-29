@@ -205,6 +205,44 @@ void CodeEditorTabs::saveFile(QString fileName, int index) {
     }
 }
 
+void CodeEditorTabs::saveAsFile(QString fileName, int index) {
+    if( index < 0 )
+    {
+        auto file = _openFiles.find(tabText(currentIndex()));
+        auto editor = std::get<0>(file->second).get();
+        std::get<2>(file->second) = fileName;
+        std::ofstream source(std::get<2>(file->second).toStdString(),std::ofstream::trunc);
+        source << editor->getText().toStdString() << std::endl;
+        source.close();
+
+        std::get<1>(file->second) = true;
+        setTabIcon(currentIndex(),QIcon());
+
+        fileName.replace('\\','/').remove(QRegExp(".*\\/"));
+        std::swap(_openFiles[fileName], file->second);
+        _openFiles.erase(file);
+        setTabText(currentIndex(),fileName);
+        return;
+    }
+    auto file = _openFiles.find(tabText(index));
+    if( index < count() )
+    {
+        auto editor = std::get<0>(file->second).get();
+        std::get<2>(file->second) = fileName;
+        std::ofstream source(std::get<2>(file->second).toStdString(),std::ofstream::trunc);
+        source << editor->getText().toStdString() << std::endl;
+        source.close();
+
+        std::get<1>(file->second) = true;
+        setTabIcon(index,QIcon());
+
+        fileName.replace('\\','/').remove(QRegExp(".*\\/"));
+        std::swap(_openFiles[fileName], file->second);
+        _openFiles.erase(file);
+        setTabText(index,fileName);
+    }
+}
+
 void CodeEditorTabs::find(bool reverse,bool caseSensitive, bool wholeWords, QString textToFind) {
     if( currentIndex() == -1 )
         return;
