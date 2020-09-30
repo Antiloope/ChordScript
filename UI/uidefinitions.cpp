@@ -14,7 +14,7 @@ namespace {
 const QString DEFAULT_GLOBAL_FONT = QString::fromUtf8("Sans Serif");
 const int DEFAULT_GLOBAL_FONT_SIZE = 9;
 const int DEFAULT_GLOBAL_FONT_WIDTH = 50;
-const std::string APP_ICON_PATH = ":/icons/resources/circulo.svg";
+const std::string APP_ICON_PATH = ":/resources/circulo.svg";
 }
 
 UiDefinitions::UiDefinitions() {

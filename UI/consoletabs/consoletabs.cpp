@@ -10,7 +10,7 @@
 using namespace CS::UI;
 
 namespace {
-const QString CLOSE_TAB_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/closeTab.svg");
+const QString CLOSE_TAB_ICON_RESOURCE = QString::fromUtf8(":/resources/closeTab.svg");
 }
 
 ConsoleTabs::ConsoleTabs(QWidget *parent)

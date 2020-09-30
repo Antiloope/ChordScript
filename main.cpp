@@ -25,10 +25,17 @@ int main(int argc, char *argv[])
     UI::UiManager ui;
     ui.init(a);
 
-    int ret = a.exec();
+    int ret;
+    try
+    {
+        ret = a.exec();
+    }
+    catch( const exception& e)
+    {
+        Log::getInstance().write(e.what(),Log::error_t);
+    }
 
     audio->closeAll();
     Log::getInstance().write("Program closed",Log::info_t);
     return ret;
-    return 0;
 }

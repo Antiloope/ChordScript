@@ -2,17 +2,28 @@
 #define LEXER_H
 
 #include <list>
-#include "terminalexpressions.h"
-
-using namespace std;
+#include <string>
 
 namespace CS {
 
+// Defined in terminalexpressions.h
+class TerminalExpression;
+
+/**
+ * @brief This has only one static method that returns the tokens
+ * that are generated based on source code.
+ */
 class Lexer
 {
 public:
-    Lexer(){};
-    list<TerminalExpression*> tokenize(string sourceCode);
+    /**
+     * @brief tokenize This method generate CS::TerminalExpressions based
+     * on source code
+     * @param sourceCode Plain text source code
+     * @return An std::list of CS::TerminalExpression* that holds
+     * all the information about the token
+     */
+    static std::list<TerminalExpression*> tokenize(const std::string);
 };
 
 }

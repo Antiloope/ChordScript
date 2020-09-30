@@ -7,9 +7,9 @@ using namespace CS::UI;
 
 namespace  {
 
-const QString CLOSE_TAB_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/closeTab.svg");
-const QString CLOSE_TAB_HOVER_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/closeTabHover.svg");
-const QString MODIFIED_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/modified.svg");
+const QString CLOSE_TAB_ICON_RESOURCE = QString::fromUtf8(":/resources/closeTab.svg");
+const QString CLOSE_TAB_HOVER_ICON_RESOURCE = QString::fromUtf8(":/resources/closeTabHover.svg");
+const QString MODIFIED_ICON_RESOURCE = QString::fromUtf8(":/resources/modified.svg");
 const QString NEW_FILE_NAME = "new_file_";
 
 }

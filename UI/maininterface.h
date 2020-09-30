@@ -23,7 +23,6 @@ private:
     UiManager* _manager;
     CodeEditorTabs* _editorTabs;
     ConsoleTabs* _consoleTabs;
-    Interpreter* _interpreter;
 protected slots:
     void playButton();
     void stopButton();

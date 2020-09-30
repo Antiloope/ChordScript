@@ -16,7 +16,7 @@ CS::AudioBuffer localBuffer;
 
 namespace {
 
-const QString SETTINGS_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/settings.svg");
+const QString SETTINGS_ICON_RESOURCE = QString::fromUtf8(":/resources/settings.svg");
 
 const int CHART_PEN_SIZE = 2;
 

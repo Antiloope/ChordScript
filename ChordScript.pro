@@ -53,6 +53,7 @@ SOURCES += \
     interpteter/value.cpp \
     main.cpp \
     utils/Exceptions/exception.cpp \
+    utils/globalconfig.cpp \
     utils/log.cpp \
     utils/timehandler.cpp
 
@@ -87,7 +88,10 @@ HEADERS += \
     interpteter/terminalexpressions.h \
     interpteter/value.h \
     utils/Exceptions/exception.h \
+    utils/globalconfig.h \
+    utils/globalconfigdefinitions.h \
     utils/log.h \
+    utils/mINI.h \
     utils/timehandler.h
 
 FORMS +=

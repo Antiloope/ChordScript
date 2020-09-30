@@ -3,15 +3,19 @@
 
 #include <string>
 
-using namespace std;
-
 namespace CS {
-
+/**
+ * @brief This class holds a sigle static method that interpret the code
+ */
 class Interpreter
 {
 public:
-    Interpreter();
-    void interpret(const string sourceCode);
+    /**
+     * @brief interpret This method thow a CS::Exception if there are any
+     * error in the code.
+     * @param sourceCode Plain text with the code to interpret.
+     */
+    static void interpret(const std::string);
 };
 
 }

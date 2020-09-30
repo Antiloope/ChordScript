@@ -27,14 +27,14 @@ namespace {
 
 const QString WINDOW_NAME = QString::fromUtf8("MainWindow");
 const int DEFAULT_WINDOW_WIDTH = 500;
-const QString WINDOW_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/circulo.svg");
-const QString ACTION_PLAY_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/play.svg");
-const QString ACTION_STOP_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/stop.svg");
-const QString ACTION_RECORD_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/record.svg");
-const QString ACTION_RECORDING_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/recording.svg");
-const QString ACTION_SAVE_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/save.svg");
-const QString ACTION_NEW_FILE_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/new.svg");
-const QString ACTION_OPEN_ICON_RESOURCE = QString::fromUtf8(":/icons/resources/open.svg");
+const QString WINDOW_ICON_RESOURCE = QString::fromUtf8(":/resources/circulo.svg");
+const QString ACTION_PLAY_ICON_RESOURCE = QString::fromUtf8(":/resources/play.svg");
+const QString ACTION_STOP_ICON_RESOURCE = QString::fromUtf8(":/resources/stop.svg");
+const QString ACTION_RECORD_ICON_RESOURCE = QString::fromUtf8(":/resources/record.svg");
+const QString ACTION_RECORDING_ICON_RESOURCE = QString::fromUtf8(":/resources/recording.svg");
+const QString ACTION_SAVE_ICON_RESOURCE = QString::fromUtf8(":/resources/save.svg");
+const QString ACTION_NEW_FILE_ICON_RESOURCE = QString::fromUtf8(":/resources/new.svg");
+const QString ACTION_OPEN_ICON_RESOURCE = QString::fromUtf8(":/resources/open.svg");
 const int DEFAULT_MENU_BAR_HEIGHT = 20;
 const QString FILE_MENU_TITLE = QString::fromUtf8("&File");
 const QString EDIT_MENU_TITLE = QString::fromUtf8("&Edit");
@@ -399,7 +399,7 @@ MainInterface::~MainInterface() {
 #include "interpteter/interpreter.h"
 
 void MainInterface::stopButton() {
-    _interpreter->interpret("STOP();");
+    Interpreter::interpret("STOP();");
 }
 
 void MainInterface::find() {
@@ -408,9 +408,9 @@ void MainInterface::find() {
 
 void MainInterface::recordButton(bool checked) {
     if( checked )
-        _interpreter->interpret("START_RECORDING();");
+        Interpreter::interpret("START_RECORDING();");
     else
-        _interpreter->interpret("STOP_RECORDING();");
+        Interpreter::interpret("STOP_RECORDING();");
 }
 
 void MainInterface::openFile() {
@@ -497,7 +497,7 @@ void MainInterface::playButton() {
     {
         string code = ((CodeEditor*)_editorTabs->currentWidget())->getText().replace(QRegExp("[ \t]")," ").toStdString();
         try {
-            _interpreter->interpret(code);
+            Interpreter::interpret(code);
         } catch (CS::SyntaxException& e) {
             _editorTabs->setError(e.getCharacterRefference());
             CS::Log::getInstance().write(e.what(),CS::Log::info_t);
