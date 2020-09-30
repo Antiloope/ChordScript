@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/icons">
+    <qresource prefix="/">
         <file>resources/play.svg</file>
         <file>resources/stop.svg</file>
         <file>resources/record.svg</file>
@@ -12,5 +12,8 @@
         <file>resources/closeTabHover.svg</file>
         <file>resources/modified.svg</file>
         <file>resources/settings.svg</file>
+        <file>etc/config.ini</file>
+        <file>etc/lang/en.ini</file>
+        <file>etc/lang/es.ini</file>
     </qresource>
 </RCC>
