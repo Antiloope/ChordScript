@@ -20,7 +20,7 @@ void FunctionDefinition::load(list<TerminalExpression*>* terminalExpressionsList
 
     Context* ctx = Context::getInstance();
 
-    if( ctx->getCurrentScope() != GlobalScope ) throw SemanticException("Functions must be defined on global scope",tmp->getCodeReference());
+    if( ctx->getCurrentScope() != GLOBAL_SCOPE ) throw SemanticException("Functions must be defined on global scope",tmp->getCodeReference());
 
     _context = ctx->newScope();
 

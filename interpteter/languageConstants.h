@@ -3,63 +3,61 @@
 
 #include <string>
 
-using namespace std;
-
 namespace CS {
 
-namespace  {
+namespace {
     constexpr size_t getHash(const char* str, int h = 0)
     {
         return !str[h] ? 5381 : (getHash(str, h+1) * 33) ^ str[h];
     }
 }
 
-namespace constants {
-    const char cEqual               = '=';
-    const char cSubstraction        = '-';
-    const char cAddition            = '+';
-    const char cMultiplication      = '*';
-    const char cDivition            = '/';
-    const char cNegation            = '!';
-    const char cGreaterThan         = '>';
-    const char cLessThan            = '<';
-    const char cOr                  = '|';
-    const char cAnd                 = '&';
-    const char cMemberAccess        = '.';
-    const char cOpenParenthesis     = '(';
-    const char cCloseParenthesis    = ')';
-    const char cOpenBracket         = '[';
-    const char cCloseBracket        = ']';
-    const char cOpenBrace           = '{';
-    const char cCloseBrace          = '}';
-    const char cEndOfExpression     = ';';
-    const char cSeparator           = ',';
-    const char cStringDelimitator   = '"';
-    const char cStartComment        = '#';
-    const char cEndOfLine           = 0x0A;
-    const char cSpace               = ' ';
-    const string sNull              = "null";
-    const string sSample            = "sample";
-    const string sSound             = "sound";
-    const string sNumber            = "number";
-    const string sArgument          = "argument";
-    const string sGroup             = "group";
-    const string sBoolean           = "boolean";
-    const string sString            = "string";
-    const string sFor               = "for";
-    const string sIf                = "if";
-    const string sBreak             = "break";
-    const string sReturn            = "return";
-    const string sElse              = "else";
-    const string sTrue              = "true";
-    const string sFalse             = "false";
+namespace Constants {
+    const char EQUAL                    = '=';
+    const char SUBSTRACTION             = '-';
+    const char ADDITION                 = '+';
+    const char MULTIPLICATION           = '*';
+    const char DIVITION                 = '/';
+    const char NEGATION                 = '!';
+    const char GREATER_THAN             = '>';
+    const char LESS_THAN                = '<';
+    const char OR                       = '|';
+    const char AND                      = '&';
+    const char MEMBER_ACCESS            = '.';
+    const char OPEN_PARENTHESIS         = '(';
+    const char CLOSE_PARENTHESIS        = ')';
+    const char OPEN_BRACKET             = '[';
+    const char CLOSE_BRACKET            = ']';
+    const char OPEN_BRACE               = '{';
+    const char CLOSE_BRACE              = '}';
+    const char END_OF_EXPRESSION        = ';';
+    const char SEPARATOR                = ',';
+    const char STIRNG_DELIMITATOR       = '"';
+    const char START_COMMENT            = '#';
+    const char END_OF_LINE              = 0x0A;
+    const char SPACE                    = ' ';
+    const std::string S_NULL            = "null";
+    const std::string SAMPLE            = "sample";
+    const std::string SOUND             = "sound";
+    const std::string NUMBER            = "number";
+    const std::string ARGUMENT          = "argument";
+    const std::string GROUP             = "group";
+    const std::string BOOLEAN           = "boolean";
+    const std::string STRING            = "string";
+    const std::string FOR               = "for";
+    const std::string IF                = "if";
+    const std::string BREAK             = "break";
+    const std::string RETURN            = "return";
+    const std::string ELSE              = "else";
+    const std::string TRUE              = "true";
+    const std::string FALSE             = "false";
 
     /**
      * @brief Check if str is different from all reserved keywords
      * @param str string value to evaluate
      * @return true if str is different from all reserved keywords
      */
-    inline bool isValidName(const string str)
+    inline bool isValidName(const std::string str)
     {
         switch (getHash(str.c_str())) {
         case getHash("null"):

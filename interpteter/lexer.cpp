@@ -7,7 +7,7 @@
 
 using namespace std;
 using namespace CS;
-using namespace CS::constants;
+using namespace CS::Constants;
 
 list<TerminalExpression*> Lexer::tokenize(const string sourceCode){
     list<TerminalExpression*> tokens;
@@ -21,84 +21,84 @@ list<TerminalExpression*> Lexer::tokenize(const string sourceCode){
     {
         switch( sourceCode[i] )
         {
-            case cEqual:
+            case EQUAL:
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::Equal)));
                 break;
-            case cEndOfExpression:
+            case END_OF_EXPRESSION:
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::EOE)));
                 break;
-            case cSubstraction:
+            case SUBSTRACTION:
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::Substract)));
                 break;
-            case cAddition:
+            case ADDITION:
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::Addition)));
                 break;
-            case cMultiplication:
+            case MULTIPLICATION:
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::Multiplication)));
                 break;
-            case cDivition:
+            case DIVITION:
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::Divition)));
                 break;
-            case cNegation:
+            case NEGATION:
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::Negation)));
                 break;
-            case cGreaterThan:
+            case GREATER_THAN:
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::GreaterThan)));
                 break;
-            case cLessThan:
+            case LESS_THAN:
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::LessThan)));
                 break;
-            case cOr:
+            case OR:
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::Or)));
                 break;
-            case cAnd:
+            case AND:
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::And)));
                 break;
-            case cMemberAccess:
+            case MEMBER_ACCESS:
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::MemberAccess)));
                 break;
-            case cSeparator:
+            case SEPARATOR:
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::Separator)));
                 break;
-            case cOpenParenthesis:
+            case OPEN_PARENTHESIS:
                 containersStack.push('(');
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::OpenParenthesis)));
                 break;
-            case cCloseParenthesis:
+            case CLOSE_PARENTHESIS:
                 containersStack.top() == '('
                     ? containersStack.pop()
                     : throw SyntaxException("Closing a wrong parenthesis", i);
 
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::CloseParenthesis)));
                 break;
-            case cOpenBracket:
+            case OPEN_BRACKET:
                 containersStack.push('[');
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::OpenBracket)));
                 break;
-            case cCloseBracket:
+            case CLOSE_BRACKET:
                 containersStack.top() == '['
                     ? containersStack.pop()
                     : throw SyntaxException("Closing a wrong bracket", i);
 
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::CloseBracket)));
                 break;
-            case cOpenBrace:
+            case OPEN_BRACE:
                 containersStack.push('{');
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::OpenBrace)));
                 break;
-            case cCloseBrace:
+            case CLOSE_BRACE:
                 containersStack.top() == '{'
                     ? containersStack.pop()
                     : throw SyntaxException("Closing a wrong brace", i);
 
                 tokens.push_back(new TerminalExpression(i,cCast(ExpressionTypes::CloseBrace)));
                 break;
-            case cEndOfLine:
-            case cSpace:
+            case END_OF_LINE:
+            case SPACE:
                 break;
-            case cStartComment:
+            case START_COMMENT:
                 i++;
-                while( sourceCode[i] != cEndOfLine )
+                while( sourceCode[i] != END_OF_LINE )
                 {
                     if( i >= sourceCode.length() )
                         break;
@@ -106,12 +106,12 @@ list<TerminalExpression*> Lexer::tokenize(const string sourceCode){
                 }
                 i--;
                 break;
-            case cStringDelimitator:
+            case STIRNG_DELIMITATOR:
             {
                 string tmp = "";
                 size_t codeRef = i;
                 i++;
-                while( sourceCode[i] != cStringDelimitator )
+                while( sourceCode[i] != STIRNG_DELIMITATOR )
                 {
                     if( i >= sourceCode.length() )
                         throw SyntaxException("String delimitator never closed",i);
@@ -143,21 +143,21 @@ list<TerminalExpression*> Lexer::tokenize(const string sourceCode){
                         i++;
                     }
                     // Check for reseved keywords
-                    if( tmp == sFor )
+                    if( tmp == FOR )
                         tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::For)));
-                    else if( tmp == sIf )
+                    else if( tmp == IF )
                         tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::If)));
-                    else if( tmp == sElse )
+                    else if( tmp == ELSE )
                         tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Else)));
-                    else if( tmp == sBreak )
+                    else if( tmp == BREAK )
                         tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Break)));
-                    else if( tmp == sReturn )
+                    else if( tmp == RETURN )
                         tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Return)));
-                    else if( tmp == sTrue )
+                    else if( tmp == TRUE )
                         tokens.push_back(new BooleanExpression(codeRef,cCast(ExpressionTypes::Boolean),true));
-                    else if( tmp == sFalse )
+                    else if( tmp == FALSE )
                         tokens.push_back(new BooleanExpression(codeRef,cCast(ExpressionTypes::Boolean),false));
-                    else if( tmp == sNull )
+                    else if( tmp == S_NULL )
                         tokens.push_back(new TerminalExpression(codeRef,cCast(ExpressionTypes::Null)));
                     else
                         tokens.push_back(new NameExpression(codeRef,cCast(ExpressionTypes::Name),tmp));
@@ -208,9 +208,9 @@ list<TerminalExpression*> Lexer::tokenize(const string sourceCode){
     }
     if( containersStack.empty() )
         return tokens;
-    if( containersStack.top() == cOpenParenthesis )
+    if( containersStack.top() == OPEN_PARENTHESIS )
         throw SyntaxException("Expected ')'",i);
-    if( containersStack.top() == cOpenBrace )
+    if( containersStack.top() == OPEN_BRACE )
         throw SyntaxException("Expected '}'",i);
     else
         throw SyntaxException("Expected ']'",i);

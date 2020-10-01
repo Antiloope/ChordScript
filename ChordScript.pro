@@ -40,7 +40,15 @@ SOURCES += \
     executor/executor.cpp \
     executor/executorinterface.cpp \
     interpteter/context.cpp \
-    interpteter/datatype.cpp \
+    interpteter/datatypes/argumentdatatype.cpp \
+    interpteter/datatypes/booleandatatype.cpp \
+    interpteter/datatypes/datatype.cpp \
+    interpteter/datatypes/groupdatatype.cpp \
+    interpteter/datatypes/nulldatatype.cpp \
+    interpteter/datatypes/numberdatatype.cpp \
+    interpteter/datatypes/sampledatatype.cpp \
+    interpteter/datatypes/sounddatatype.cpp \
+    interpteter/datatypes/stringdatatype.cpp \
     interpteter/expression.cpp \
     interpteter/functiondefinition.cpp \
     interpteter/interpreter.cpp \
@@ -75,7 +83,15 @@ HEADERS += \
     executor/executor.h \
     executor/executorinterface.h \
     interpteter/context.h \
-    interpteter/datatype.h \
+    interpteter/datatypes/argumentdatatype.h \
+    interpteter/datatypes/booleandatatype.h \
+    interpteter/datatypes/datatype.h \
+    interpteter/datatypes/groupdatatype.h \
+    interpteter/datatypes/nulldatatype.h \
+    interpteter/datatypes/numberdatatype.h \
+    interpteter/datatypes/sampledatatype.h \
+    interpteter/datatypes/sounddatatype.h \
+    interpteter/datatypes/stringdatatype.h \
     interpteter/expression.h \
     interpteter/functiondefinition.h \
     interpteter/interpreter.h \

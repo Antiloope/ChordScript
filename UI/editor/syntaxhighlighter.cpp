@@ -13,21 +13,21 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent)
     dataTypeFormat.setFontWeight(QFont::Bold);
     QStringList dataTypeKeywords;
     QString tmp;
-    tmp = "\\b" + QString(CS::constants::sBoolean.c_str()) + "\\b";
+    tmp = "\\b" + QString(CS::Constants::BOOLEAN.c_str()) + "\\b";
     dataTypeKeywords << tmp;
-    tmp = "\\b" + QString(CS::constants::sNull.c_str()) + "\\b";
+    tmp = "\\b" + QString(CS::Constants::S_NULL.c_str()) + "\\b";
     dataTypeKeywords << tmp;
-    tmp = "\\b" + QString(CS::constants::sSample.c_str()) + "\\b";
+    tmp = "\\b" + QString(CS::Constants::SAMPLE.c_str()) + "\\b";
     dataTypeKeywords << tmp;
-    tmp = "\\b" + QString(CS::constants::sSound.c_str()) + "\\b";
+    tmp = "\\b" + QString(CS::Constants::SOUND.c_str()) + "\\b";
     dataTypeKeywords << tmp;
-    tmp = "\\b" + QString(CS::constants::sNumber.c_str()) + "\\b";
+    tmp = "\\b" + QString(CS::Constants::NUMBER.c_str()) + "\\b";
     dataTypeKeywords << tmp;
-    tmp = "\\b" + QString(CS::constants::sArgument.c_str()) + "\\b";
+    tmp = "\\b" + QString(CS::Constants::ARGUMENT.c_str()) + "\\b";
     dataTypeKeywords << tmp;
-    tmp = "\\b" + QString(CS::constants::sGroup.c_str()) + "\\b";
+    tmp = "\\b" + QString(CS::Constants::GROUP.c_str()) + "\\b";
     dataTypeKeywords << tmp;
-    tmp = "\\b" + QString(CS::constants::sString.c_str()) + "\\b";
+    tmp = "\\b" + QString(CS::Constants::STRING.c_str()) + "\\b";
     dataTypeKeywords << tmp;
 
     foreach (const QString &pattern, dataTypeKeywords) {
@@ -39,19 +39,19 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent)
     keywordFormat.setForeground(QBrush(def->getColor(ColorId::H_ReservedKeyword)));
     keywordFormat.setFontWeight(QFont::Bold);
     QStringList keywordPatterns;
-    tmp = "\\b" + QString(CS::constants::sFor.c_str()) + "\\b";
+    tmp = "\\b" + QString(CS::Constants::FOR.c_str()) + "\\b";
     keywordPatterns << tmp;
-    tmp = "\\b" + QString(CS::constants::sIf.c_str()) + "\\b";
+    tmp = "\\b" + QString(CS::Constants::IF.c_str()) + "\\b";
     keywordPatterns << tmp;
-    tmp = "\\b" + QString(CS::constants::sBreak.c_str()) + "\\b";
+    tmp = "\\b" + QString(CS::Constants::BREAK.c_str()) + "\\b";
     keywordPatterns << tmp;
-    tmp = "\\b" + QString(CS::constants::sReturn.c_str()) + "\\b";
+    tmp = "\\b" + QString(CS::Constants::RETURN.c_str()) + "\\b";
     keywordPatterns << tmp;
-    tmp = "\\b" + QString(CS::constants::sElse.c_str()) + "\\b";
+    tmp = "\\b" + QString(CS::Constants::ELSE.c_str()) + "\\b";
     keywordPatterns << tmp;
-    tmp = "\\b" + QString(CS::constants::sTrue.c_str()) + "\\b";
+    tmp = "\\b" + QString(CS::Constants::TRUE.c_str()) + "\\b";
     keywordPatterns << tmp;
-    tmp = "\\b" + QString(CS::constants::sFalse.c_str()) + "\\b";
+    tmp = "\\b" + QString(CS::Constants::FALSE.c_str()) + "\\b";
     keywordPatterns << tmp;
 
     foreach (const QString &pattern, keywordPatterns) {

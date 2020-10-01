@@ -3,29 +3,25 @@
 
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 #include <map>
 #include <stack>
-#include <tuple>
-
-#include "value.h"
-#include "datatype.h"
+#include "executor/AudioFile.h"
+#include "datatypes/datatype.h"
 #include "languageConstants.h"
 
-using namespace std;
 namespace CS {
 
+// Defined in functiondefinition.h
 class FunctionDefinition;
 class BaseFunction;
 
-typedef unordered_map<string,tuple<DataTypesId,LiteralValue*>> variables_map;
-typedef unordered_map<string,tuple<DataTypesId,FunctionDefinition*>> functions_map;
-typedef unordered_map<DataTypesId,DataType*> data_types_map;
+typedef std::unordered_map<std::string,std::tuple<DataTypesId,LiteralValue*>> variables_map;
+typedef std::unordered_map<std::string,std::tuple<DataTypesId,FunctionDefinition*>> functions_map;
+typedef std::unordered_map<DataTypesId,DataType*> data_types_map;
 typedef size_t scope_index;
-typedef unordered_map<string,AudioFile<float>> audio_files_map;
+typedef std::unordered_map<std::string,AudioFile<float>> audio_files_map;
 
-const scope_index GlobalScope = 0;
-const scope_index MaxContextCount = 1000;
+const scope_index GLOBAL_SCOPE = 0;
 
 /**
  * @brief Axiliar class to manage variables on each scope
@@ -42,50 +38,55 @@ public:
      * @param name Variable name
      * @return true if exist
      */
-    bool exist(string);
+    bool exist(std::string);
 
     /**
      * @brief getVariableDataType
      * @param name Variable name
      * @return
      */
-    DataTypesId getVariableDataType(string);
+    DataTypesId getVariableDataType(std::string);
     /**
      * @brief getDefinedDataType
      * @param name Variable name
      * @return
      */
-    DataTypesId getDefinedDataType(string);
+    DataTypesId getDefinedDataType(std::string);
     /**
      * @brief getVariableValue
      * @param name Variable name
      * @return A pointer to a literal value stored in scope
      */
-    LiteralValue* getVariableValue(string);
+    LiteralValue* getVariableValue(std::string);
     /**
      * @brief setVariableValue
      * @param name Variable name
      * @param value LiteralValue
      * @return true if variable could be setted
      */
-    bool setVariableValue(string,LiteralValue*);
+    bool setVariableValue(std::string,LiteralValue*);
     /**
      * @brief newVariable
      * @param name Variable name
      * @param dataType data type in variable definition
      */
-    void newVariable(string, DataTypesId);
+    void newVariable(std::string, DataTypesId);
 
-   const variables_map getAllPlayables();
+    /**
+     * @brief this method is used to stop all sounds currently active
+     * @return return a map with all playable variables
+     */
+    const variables_map getAllPlayables();
 
 private:
     variables_map _scope;
 };
 
-typedef map<size_t,Scope> scopes_map;
+typedef std::map<size_t,Scope> scopes_map;
 
 /**
- * @brief Singleton class to sotre all values needed to be non volatile on sucesive interpreter instances
+ * @brief Singleton class to sotre all values needed to be non volatile
+ * on sucesive interpreter instances
  */
 class Context
 {
@@ -105,65 +106,65 @@ public:
      * @param name Variable name
      * @return true if exist a variable with specified name
      */
-    bool nameExist(string);
+    bool nameExist(std::string);
     /**
      * @brief functionNameExist
      * @param name Function name
      * @return true if exist a function with specified name
      */
-    bool functionNameExist(string) const;
+    bool functionNameExist(std::string) const;
     /**
      * @brief isValidName
      * @param name Variable or function name
      * @return true if name its not a language keyword or anothe not valid names
      */
-    bool isValidName(string) const;
+    bool isValidName(std::string) const;
     /**
      * @brief getVariableDataType
      * @param name Variable name
      * @return
      */
-    DataTypesId getVariableDataType(string);
+    DataTypesId getVariableDataType(std::string);
 
     /**
      * @brief newVariable
      * @param name Variable name
      * @param dataType data type in variable definition
      */
-    void newVariable(string,DataTypesId);
+    void newVariable(std::string,DataTypesId);
     /**
      * @brief setVariableValue
      * @param name Variable name
      * @param value LiteralValue
      * @return true if variable could be setted
      */
-    bool setVariableValue(string,LiteralValue*);
+    bool setVariableValue(std::string,LiteralValue*);
     /**
      * @brief getVariableValue
      * @param name Variable name
      * @return A pointer to a literal value stored in scope
      */
-    LiteralValue* getVariableValue(string);
+    LiteralValue* getVariableValue(std::string);
     /**
      * @brief getVariableValue
      * @param name Variable name
      * @param dataTypeId Id to a data type to cast
      * @return A pointer casted to specified data type from a literal value stored in scope
      */
-    LiteralValue* getVariableValue(string,DataTypesId);
+    LiteralValue* getVariableValue(std::string,DataTypesId);
     /**
      * @brief getArgumentValue
      * @param name Argument name
      * @return A pointer to a literal value stored current scope
      */
-    LiteralValue* getArgumentValue(string);
+    LiteralValue* getArgumentValue(std::string);
     /**
      * @brief getArgumentValue
      * @param name Argument name
      * @param dataTypeId Id to a data type to cast
      * @return A pointer casted to specified data type from a literal value stored current scope
      */
-    LiteralValue* getArgumentValue(string,DataTypesId);
+    LiteralValue* getArgumentValue(std::string,DataTypesId);
 
     /**
      * @brief newFunction
@@ -171,14 +172,14 @@ public:
      * @param dataType Function return data type
      * @return A pointer to a new function definition. Destruction responsability is over this Context class
      */
-    FunctionDefinition* newFunction(string,DataTypesId);
+    FunctionDefinition* newFunction(std::string,DataTypesId);
     /**
      * @brief executeFunction
      * @param name Function name
      * @param arguments Literal arguments to execute function
      * @return true if function could be executed correctly
      */
-    bool executeFunction(string,LiteralValue*);
+    bool executeFunction(std::string,LiteralValue*);
 
     /**
      * @brief executeMethod
@@ -187,7 +188,7 @@ public:
      * @param arguments
      * @return true if method could be executed correctly
      */
-    bool executeMethod(string,string,LiteralValue*);
+    bool executeMethod(std::string,std::string,LiteralValue*);
 
     /**
      * @brief newScope
@@ -214,32 +215,67 @@ public:
      * @param scopeIndex
      */
     void removeScope(scope_index);
-
+    /**
+     * @brief this method is used to stop all sounds currently active
+     * To do it, this method iterate over all scopes searching for playables.
+     * @return return a map with all playable variables.
+     */
     const variables_map getAllPlayables();
 
-    void newAudioFile(string,AudioFile<float>);
-    void removeAudioFile(string);
-    const AudioFile<float>* getAudioFile(string) const;
+    /**
+     * @brief This method store an AudioFile in memory, in order to be
+     * used later as a sample.
+     * @param fileName (unique)
+     * @param audioFile
+     */
+    void newAudioFile(std::string,AudioFile<float>);
+    /**
+     * @brief removeAudioFile
+     * @param fileName
+     */
+    void removeAudioFile(std::string);
+    /**
+     * @brief getAudioFile
+     * @param fileName
+     * @return
+     */
+    const AudioFile<float>* getAudioFile(std::string) const;
 
+    /**
+     * @brief This method store a copy of the value passed as argument.
+     * @param returnValue
+     */
     void setReturnValue(LiteralValue*);
+    /**
+     * @brief This method store a CS::NullLiteralValue as return value.
+     */
     void setReturnValue();
+    /**
+     * @brief getReturnValue
+     * @return A copy of the return value internaly stored.
+     * Delegates responsability to free this pointer later.
+     */
     LiteralValue* getReturnValue() const;
+    /**
+     * @brief Check if there are a return value setted.
+     * @return false if return value is a nullptr, true otherwise.
+     */
     bool existReturnValue() const;
 private:
     static Context* _instance;
     Context();
 
-    bool executeVariableFunction(string,LiteralValue*);
+    bool executeVariableFunction(std::string,LiteralValue*);
 
-    stack<scope_index> _freeScopesIndexes;
-    stack<scope_index> _scopeStack;
+    std::stack<scope_index> _freeScopesIndexes;
+    std::stack<scope_index> _scopeStack;
     data_types_map _dataTypes;
     scopes_map _scopes;
     functions_map _functions;
     LiteralValue* _returnValue;
     audio_files_map _audioFiles;
 
-    BaseFunction* newBaseFunction(string,DataTypesId);
+    BaseFunction* newBaseFunction(std::string,DataTypesId);
 };
 
 }

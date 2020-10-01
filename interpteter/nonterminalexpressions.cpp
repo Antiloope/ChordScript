@@ -393,7 +393,7 @@ void IfInstructionExpression::interpret(){
 BreakInstructionExpression::BreakInstructionExpression(size_t codeReference) : NonTerminalExpression(codeReference) {}
 
 void BreakInstructionExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
-    if(Context::getInstance()->getCurrentScope() == GlobalScope)
+    if(Context::getInstance()->getCurrentScope() == GLOBAL_SCOPE)
         throw SyntaxException("Break is not valid in global scope",terminalExpressionsList->front()->getCodeReference());
 
     terminalExpressionsList->pop_front();
@@ -562,7 +562,7 @@ void ReturnInstructionExpression::load(list<TerminalExpression*>* terminalExpres
 
     if( tmp->getType() != cCast(ExpressionTypes::Return) ) throw SyntaxException("Expected return", tmp->getCodeReference());
 
-    if( Context::getInstance()->getCurrentScope() == GlobalScope ) throw SyntaxException("Return is not valid in global scope",tmp->getCodeReference());
+    if( Context::getInstance()->getCurrentScope() == GLOBAL_SCOPE ) throw SyntaxException("Return is not valid in global scope",tmp->getCodeReference());
 
     terminalExpressionsList->pop_front();
     if ( terminalExpressionsList->empty() ) throw SyntaxException("Expected a return value or end of line",tmp->getCodeReference());

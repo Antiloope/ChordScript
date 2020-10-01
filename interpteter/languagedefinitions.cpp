@@ -2,6 +2,7 @@
 #include "context.h"
 #include "value.h"
 #include "executor/executorinterface.h"
+#include "executor/AudioFile.h"
 #include <cmath>
 
 #include <string>

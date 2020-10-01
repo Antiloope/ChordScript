@@ -1,12 +1,13 @@
 #include "context.h"
 #include "functiondefinition.h"
 #include "languagedefinitions.h"
-
 #include "executor/buffer.h"
 #include <memory>
 
 using namespace std;
 using namespace CS;
+
+const scope_index MAX_CONTEXT_COUNT = 1000;
 
 Context* Context::_instance = nullptr;
 
@@ -94,17 +95,17 @@ Context::Context() {
         {DataTypesId::String,      new StringDataType()},
     };
 
-    _scopes.insert( pair<size_t,Scope>(GlobalScope,Scope()) );
+    _scopes.insert( pair<size_t,Scope>(GLOBAL_SCOPE,Scope()) );
 
     _functions = {};
 
     _audioFiles = {};
 
-    _scopeStack.push(GlobalScope);
+    _scopeStack.push(GLOBAL_SCOPE);
 
     _returnValue = nullptr;
 
-    for(scope_index i = MaxContextCount ; i != 0 ; i--)
+    for(scope_index i = MAX_CONTEXT_COUNT ; i != 0 ; i--)
     {
         _freeScopesIndexes.push(i);
     }
@@ -115,16 +116,16 @@ void Context::load() {
     this->newVariable(Names::squareSound,DataTypesId::Sound);
 
     LiteralValue* value = new SoundLiteralValue(new SoundGenerator(&Functions::sin));
-    _scopes.find(GlobalScope)->second.setVariableValue(Names::sinSound,value);
+    _scopes.find(GLOBAL_SCOPE)->second.setVariableValue(Names::sinSound,value);
 
     value = new SoundLiteralValue(new SoundGenerator(&Functions::square));
-    _scopes.find(GlobalScope)->second.setVariableValue(Names::squareSound,value);
+    _scopes.find(GLOBAL_SCOPE)->second.setVariableValue(Names::squareSound,value);
 
     this->newVariable(Names::a3,DataTypesId::Numeric);
     this->newVariable(Names::c3,DataTypesId::Numeric);
 
-    _scopes.find(GlobalScope)->second.setVariableValue(Names::a3,new NumericLiteralValue(220));
-    _scopes.find(GlobalScope)->second.setVariableValue(Names::c3,new NumericLiteralValue(130.813));
+    _scopes.find(GLOBAL_SCOPE)->second.setVariableValue(Names::a3,new NumericLiteralValue(220));
+    _scopes.find(GLOBAL_SCOPE)->second.setVariableValue(Names::c3,new NumericLiteralValue(130.813));
 
     BaseFunction* func = new BaseFunction();
     func->load({{DataTypesId::String,"fileName"}},&Functions::sample);
@@ -177,7 +178,7 @@ void Context::returnScope() {
 
 scope_index Context::switchScope(scope_index scopeIndex) {
     if( _scopes.find(scopeIndex) == _scopes.end() )
-        return GlobalScope;
+        return GLOBAL_SCOPE;
 
     scope_index returnScopeId = _freeScopesIndexes.top();
     _freeScopesIndexes.pop();
@@ -200,7 +201,7 @@ bool Context::isDataType(DataTypesId dataType) const {
 }
 
 bool Context::isValidName(string name) const {
-    return constants::isValidName(name);
+    return Constants::isValidName(name);
 }
 
 DataTypesId Context::getVariableDataType(string name) {
@@ -487,7 +488,7 @@ BaseFunction* Context::newBaseFunction(string name,DataTypesId dataType) {
 }
 
 void Context::removeScope(scope_index ctx) {
-    if( ctx == GlobalScope )
+    if( ctx == GLOBAL_SCOPE )
         return;
     if( _scopes.find(ctx) == _scopes.end() )
         return;
