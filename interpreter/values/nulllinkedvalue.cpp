@@ -1,6 +1,6 @@
 #include "nulllinkedvalue.h"
 #include "nullliteralvalue.h"
-#include "interpteter/expressions/terminalexpression.h"
+#include "interpreter/expressions/terminalexpression.h"
 #include "utils/Exceptions/exception.h"
 
 using namespace CS;

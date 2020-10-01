@@ -1,9 +1,9 @@
 #include "booleanoperationlinkedvalue.h"
-#include "interpteter/expressions/terminalexpression.h"
+#include "interpreter/expressions/terminalexpression.h"
 #include "utils/Exceptions/exception.h"
-#include "interpteter/values/literalvalue.h"
-#include "interpteter/aux/soundgenerator.h"
-#include "interpteter/aux/sampleplayer.h"
+#include "interpreter/values/literalvalue.h"
+#include "interpreter/aux/soundgenerator.h"
+#include "interpreter/aux/sampleplayer.h"
 #include <stack>
 #include <memory>
 

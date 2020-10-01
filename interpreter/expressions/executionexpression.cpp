@@ -1,9 +1,9 @@
 #include "executionexpression.h"
-#include "interpteter/context.h"
+#include "interpreter/context.h"
 #include "terminalexpression.h"
 #include "utils/Exceptions/exception.h"
-#include "interpteter/values/arraylinkedvalue.h"
-#include "interpteter/values/literalvalue.h"
+#include "interpreter/values/arraylinkedvalue.h"
+#include "interpreter/values/literalvalue.h"
 #include <memory>
 
 using namespace CS;

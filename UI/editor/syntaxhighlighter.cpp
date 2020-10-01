@@ -1,5 +1,5 @@
 #include "syntaxhighlighter.h"
-#include "interpteter/languageConstants.h"
+#include "interpreter/languageConstants.h"
 #include "UI/uidefinitions.h"
 
 using namespace CS::UI;

@@ -396,7 +396,7 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
 MainInterface::~MainInterface() {
 }
 
-#include "interpteter/interpreter.h"
+#include "interpreter/interpreter.h"
 
 void MainInterface::stopButton() {
     Interpreter::interpret("STOP();");

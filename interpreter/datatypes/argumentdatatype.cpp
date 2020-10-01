@@ -1,5 +1,5 @@
 #include "argumentdatatype.h"
-#include "interpteter/value.h"
+#include "interpreter/values/literalvalue.h"
 
 using namespace CS;
 

@@ -1,7 +1,9 @@
 #include "sounddatatype.h"
-#include "interpteter/context.h"
-#include "interpteter/value.h"
+#include "interpreter/context.h"
+#include "interpreter/values/literalvalue.h"
 #include <memory>
+#include "interpreter/aux/soundgenerator.h"
+#include "utils/Exceptions/exception.h"
 
 using namespace CS;
 using namespace CS::Constants;

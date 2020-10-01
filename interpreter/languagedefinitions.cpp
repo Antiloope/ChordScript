@@ -1,10 +1,12 @@
 #include "languagedefinitions.h"
 #include "context.h"
-#include "value.h"
+#include "values/literalvalue.h"
 #include "executor/executorinterface.h"
 #include "executor/AudioFile.h"
+#include "utils/Exceptions/exception.h"
 #include <cmath>
-
+#include "executor/buffer.h"
+#include "interpreter/aux/sampleplayer.h"
 #include <string>
 
 using namespace CS;

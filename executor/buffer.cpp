@@ -1,7 +1,7 @@
 #include "buffer.h"
 #include "executorinterface.h"
 #include <math.h>
-#include "interpteter/context.h"
+#include "interpreter/context.h"
 #include <cstring>
 
 using namespace CS;

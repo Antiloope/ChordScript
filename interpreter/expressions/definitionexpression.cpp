@@ -1,8 +1,8 @@
 #include "definitionexpression.h"
-#include "interpteter/functiondefinition.h"
+#include "interpreter/functiondefinition.h"
 #include "terminalexpression.h"
 #include "utils/Exceptions/exception.h"
-#include "interpteter/context.h"
+#include "interpreter/context.h"
 
 using namespace CS;
 using namespace std;

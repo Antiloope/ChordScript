@@ -1,7 +1,8 @@
 #include "booleandatatype.h"
-#include "interpteter/value.h"
+#include "interpreter/values/literalvalue.h"
 
 using namespace CS;
+using namespace std;
 
 BooleanDataType::BooleanDataType() {}
 

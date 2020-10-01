@@ -1,5 +1,5 @@
 #include "sampleliteralvalue.h"
-#include "interpteter/aux/sampleplayer.h"
+#include "interpreter/aux/sampleplayer.h"
 
 using namespace CS;
 

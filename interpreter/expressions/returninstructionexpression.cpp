@@ -1,7 +1,7 @@
 #include "returninstructionexpression.h"
-#include "interpteter/context.h"
-#include "interpteter/values/linkedvalue.h"
-#include "interpteter/values/literalvalue.h"
+#include "interpreter/context.h"
+#include "interpreter/values/linkedvalue.h"
+#include "interpreter/values/literalvalue.h"
 #include "terminalexpression.h"
 #include "utils/Exceptions/exception.h"
 

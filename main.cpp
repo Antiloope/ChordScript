@@ -4,8 +4,8 @@
 #include "utils/log.h"
 #include "utils/Exceptions/exception.h"
 #include <stdlib.h>
-#include "interpteter/interpreter.h"
-#include "interpteter/context.h"
+#include "interpreter/interpreter.h"
+#include "interpreter/context.h"
 
 #include <iostream>
 

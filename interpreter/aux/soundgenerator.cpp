@@ -1,5 +1,5 @@
 #include "soundgenerator.h"
-#include "interpteter/context.h"
+#include "interpreter/context.h"
 #include "executor/executorinterface.h"
 
 using namespace CS;

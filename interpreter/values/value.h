@@ -1,7 +1,7 @@
 #ifndef VALUE_H
 #define VALUE_H
 
-#include "interpteter/datatypes/datatype.h"
+#include "interpreter/datatypes/datatype.h"
 
 namespace CS {
 

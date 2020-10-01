@@ -1,8 +1,8 @@
 #include "sampledatatype.h"
-#include "interpteter/context.h"
-#include "interpteter/values/literalvalue.h"
-#include "interpteter/aux/sampleplayer.h"
-#include "interpteter/aux/soundgenerator.h"
+#include "interpreter/context.h"
+#include "interpreter/values/literalvalue.h"
+#include "interpreter/aux/sampleplayer.h"
+#include "interpreter/aux/soundgenerator.h"
 #include "utils/Exceptions/exception.h"
 
 using namespace CS;

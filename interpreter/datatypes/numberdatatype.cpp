@@ -1,5 +1,5 @@
 #include "numberdatatype.h"
-#include "interpteter/values/literalvalue.h"
+#include "interpreter/values/literalvalue.h"
 
 using namespace CS;
 

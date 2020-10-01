@@ -1,6 +1,6 @@
 #include "programexpression.h"
 #include "terminalexpression.h"
-#include "interpteter/context.h"
+#include "interpreter/context.h"
 
 using namespace CS;
 using namespace std;

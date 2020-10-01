@@ -1,8 +1,8 @@
 #include "assignationexpression.h"
 #include "utils/Exceptions/exception.h"
-#include "interpteter/context.h"
+#include "interpreter/context.h"
 #include "terminalexpression.h"
-#include "interpteter/values/linkedvalue.h"
+#include "interpreter/values/linkedvalue.h"
 
 using namespace CS;
 using namespace std;

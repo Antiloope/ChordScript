@@ -1,10 +1,10 @@
 #include "forinstructionexpression.h"
-#include "interpteter/context.h"
+#include "interpreter/context.h"
 #include "terminalexpression.h"
 #include "utils/Exceptions/exception.h"
-#include "interpteter/values/booleanoperationlinkedvalue.h"
+#include "interpreter/values/booleanoperationlinkedvalue.h"
 #include <memory>
-#include "interpteter/values/literalvalue.h"
+#include "interpreter/values/literalvalue.h"
 
 using namespace CS;
 using namespace std;

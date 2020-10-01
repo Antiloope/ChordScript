@@ -1,8 +1,8 @@
 #include "executionlinkedvalue.h"
-#include "interpteter/expressions/terminalexpression.h"
+#include "interpreter/expressions/terminalexpression.h"
 #include "utils/Exceptions/exception.h"
-#include "interpteter/values/literalvalue.h"
-#include "interpteter/context.h"
+#include "interpreter/values/literalvalue.h"
+#include "interpreter/context.h"
 #include <memory>
 
 using namespace CS;

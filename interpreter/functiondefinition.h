@@ -4,7 +4,7 @@
 #include <list>
 #include <string>
 
-#include "interpteter/datatypes/datatype.h"
+#include "interpreter/datatypes/datatype.h"
 
 namespace CS {
 

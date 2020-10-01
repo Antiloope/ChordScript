@@ -1,5 +1,5 @@
 #include "instructionexpression.h"
-#include "interpteter/context.h"
+#include "interpreter/context.h"
 #include "utils/Exceptions/exception.h"
 #include "terminalexpression.h"
 

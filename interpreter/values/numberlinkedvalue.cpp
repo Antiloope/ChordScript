@@ -1,7 +1,7 @@
 #include "numberlinkedvalue.h"
-#include "interpteter/expressions/terminalexpression.h"
+#include "interpreter/expressions/terminalexpression.h"
 #include "utils/Exceptions/exception.h"
-#include "interpteter/values/literalvalue.h"
+#include "interpreter/values/literalvalue.h"
 
 using namespace CS;
 using namespace std;

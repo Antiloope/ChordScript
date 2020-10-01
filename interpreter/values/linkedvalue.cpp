@@ -1,6 +1,6 @@
 #include "linkedvalue.h"
 #include "utils/Exceptions/exception.h"
-#include "interpteter/expressions/terminalexpression.h"
+#include "interpreter/expressions/terminalexpression.h"
 
 using namespace CS;
 using namespace std;
