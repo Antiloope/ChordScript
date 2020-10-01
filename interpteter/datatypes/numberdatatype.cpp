@@ -1,13 +1,13 @@
 #include "numberdatatype.h"
-#include "interpteter/value.h"
+#include "interpteter/values/literalvalue.h"
 
 using namespace CS;
 
-NumericDataType::NumericDataType() {}
+NumberDataType::NumberDataType() {}
 
-NumericDataType::~NumericDataType() {}
+NumberDataType::~NumberDataType() {}
 
-LiteralValue* NumericDataType::cast(LiteralValue* value) const {
+LiteralValue* NumberDataType::cast(LiteralValue* value) const {
     switch ( value->getDataTypeId() )
     {
     case DataTypesId::Numeric:
@@ -17,7 +17,7 @@ LiteralValue* NumericDataType::cast(LiteralValue* value) const {
     {
         int returnValue = *(bool*)value->getValue();
         delete value;
-        return new NumericLiteralValue(returnValue);
+        return new NumberLiteralValue(returnValue);
     }
     break;
     default:

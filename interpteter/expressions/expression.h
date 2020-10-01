@@ -4,16 +4,16 @@
 #include <string>
 #include <list>
 
-using namespace std;
-
 namespace CS {
 
-#define cCast(a) static_cast<char>(a)
-
+/**
+ * @brief Base class for expressions. Implement a common codeReference storage
+ * See NonTerminalExpression and TerminalExpression
+ */
 class Expression {
 public:
     Expression();
-    Expression(size_t codeReference);
+    Expression(size_t);
     virtual ~Expression();
     size_t getCodeReference() const;
 private:

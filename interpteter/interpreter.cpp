@@ -1,6 +1,7 @@
 #include "interpreter.h"
-#include "nonterminalexpressions.h"
-#include "terminalexpressions.h"
+#include "expressions/nonterminalexpression.h"
+#include "expressions/terminalexpression.h"
+#include "utils/Exceptions/exception.h"
 #include "lexer.h"
 
 using namespace std;

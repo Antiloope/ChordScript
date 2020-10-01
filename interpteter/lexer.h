@@ -21,7 +21,7 @@ public:
      * on source code
      * @param sourceCode Plain text source code
      * @return An std::list of CS::TerminalExpression* that holds
-     * all the information about the token
+     * all the information about the token (see TerminalExpression)
      */
     static std::list<TerminalExpression*> tokenize(const std::string);
 };

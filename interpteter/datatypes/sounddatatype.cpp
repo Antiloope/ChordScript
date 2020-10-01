@@ -9,37 +9,37 @@ using namespace std;
 
 SoundDataType::SoundDataType() {
     _methods.insert(
-        pair<string,methodFunction_t>(
+        pair<string,method_function_t>(
             "play",
             &SoundDataType::play)
         );
     _methods.insert(
-        pair<string,methodFunction_t>(
+        pair<string,method_function_t>(
             "stop",
             &SoundDataType::stop)
         );
     _methods.insert(
-        pair<string,methodFunction_t>(
+        pair<string,method_function_t>(
             "setPanning",
             &SoundDataType::setPanning)
         );
     _methods.insert(
-        pair<string,methodFunction_t>(
+        pair<string,method_function_t>(
             "constantFreq",
             &SoundDataType::constantFreq)
         );
     _methods.insert(
-        pair<string,methodFunction_t>(
+        pair<string,method_function_t>(
             "freqFactor",
             &SoundDataType::freqFactor)
         );
     _methods.insert(
-        pair<string,methodFunction_t>(
+        pair<string,method_function_t>(
             "freqModulation",
             &SoundDataType::freqModulation)
         );
     _methods.insert(
-        pair<string,methodFunction_t>(
+        pair<string,method_function_t>(
             "ampFactor",
             &SoundDataType::ampFactor)
         );

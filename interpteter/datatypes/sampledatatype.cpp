@@ -1,6 +1,9 @@
 #include "sampledatatype.h"
 #include "interpteter/context.h"
-#include "interpteter/value.h"
+#include "interpteter/values/literalvalue.h"
+#include "interpteter/aux/sampleplayer.h"
+#include "interpteter/aux/soundgenerator.h"
+#include "utils/Exceptions/exception.h"
 
 using namespace CS;
 using namespace CS::Constants;
@@ -8,17 +11,17 @@ using namespace std;
 
 SampleDataType::SampleDataType() {
     _methods.insert(
-        pair<string,methodFunction_t>(
+        pair<string,method_function_t>(
             "play",
             &SampleDataType::play)
         );
     _methods.insert(
-        pair<string,methodFunction_t>(
+        pair<string,method_function_t>(
             "stop",
             &SampleDataType::stop)
         );
     _methods.insert(
-        pair<string,methodFunction_t>(
+        pair<string,method_function_t>(
             "setPanning",
             &SampleDataType::setPanning)
         );
@@ -78,7 +81,7 @@ LiteralValue* SampleDataType::play(
     {
     case DataTypesId::Numeric:
     {
-        double timeFactor = *(double*)((NumericLiteralValue*)(*it))->getValue();
+        double timeFactor = *(double*)((NumberLiteralValue*)(*it))->getValue();
 
         it++;
         if( it == argumentValues->end() )

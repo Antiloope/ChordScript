@@ -1,6 +1,7 @@
 #include "exception.h"
 
 using namespace CS;
+using namespace std;
 
 Exception::Exception() : exception() {}
 

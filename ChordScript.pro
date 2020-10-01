@@ -39,6 +39,8 @@ SOURCES += \
     executor/buffer.cpp \
     executor/executor.cpp \
     executor/executorinterface.cpp \
+    interpteter/aux/sampleplayer.cpp \
+    interpteter/aux/soundgenerator.cpp \
     interpteter/context.cpp \
     interpteter/datatypes/argumentdatatype.cpp \
     interpteter/datatypes/booleandatatype.cpp \
@@ -49,16 +51,44 @@ SOURCES += \
     interpteter/datatypes/sampledatatype.cpp \
     interpteter/datatypes/sounddatatype.cpp \
     interpteter/datatypes/stringdatatype.cpp \
-    interpteter/expression.cpp \
+    interpteter/expressions/assignationexpression.cpp \
+    interpteter/expressions/breakinstructionexpression.cpp \
+    interpteter/expressions/definitionexpression.cpp \
+    interpteter/expressions/eoeinstructionexpression.cpp \
+    interpteter/expressions/executionexpression.cpp \
+    interpteter/expressions/expression.cpp \
+    interpteter/expressions/forinstructionexpression.cpp \
+    interpteter/expressions/ifinstructionexpression.cpp \
+    interpteter/expressions/instructionexpression.cpp \
+    interpteter/expressions/nonterminalexpression.cpp \
+    interpteter/expressions/programexpression.cpp \
+    interpteter/expressions/returninstructionexpression.cpp \
     interpteter/functiondefinition.cpp \
     interpteter/interpreter.cpp \
     interpteter/languagedefinitions.cpp \
     interpteter/lexer.cpp \
-    interpteter/nonterminalexpressions.cpp \
-    interpteter/sampleplayer.cpp \
-    interpteter/soundgenerator.cpp \
-    interpteter/terminalexpressions.cpp \
-    interpteter/value.cpp \
+    interpteter/values/argumentliteralvalue.cpp \
+    interpteter/values/arraylinkedvalue.cpp \
+    interpteter/values/arrayliteralvalue.cpp \
+    interpteter/values/booleanlinkedvalue.cpp \
+    interpteter/values/booleanliteralvalue.cpp \
+    interpteter/values/booleanoperationlinkedvalue.cpp \
+    interpteter/values/executionlinkedvalue.cpp \
+    interpteter/values/linkedvalue.cpp \
+    interpteter/values/literalvalue.cpp \
+    interpteter/values/mathoperationlinkedvalue.cpp \
+    interpteter/values/namelinkedvalue.cpp \
+    interpteter/values/nulllinkedvalue.cpp \
+    interpteter/values/nullliteralvalue.cpp \
+    interpteter/values/numberlinkedvalue.cpp \
+    interpteter/values/numberliteralvalue.cpp \
+    interpteter/values/operatorlinkedvalue.cpp \
+    interpteter/values/operatorliteralvalue.cpp \
+    interpteter/values/sampleliteralvalue.cpp \
+    interpteter/values/soundliteralvalue.cpp \
+    interpteter/values/stringlinkedvalue.cpp \
+    interpteter/values/stringliteralvalue.cpp \
+    interpteter/values/value.cpp \
     main.cpp \
     utils/Exceptions/exception.cpp \
     utils/globalconfig.cpp \
@@ -82,6 +112,8 @@ HEADERS += \
     executor/buffer.h \
     executor/executor.h \
     executor/executorinterface.h \
+    interpteter/aux/sampleplayer.h \
+    interpteter/aux/soundgenerator.h \
     interpteter/context.h \
     interpteter/datatypes/argumentdatatype.h \
     interpteter/datatypes/booleandatatype.h \
@@ -92,17 +124,46 @@ HEADERS += \
     interpteter/datatypes/sampledatatype.h \
     interpteter/datatypes/sounddatatype.h \
     interpteter/datatypes/stringdatatype.h \
-    interpteter/expression.h \
+    interpteter/expressions/assignationexpression.h \
+    interpteter/expressions/breakinstructionexpression.h \
+    interpteter/expressions/definitionexpression.h \
+    interpteter/expressions/eoeinstructionexpression.h \
+    interpteter/expressions/executionexpression.h \
+    interpteter/expressions/expression.h \
+    interpteter/expressions/forinstructionexpression.h \
+    interpteter/expressions/ifinstructionexpression.h \
+    interpteter/expressions/instructionexpression.h \
+    interpteter/expressions/nonterminalexpression.h \
+    interpteter/expressions/programexpression.h \
+    interpteter/expressions/returninstructionexpression.h \
+    interpteter/expressions/terminalexpression.h \
     interpteter/functiondefinition.h \
     interpteter/interpreter.h \
     interpteter/languageConstants.h \
     interpteter/languagedefinitions.h \
     interpteter/lexer.h \
-    interpteter/nonterminalexpressions.h \
-    interpteter/sampleplayer.h \
-    interpteter/soundgenerator.h \
-    interpteter/terminalexpressions.h \
-    interpteter/value.h \
+    interpteter/values/argumentliteralvalue.h \
+    interpteter/values/arraylinkedvalue.h \
+    interpteter/values/arrayliteralvalue.h \
+    interpteter/values/booleanlinkedvalue.h \
+    interpteter/values/booleanliteralvalue.h \
+    interpteter/values/booleanoperationlinkedvalue.h \
+    interpteter/values/executionlinkedvalue.h \
+    interpteter/values/linkedvalue.h \
+    interpteter/values/literalvalue.h \
+    interpteter/values/mathoperationlinkedvalue.h \
+    interpteter/values/namelinkedvalue.h \
+    interpteter/values/nulllinkedvalue.h \
+    interpteter/values/nullliteralvalue.h \
+    interpteter/values/numberlinkedvalue.h \
+    interpteter/values/numberliteralvalue.h \
+    interpteter/values/operatorlinkedvalue.h \
+    interpteter/values/operatorliteralvalue.h \
+    interpteter/values/sampleliteralvalue.h \
+    interpteter/values/soundliteralvalue.h \
+    interpteter/values/stringlinkedvalue.h \
+    interpteter/values/stringliteralvalue.h \
+    interpteter/values/value.h \
     utils/Exceptions/exception.h \
     utils/globalconfig.h \
     utils/globalconfigdefinitions.h \

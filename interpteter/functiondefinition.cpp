@@ -1,7 +1,12 @@
 #include "functiondefinition.h"
 #include "context.h"
+#include "expressions/terminalexpression.h"
+#include "expressions/nonterminalexpression.h"
+#include "utils/Exceptions/exception.h"
+#include "values/literalvalue.h"
 
 using namespace CS;
+using namespace std;
 
 ArgumentDefinition::ArgumentDefinition(DataTypesId dataType, string name) : _dataType(dataType),_name(name) {}
 
@@ -24,7 +29,7 @@ void FunctionDefinition::load(list<TerminalExpression*>* terminalExpressionsList
 
     _context = ctx->newScope();
 
-    if( tmp->getType() != cCast(ExpressionTypes::OpenParenthesis) ) throw SyntaxException("Expected (",tmp->getCodeReference());
+    if( tmp->getType() != cCast(TerminalExpressionType::OpenParenthesis) ) throw SyntaxException("Expected (",tmp->getCodeReference());
 
     terminalExpressionsList->pop_front();
     if( terminalExpressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
@@ -35,7 +40,7 @@ void FunctionDefinition::load(list<TerminalExpression*>* terminalExpressionsList
     bool isValidArgument = true;
     while( isValidArgument )
     {
-        if ( tmp->getType() == cCast(ExpressionTypes::Name) )
+        if ( tmp->getType() == cCast(TerminalExpressionType::Name) )
         {
             if ( !ctx->isDataType(DataType::getDataTypeId(((NameExpression*)tmp)->getName())) ) throw SyntaxException("Expected data type", tmp->getCodeReference());
 
@@ -45,7 +50,7 @@ void FunctionDefinition::load(list<TerminalExpression*>* terminalExpressionsList
             if( terminalExpressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
             tmp = terminalExpressionsList->front();
 
-            if( tmp->getType() != cCast(ExpressionTypes::Name) ) throw SyntaxException("Expected argument name",tmp->getCodeReference());
+            if( tmp->getType() != cCast(TerminalExpressionType::Name) ) throw SyntaxException("Expected argument name",tmp->getCodeReference());
 
             if( !ctx->isValidName(((NameExpression*)tmp)->getName()) ) throw SyntaxException("Invalid name",tmp->getCodeReference());
 
@@ -57,13 +62,13 @@ void FunctionDefinition::load(list<TerminalExpression*>* terminalExpressionsList
             if( terminalExpressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
             tmp = terminalExpressionsList->front();
 
-            if( tmp->getType() == cCast(ExpressionTypes::Separator) )
+            if( tmp->getType() == cCast(TerminalExpressionType::Separator) )
             {
                 terminalExpressionsList->pop_front();
                 if( terminalExpressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
                 tmp = terminalExpressionsList->front();
 
-                if( tmp->getType() == cCast(ExpressionTypes::CloseParenthesis) )
+                if( tmp->getType() == cCast(TerminalExpressionType::CloseParenthesis) )
                 {
                     isValidArgument = false;
 
@@ -72,7 +77,7 @@ void FunctionDefinition::load(list<TerminalExpression*>* terminalExpressionsList
                     tmp = terminalExpressionsList->front();
                 }
             }
-            else if( tmp->getType() == cCast(ExpressionTypes::CloseParenthesis) )
+            else if( tmp->getType() == cCast(TerminalExpressionType::CloseParenthesis) )
             {
                 isValidArgument = false;
 
@@ -85,7 +90,7 @@ void FunctionDefinition::load(list<TerminalExpression*>* terminalExpressionsList
                 throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
             }
         }
-        else if( tmp->getType() == cCast(ExpressionTypes::CloseParenthesis) )
+        else if( tmp->getType() == cCast(TerminalExpressionType::CloseParenthesis) )
         {
             isValidArgument = false;
 
@@ -99,7 +104,7 @@ void FunctionDefinition::load(list<TerminalExpression*>* terminalExpressionsList
         }
     }
 
-    if( tmp->getType() != cCast(ExpressionTypes::OpenBrace) ) throw SyntaxException("Expected {",tmp->getCodeReference());
+    if( tmp->getType() != cCast(TerminalExpressionType::OpenBrace) ) throw SyntaxException("Expected {",tmp->getCodeReference());
 
     terminalExpressionsList->pop_front();
     if( terminalExpressionsList->empty() ) throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
@@ -111,7 +116,7 @@ void FunctionDefinition::load(list<TerminalExpression*>* terminalExpressionsList
     if( terminalExpressionsList->empty() ) throw SyntaxException("Expected }",tmp->getCodeReference() );
 
     tmp = terminalExpressionsList->front();
-    if ( tmp->getType() != cCast(ExpressionTypes::CloseBrace) ) throw SyntaxException("Expected }",tmp->getCodeReference() );
+    if ( tmp->getType() != cCast(TerminalExpressionType::CloseBrace) ) throw SyntaxException("Expected }",tmp->getCodeReference() );
 
     terminalExpressionsList->pop_front();
 

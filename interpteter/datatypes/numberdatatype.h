@@ -5,11 +5,11 @@
 
 namespace CS {
 
-class NumericDataType : public DataType
+class NumberDataType : public DataType
 {
 public:
-    NumericDataType();
-    ~NumericDataType();
+    NumberDataType();
+    ~NumberDataType();
     LiteralValue* cast(LiteralValue*) const;
 };
 

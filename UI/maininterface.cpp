@@ -69,7 +69,7 @@ const QString DOCUMENTATION_ACTION_TITLE = QString::fromUtf8("Open &Documentatio
 
 }
 
-atomic_flag flag = ATOMIC_FLAG_INIT;
+std::atomic_flag flag = ATOMIC_FLAG_INIT;
 
 MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     : QMainWindow(parent), _manager(manager) {
@@ -495,7 +495,7 @@ void MainInterface::exit() {
 void MainInterface::playButton() {
     if(!flag.test_and_set())
     {
-        string code = ((CodeEditor*)_editorTabs->currentWidget())->getText().replace(QRegExp("[ \t]")," ").toStdString();
+        std::string code = ((CodeEditor*)_editorTabs->currentWidget())->getText().replace(QRegExp("[ \t]")," ").toStdString();
         try {
             Interpreter::interpret(code);
         } catch (CS::SyntaxException& e) {
@@ -504,7 +504,7 @@ void MainInterface::playButton() {
         } catch (CS::SemanticException& e) {
             _editorTabs->setError(e.getCharacterRefference());
             CS::Log::getInstance().write(e.what(),CS::Log::info_t);
-        } catch (exception& e) {
+        } catch (std::exception& e) {
             CS::Log::getInstance().write(e.what(),CS::Log::info_t);
         }
 

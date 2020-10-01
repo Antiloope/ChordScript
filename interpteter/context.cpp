@@ -3,6 +3,8 @@
 #include "languagedefinitions.h"
 #include "executor/buffer.h"
 #include <memory>
+#include "values/literalvalue.h"
+#include "aux/soundgenerator.h"
 
 using namespace std;
 using namespace CS;
@@ -88,7 +90,7 @@ Context::Context() {
     _dataTypes = {
         {DataTypesId::Sample,      new SampleDataType()},
         {DataTypesId::Sound,       new SoundDataType()},
-        {DataTypesId::Numeric,     new NumericDataType()},
+        {DataTypesId::Numeric,     new NumberDataType()},
         {DataTypesId::Argument,    new ArgumentDataType()},
         {DataTypesId::Group,       new GroupDataType()},
         {DataTypesId::Boolean,     new BooleanDataType()},
@@ -124,8 +126,8 @@ void Context::load() {
     this->newVariable(Names::a3,DataTypesId::Numeric);
     this->newVariable(Names::c3,DataTypesId::Numeric);
 
-    _scopes.find(GLOBAL_SCOPE)->second.setVariableValue(Names::a3,new NumericLiteralValue(220));
-    _scopes.find(GLOBAL_SCOPE)->second.setVariableValue(Names::c3,new NumericLiteralValue(130.813));
+    _scopes.find(GLOBAL_SCOPE)->second.setVariableValue(Names::a3,new NumberLiteralValue(220));
+    _scopes.find(GLOBAL_SCOPE)->second.setVariableValue(Names::c3,new NumberLiteralValue(130.813));
 
     BaseFunction* func = new BaseFunction();
     func->load({{DataTypesId::String,"fileName"}},&Functions::sample);

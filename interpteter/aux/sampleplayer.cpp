@@ -1,7 +1,7 @@
 #include "sampleplayer.h"
 #include "executor/buffer.h"
 #include "executor/executorinterface.h"
-#include "interpteter/soundgenerator.h"
+#include "interpteter/aux/soundgenerator.h"
 
 using namespace CS;
 
