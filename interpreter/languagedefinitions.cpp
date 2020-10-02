@@ -6,7 +6,7 @@
 #include "utils/Exceptions/exception.h"
 #include <cmath>
 #include "executor/buffer.h"
-#include "interpreter/aux/sampleplayer.h"
+#include "interpreter/players/sampleplayer.h"
 #include <string>
 
 using namespace CS;

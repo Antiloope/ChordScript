@@ -2,8 +2,8 @@
 #include "interpreter/expressions/terminalexpression.h"
 #include "utils/Exceptions/exception.h"
 #include "interpreter/values/literalvalue.h"
-#include "interpreter/aux/soundgenerator.h"
-#include "interpreter/aux/sampleplayer.h"
+#include "interpreter/players/soundgenerator.h"
+#include "interpreter/players/sampleplayer.h"
 #include <stack>
 #include <memory>
 

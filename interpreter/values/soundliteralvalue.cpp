@@ -1,5 +1,5 @@
 #include "soundliteralvalue.h"
-#include "interpreter/aux/soundgenerator.h"
+#include "interpreter/players/soundgenerator.h"
 
 using namespace CS;
 

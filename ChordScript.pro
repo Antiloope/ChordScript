@@ -39,8 +39,8 @@ SOURCES += \
     executor/buffer.cpp \
     executor/executor.cpp \
     executor/executorinterface.cpp \
-    interpreter/aux/sampleplayer.cpp \
-    interpreter/aux/soundgenerator.cpp \
+    interpreter/players/sampleplayer.cpp \
+    interpreter/players/soundgenerator.cpp \
     interpreter/context.cpp \
     interpreter/datatypes/argumentdatatype.cpp \
     interpreter/datatypes/booleandatatype.cpp \
@@ -112,8 +112,8 @@ HEADERS += \
     executor/buffer.h \
     executor/executor.h \
     executor/executorinterface.h \
-    interpreter/aux/sampleplayer.h \
-    interpreter/aux/soundgenerator.h \
+    interpreter/players/sampleplayer.h \
+    interpreter/players/soundgenerator.h \
     interpreter/context.h \
     interpreter/datatypes/argumentdatatype.h \
     interpreter/datatypes/booleandatatype.h \

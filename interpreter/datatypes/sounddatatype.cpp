@@ -2,7 +2,7 @@
 #include "interpreter/context.h"
 #include "interpreter/values/literalvalue.h"
 #include <memory>
-#include "interpreter/aux/soundgenerator.h"
+#include "interpreter/players/soundgenerator.h"
 #include "utils/Exceptions/exception.h"
 
 using namespace CS;

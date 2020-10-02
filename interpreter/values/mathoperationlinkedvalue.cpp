@@ -3,8 +3,8 @@
 #include "utils/Exceptions/exception.h"
 #include "interpreter/values/linkedvalue.h"
 #include "interpreter/values/literalvalue.h"
-#include "interpreter/aux/soundgenerator.h"
-#include "interpreter/aux/sampleplayer.h"
+#include "interpreter/players/soundgenerator.h"
+#include "interpreter/players/sampleplayer.h"
 #include <stack>
 #include <memory>
 #include "interpreter/context.h"

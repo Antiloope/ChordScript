@@ -4,7 +4,7 @@
 #include "executor/buffer.h"
 #include <memory>
 #include "values/literalvalue.h"
-#include "aux/soundgenerator.h"
+#include "players/soundgenerator.h"
 
 using namespace std;
 using namespace CS;
