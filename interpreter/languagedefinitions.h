@@ -53,6 +53,9 @@ const std::string sampleFunction            = "SAMPLE";
 const std::string stopFunction              = "STOP";
 const std::string startRecordingFunction    = "START_RECORDING";
 const std::string stopRecordingFunction     = "STOP_RECORDING";
+const std::string startServerFunction       = "START_SERVER";
+const std::string restartServerFunction     = "RESTART_SERVER";
+const std::string killServerFunction        = "KILL_SERVER";
 
 }
 
@@ -72,6 +75,9 @@ void sample();
 void stop();
 void startRecording();
 void stopRecording();
+void startServer();
+void restartServer();
+void killServer();
 
 }
 

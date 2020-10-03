@@ -505,56 +505,30 @@ void Executor::closeAll() {
     bufferHandlerThread.join();
 }
 
-void Executor::clientRestart() {
-    if( jackClient )
-    {
-        jack_deactivate(jackClient);
-
-        jack_activate(jackClient);
-
-        // Crete ports
-        stereoOutputPort[Channel::left] = jack_port_register (jackClient, "LeftOutput",
-                                                             JACK_DEFAULT_AUDIO_TYPE,
-                                                             JackPortIsOutput, 0);
-
-        stereoOutputPort[Channel::right] = jack_port_register (jackClient, "RightOutput",
-                                                              JACK_DEFAULT_AUDIO_TYPE,
-                                                              JackPortIsOutput, 0);
-        if (stereoOutputPort[Channel::left] == NULL)
-            throw new LogException("No more JACK ports available");
-        if (stereoOutputPort[Channel::right] == NULL)
-            throw new LogException("No more JACK ports available");
-
-        // Activate client
-        if (jack_activate (jackClient))
-            throw new LogException("Cannot activate client");
-
-        // Connect ports to outputPort strucure used to load buffers
-        const char ** ports = jack_get_ports (
-            jackClient,
-            NULL,
-            NULL,
-            JackPortIsPhysical|JackPortIsInput
-            );
-
-        if (ports == NULL)
-            throw new LogException("No physical playback ports");
-
-        if (jack_connect (jackClient, jack_port_name (stereoOutputPort[Channel::left]), ports[Channel::right]) ||
-            jack_connect (jackClient, jack_port_name (stereoOutputPort[Channel::right]), ports[Channel::left]))
-            throw new LogException("Cannot connect output ports");
-
-        free (ports);
-    }
-    else
-        clientInit();
+bool Executor::isServerRunning() {
+    return _isServerRunning;
 }
 
-void Executor::serverRestart() {
-    if( jackServer )
-        jackctl_server_destroy(jackServer);
+void Executor::startServer() {
+    _isServerRunning = serverInit();
+    clientInit();
+}
 
-    serverInit();
+void Executor::restartServer() {
+    killServer();
+    startServer();
+}
+
+void Executor::killServer() {
+    jack_deactivate(jackClient);
+    jack_client_close(jackClient);
+    jackctl_server_stop(jackServer);
+    jackctl_server_close(jackServer);
+    jackctl_server_destroy(jackServer);
+
+    _isServerRunning = false;
+
+    Log::getInstance().write("Server killed",Log::logType::info_t);
 }
 
 void Executor::init() {
@@ -567,7 +541,7 @@ void Executor::init() {
     // Start the trhead
     bufferHandlerThread = thread(loadBuffer,&_soundsList);
 
-    serverInit();
+    _isServerRunning = serverInit();
 
     // Set conficuration for TimeHandler
     TimeHandler::getInstance()->configure(

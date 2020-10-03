@@ -26,6 +26,9 @@ public:
     static void stopRecording();
     static int addObserver(function<void(const AudioBuffer&)>);
     static void removeObserver(int);
+    static void startServer();
+    static void restartServer();
+    static void killServer();
 private:
     ExecutorInterface();
 };

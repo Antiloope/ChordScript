@@ -77,3 +77,15 @@ void CS::Functions::startRecording() {
 void CS::Functions::stopRecording() {
     ExecutorInterface::stopRecording();
 }
+
+void CS::Functions::startServer() {
+    ExecutorInterface::startServer();
+}
+
+void CS::Functions::restartServer() {
+    ExecutorInterface::restartServer();
+}
+
+void CS::Functions::killServer() {
+    ExecutorInterface::killServer();
+}

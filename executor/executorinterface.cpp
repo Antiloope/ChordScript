@@ -1,6 +1,6 @@
 #include "executorinterface.h"
-
 #include "executor.h"
+#include "utils/log.h"
 
 using namespace CS;
 
@@ -49,4 +49,23 @@ int ExecutorInterface::addObserver(function<void(const AudioBuffer&)> callback) 
 
 void ExecutorInterface::removeObserver(int index) {
     Executor::getInstance()->removeObserver(index);
+}
+
+void ExecutorInterface::startServer() {
+    if( !Executor::getInstance()->isServerRunning() )
+        Executor::getInstance()->startServer();
+
+    Log::getInstance().write("Server was running",Log::logType::info_t);
+}
+
+void ExecutorInterface::restartServer() {
+    if( Executor::getInstance()->isServerRunning() )
+        Executor::getInstance()->restartServer();
+    else
+        Executor::getInstance()->startServer();
+}
+
+void ExecutorInterface::killServer() {
+    if( Executor::getInstance()->isServerRunning() )
+        Executor::getInstance()->killServer();
 }

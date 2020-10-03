@@ -38,11 +38,14 @@ public:
     char getSoundId();
 
     void closeAll();
-    void serverRestart();
-    void clientRestart();
 
     void startRecording();
     void stopRecording();
+
+    bool isServerRunning();
+    void startServer();
+    void restartServer();
+    void killServer();
 
     int addObserver(function<void(const AudioBuffer&)>);
     void removeObserver(int);
@@ -64,6 +67,8 @@ private:
 
     list<tuple<int,function<void(const AudioBuffer&)>>> _observerList;
     AudioFile<float> _record;
+
+    bool _isServerRunning = false;
 };
 
 }

@@ -26,6 +26,8 @@ private slots:
     void highlightCurrentLine();
     void updateLineNumberArea(const QRect &, int);
     void setSelectedText();
+public slots:
+    void comment();
 private:
     QWidget *lineNumberArea;
     QString _selectedText;

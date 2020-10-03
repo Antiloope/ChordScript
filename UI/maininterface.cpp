@@ -9,6 +9,7 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
+#include "interpreter/interpreter.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -42,7 +43,6 @@ const QString SERVER_MENU_TITLE = QString::fromUtf8("&Server");
 const QString HELP_MENU_TITLE = QString::fromUtf8("&Help");
 const QString OPEN_ACTION_TITLE = QString::fromUtf8("&Open...");
 const QString NEW_FILE_ACTION_TITLE = QString::fromUtf8("&New File");
-const QString OPEN_RECENT_ACTION_TITLE = QString::fromUtf8("Recent &Files");
 const QString SAVE_ACTION_TITLE = QString::fromUtf8("&Save");
 const QString SAVE_AS_ACTION_TITLE = QString::fromUtf8("Save As...");
 const QString CLOSE_FILE_ACTION_TITLE = QString::fromUtf8("&Close");
@@ -164,7 +164,6 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     openAction->setShortcut(tr("CTRL+O"));
     QAction* newFileAction = new QAction(NEW_FILE_ACTION_TITLE,this);
     newFileAction->setShortcut(tr("CTRL+T"));
-    QAction* openRecentAction = new QAction(OPEN_RECENT_ACTION_TITLE,this);
     QAction* saveAction = new QAction(SAVE_ACTION_TITLE,this);
     saveAction->setShortcut(tr("CTRL+S"));
     QAction* saveAsAction = new QAction(SAVE_AS_ACTION_TITLE,this);
@@ -208,7 +207,6 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     menuFile->addAction(newFileAction);
     menuFile->addSeparator();
     menuFile->addAction(openAction);
-    menuFile->addAction(openRecentAction);
     menuFile->addSeparator();
     menuFile->addAction(saveAction);
     menuFile->addAction(saveAsAction);
@@ -371,22 +369,21 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     connect(actionNewFile,SIGNAL(triggered()),this,SLOT(newFile()));
     connect(newFileAction,SIGNAL(triggered()),this,SLOT(newFile()));
     connect(closeFileAction,SIGNAL(triggered()),this,SLOT(closeFile()));
-//    connect(openRecentAction,SIGNAL(triggered()),this,SLOT(openRecentFile()));
     connect(saveAction,SIGNAL(triggered()),this,SLOT(saveFile()));
     connect(saveAsAction,SIGNAL(triggered()),this,SLOT(saveAsFile()));
     connect(exitAction,SIGNAL(triggered()),this,SLOT(exit()));
-//    connect(undoAction,SIGNAL(triggered()),this,SLOT(undo()));
-//    connect(redoAction,SIGNAL(triggered()),this,SLOT(redo()));
-//    connect(copyAction,SIGNAL(triggered()),this,SLOT(copy()));
-//    connect(cutAction,SIGNAL(triggered()),this,SLOT(cut()));
-//    connect(pasteAction,SIGNAL(triggered()),this,SLOT(paste()));
-//    connect(zoomInAction,SIGNAL(triggered()),this,SLOT(zoomIn()));
-//    connect(zoomOutAction,SIGNAL(triggered()),this,SLOT(zoomOut()));
+    connect(undoAction,SIGNAL(triggered()),_editorTabs,SLOT(undo()));
+    connect(redoAction,SIGNAL(triggered()),_editorTabs,SLOT(redo()));
+    connect(copyAction,SIGNAL(triggered()),_editorTabs,SLOT(copy()));
+    connect(cutAction,SIGNAL(triggered()),_editorTabs,SLOT(cut()));
+    connect(pasteAction,SIGNAL(triggered()),_editorTabs,SLOT(paste()));
+    connect(zoomInAction,SIGNAL(triggered()),_editorTabs,SLOT(zoomIn()));
+    connect(zoomOutAction,SIGNAL(triggered()),_editorTabs,SLOT(zoomOut()));
     connect(findAction,SIGNAL(triggered()),this,SLOT(find()));
-//    connect(commentAction,SIGNAL(triggered()),this,SLOT(comment()));
-//    connect(serverStartAction,SIGNAL(triggered()),this,SLOT(startServer()));
-//    connect(serverKillAction,SIGNAL(triggered()),this,SLOT(killServer()));
-//    connect(serverRestartAction,SIGNAL(triggered()),this,SLOT(restartServer()));
+    connect(commentAction,SIGNAL(triggered()),_editorTabs,SLOT(comment()));
+    connect(serverStartAction,SIGNAL(triggered()),this,SLOT(startServer()));
+    connect(serverKillAction,SIGNAL(triggered()),this,SLOT(killServer()));
+    connect(serverRestartAction,SIGNAL(triggered()),this,SLOT(restartServer()));
     connect(serverRecordAction,SIGNAL(triggered(bool)),this,SLOT(recordButton(bool)));
     connect(serverRecordAction,SIGNAL(triggered(bool)),actionRecord,SLOT(setChecked(bool)));
 //    connect(serverConfigAction,SIGNAL(triggered()),this,SLOT(configServer()));
@@ -396,10 +393,20 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
 MainInterface::~MainInterface() {
 }
 
-#include "interpreter/interpreter.h"
-
 void MainInterface::stopButton() {
     Interpreter::interpret("STOP();");
+}
+
+void MainInterface::startServer() {
+    Interpreter::interpret("START_SERVER();");
+}
+
+void MainInterface::restartServer() {
+    Interpreter::interpret("RESTART_SERVER();");
+}
+
+void MainInterface::killServer() {
+    Interpreter::interpret("KILL_SERVER();");
 }
 
 void MainInterface::find() {

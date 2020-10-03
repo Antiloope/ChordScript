@@ -34,6 +34,9 @@ protected slots:
     void newFile();
     void closeFile(int index = -1);
     void exit();
+    void startServer();
+    void restartServer();
+    void killServer();
 signals:
 
 };

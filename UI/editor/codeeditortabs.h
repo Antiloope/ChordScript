@@ -30,6 +30,14 @@ private slots:
     void tabModified();
 public slots:
     void find(bool,bool,bool,QString);
+    void undo();
+    void redo();
+    void copy();
+    void cut();
+    void paste();
+    void zoomIn();
+    void zoomOut();
+    void comment();
 };
 
 }

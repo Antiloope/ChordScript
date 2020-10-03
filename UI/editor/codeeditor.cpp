@@ -152,3 +152,36 @@ QString CodeEditor::getText() const {
         return this->toPlainText();
     return _selectedText;
 }
+
+void CodeEditor::comment() {
+    QTextCursor cursor = textCursor();
+    int end = cursor.selectionEnd();
+    cursor.setPosition(cursor.selectionStart(),QTextCursor::MoveAnchor);
+    cursor.movePosition(QTextCursor::StartOfLine);
+    cursor.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor);
+    int i = 0;
+    if( cursor.selectedText() == "#" )
+    {
+        while(cursor.position() < end - i)
+        {
+            cursor.removeSelectedText();
+            i++;
+            if( !cursor.movePosition(QTextCursor::Down) )
+                break;
+
+            cursor.movePosition(QTextCursor::StartOfLine);
+            cursor.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor);
+        }
+        return;
+    }
+    cursor.movePosition(QTextCursor::StartOfLine);
+    while(cursor.position() <= end + i)
+    {
+        cursor.insertText("#");
+        i++;
+        if( !cursor.movePosition(QTextCursor::Down) )
+            break;
+
+        cursor.movePosition(QTextCursor::StartOfLine);
+    }
+}

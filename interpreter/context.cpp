@@ -144,6 +144,18 @@ void Context::load() {
     func = new BaseFunction();
     func->load({{}},&Functions::stopRecording);
     _functions.insert({Names::stopRecordingFunction,tuple<DataTypesId,BaseFunction*>(DataTypesId::Null,func)});
+
+    func = new BaseFunction();
+    func->load({{}},&Functions::startServer);
+    _functions.insert({Names::startServerFunction,tuple<DataTypesId,BaseFunction*>(DataTypesId::Null,func)});
+
+    func = new BaseFunction();
+    func->load({{}},&Functions::restartServer);
+    _functions.insert({Names::restartServerFunction,tuple<DataTypesId,BaseFunction*>(DataTypesId::Null,func)});
+
+    func = new BaseFunction();
+    func->load({{}},&Functions::killServer);
+    _functions.insert({Names::killServerFunction,tuple<DataTypesId,BaseFunction*>(DataTypesId::Null,func)});
 }
 
 scope_index Context::newScope() {

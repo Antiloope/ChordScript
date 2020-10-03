@@ -261,6 +261,46 @@ void CodeEditorTabs::find(bool reverse,bool caseSensitive, bool wholeWords, QStr
     editor->find(textToFind,findFlags);
 }
 
+void CodeEditorTabs::undo() {
+    CodeEditor* editor = std::get<0>(_openFiles.find(tabText(currentIndex()))->second).get();
+    editor->undo();
+}
+
+void CodeEditorTabs::redo() {
+    CodeEditor* editor = std::get<0>(_openFiles.find(tabText(currentIndex()))->second).get();
+    editor->redo();
+}
+
+void CodeEditorTabs::copy() {
+    CodeEditor* editor = std::get<0>(_openFiles.find(tabText(currentIndex()))->second).get();
+    editor->copy();
+}
+
+void CodeEditorTabs::cut() {
+    CodeEditor* editor = std::get<0>(_openFiles.find(tabText(currentIndex()))->second).get();
+    editor->cut();
+}
+
+void CodeEditorTabs::paste() {
+    CodeEditor* editor = std::get<0>(_openFiles.find(tabText(currentIndex()))->second).get();
+    editor->paste();
+}
+
+void CodeEditorTabs::zoomIn() {
+    CodeEditor* editor = std::get<0>(_openFiles.find(tabText(currentIndex()))->second).get();
+    editor->zoomIn(1);
+}
+
+void CodeEditorTabs::zoomOut() {
+    CodeEditor* editor = std::get<0>(_openFiles.find(tabText(currentIndex()))->second).get();
+    editor->zoomOut(1);
+}
+
+void CodeEditorTabs::comment() {
+    CodeEditor* editor = std::get<0>(_openFiles.find(tabText(currentIndex()))->second).get();
+    editor->comment();
+}
+
 void CodeEditorTabs::setError(int charReference) {
     auto editor = std::get<0>(_openFiles.find(tabText(currentIndex()))->second).get();
     QList<QTextEdit::ExtraSelection> selections;
