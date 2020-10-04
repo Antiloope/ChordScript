@@ -225,6 +225,9 @@ void Sound::play(tick_t currentTick,Buffer& bufferToLoad) {
     size_t cursor = 0;
 
     tick_t durationTicks = (tick_t)((double)_duration * (double)ExecutorInterface::getSampleRate());
+    bool isPeriodic = false;
+    if( _duration == 0 )
+        isPeriodic = true;
 
     if( span <= 0 )
     {
@@ -252,7 +255,7 @@ void Sound::play(tick_t currentTick,Buffer& bufferToLoad) {
                 _amplitudeFactor->getPositiveValue(_freq) +
             _amplitudeOffset->getValue(_freq);
 
-        if( _progress >= durationTicks - 1000 )
+        if( !isPeriodic && _progress >= durationTicks - 1000 )
         {
             double factor = ((double)durationTicks - (double)_progress) / (1000);
             value = value * factor;
@@ -262,7 +265,7 @@ void Sound::play(tick_t currentTick,Buffer& bufferToLoad) {
             double factor = ((double)_progress) / (1000.);
             value = value * factor;
         }
-        if( _progress >= durationTicks )
+        if( !isPeriodic && _progress >= durationTicks )
         {
             if( abs(value) < 0.001 )
             {

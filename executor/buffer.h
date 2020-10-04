@@ -11,8 +11,6 @@ enum Channel {
     left = 1
 };
 
-constexpr unsigned short NOW = 0;
-
 typedef AudioFile<float>::AudioBuffer AudioBuffer;
 typedef std::vector<float> BufferChannel;
 
