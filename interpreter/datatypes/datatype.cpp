@@ -41,6 +41,7 @@ DataType::~DataType() {}
 
 bool DataType::executeMethod(
     string methodName,
+    string variableName,
     const LiteralValue* value,
     const LiteralValue* arguments
     ) {
@@ -50,7 +51,7 @@ bool DataType::executeMethod(
 
     auto method = _methods.find(methodName)->second;
 
-    LiteralValue* returnValue = method(value,arguments);
+    LiteralValue* returnValue = method(variableName,value,arguments);
     if( !returnValue )
         return false;
 

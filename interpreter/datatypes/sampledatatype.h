@@ -12,9 +12,9 @@ public:
     ~SampleDataType();
     LiteralValue* cast(LiteralValue*) const;
 private:
-    static LiteralValue* play(const LiteralValue*,const LiteralValue*);
-    static LiteralValue* stop(const LiteralValue*,const LiteralValue*);
-    static LiteralValue* setPanning(const LiteralValue*,const LiteralValue*);
+    static LiteralValue* play(std::string,const LiteralValue*,const LiteralValue*);
+    static LiteralValue* stop(std::string,const LiteralValue*,const LiteralValue*);
+    static LiteralValue* setPanning(std::string,const LiteralValue*,const LiteralValue*);
 };
 
 }

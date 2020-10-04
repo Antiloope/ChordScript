@@ -6,6 +6,7 @@
 
 using namespace CS::UI;
 using namespace QtCharts;
+using namespace std;
 
 mutex bufferMutex;
 

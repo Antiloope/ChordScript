@@ -20,8 +20,8 @@ public:
     SamplePlayer(const SamplePlayer&);
 
     double getDurationInSeconds();
-    void play(double,tick_t);
-    void stop();
+    void play(double,tick_t,std::string);
+    void stop(std::string);
     SamplePlayer* clone();
     SamplePlayer operator*(double);
     SamplePlayer operator/(double);

@@ -13,6 +13,7 @@
 #include <future>
 
 using namespace CS;
+using namespace std;
 
 /**
  * @brief The ChannelMode enum
@@ -83,9 +84,9 @@ jack_client_t* jackClient = nullptr;
 // Internal usage outputBuffer array to manage dual buffer
 OutputBuffer outputBuffer[DUAL_BUFFER_MODE];
 // Queue to manage insertions in soundsList
-queue<Playable*> soundsToAdd;
+queue<tuple<Playable*,string>> soundsToAdd;
 // Queue to manage removes in soundsList
-queue<Playable*> soundsToRemove;
+queue<tuple<Playable*,string>> soundsToRemove;
 // Thread to manage soundsList insertions from queue soundsToAdd and to play soundson outputBuffer
 thread bufferHandlerThread;
 atomic_flag lockBuffer = ATOMIC_FLAG_INIT;
@@ -154,7 +155,7 @@ void processShutdown(void*) {}
  * load soundsList with sounds from soundsToAdd queue.
  * @param soundsList A pointer to a list of sounds to be played
  */
-void Executor::loadBuffer(list<Playable*>* soundsList) {
+void Executor::loadBuffer(list<tuple<Playable*,string>>* soundsList) {
     isRunning.test_and_set();
     while( isRunning.test_and_set() )
     {
@@ -169,21 +170,27 @@ void Executor::loadBuffer(list<Playable*>* soundsList) {
                     soundsToAdd.pop();
                 }
 
-                if( !soundsToRemove.empty() )
+                while( !soundsToRemove.empty() )
                 {
-                    for( Playable* sound : *soundsList )
+                    auto it = soundsList->begin();
+                    while( it != soundsList->end() )
                     {
-                        if( sound == soundsToRemove.front() )
-                            delete soundsToRemove.front();
+                        if( get<1>(*it) == get<1>(soundsToRemove.front()) )
+                        {
+                            auto tmp = get<0>(*it);
+                            it = soundsList->erase(it);
+                            delete tmp;
+                        }
+                        else
+                            it++;
                     }
-                    soundsList->remove(soundsToRemove.front());
                     soundsToRemove.pop();
                 }
 
                 if( removeAll )
                 {
                     for(auto&& i : *soundsList)
-                        delete i;
+                        delete get<0>(i);
 
                     soundsList->clear();
                     removeAll = false;
@@ -200,13 +207,13 @@ void Executor::loadBuffer(list<Playable*>* soundsList) {
 
         auto i = soundsList->begin();
 
-        while (i != soundsList->end())
+        while( i != soundsList->end() )
         {
-            if( outputBuffer[nextBuffer].play(*i) )
+            if( outputBuffer[nextBuffer].play(get<0>(*i)) )
                 i++;
             else
             {
-                Playable* tmp = *i;
+                Playable* tmp = get<0>(*i);
                 delete tmp;
                 i = soundsList->erase(i);
             }
@@ -301,15 +308,15 @@ void Executor::stopRecording() {
 
 }
 
-void Executor::addSound(Playable* newSound) const {
+void Executor::addSound(Playable* newSound, string variableName) const {
     mutexQueues.lock();
-    soundsToAdd.push(newSound);
+    soundsToAdd.push({newSound,variableName});
     mutexQueues.unlock();
 }
 
-void Executor::removeSound(Playable* sound) const {
+void Executor::removeSound(Playable* sound, string variableName) const {
     mutexQueues.lock();
-    soundsToRemove.push(sound);
+    soundsToRemove.push({sound,variableName});
     mutexQueues.unlock();
 }
 
@@ -341,13 +348,15 @@ char Executor::getSoundId() {
 }
 
 Executor::~Executor() {
-    while(Playable* tmp = _soundsList.back())
+    while( !_soundsList.empty() )
     {
-        _soundsList.pop_back();
+        auto tmp = get<0>(_soundsList.front());
+        _soundsList.pop_front();
         delete tmp;
     }
-    while(Playable* tmp = soundsToAdd.front())
+    while( !soundsToAdd.empty() )
     {
+        auto tmp = get<0>(soundsToAdd.front());
         soundsToAdd.pop();
         delete tmp;
     }
@@ -541,8 +550,8 @@ void Executor::init() {
     // Start the trhead
     bufferHandlerThread = thread(loadBuffer,&_soundsList);
 
-    _isServerRunning = serverInit();
-
+    serverInit();
+    _isServerRunning = true;
     // Set conficuration for TimeHandler
     TimeHandler::getInstance()->configure(
         sampleRate,

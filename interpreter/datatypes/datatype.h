@@ -12,7 +12,7 @@ class ArgumentLiteralValue;
 // This is the type of functions that a method could be.
 // first argument is the value of the called variable method and
 // the second argument are the parameters wich the method are called.
-typedef LiteralValue* (*method_function_t)(const LiteralValue*,const LiteralValue*);
+typedef LiteralValue* (*method_function_t)(std::string,const LiteralValue*,const LiteralValue*);
 
 enum class DataTypesId {
     Sample,
@@ -45,11 +45,12 @@ public:
     /**
      * @brief This method execute a method of the current (derived) data type
      * @param methodName
+     * @param variableName
      * @param value
      * @param arguments
      * @return true if method was found and was executed
      */
-    bool executeMethod(std::string,const LiteralValue*,const LiteralValue*);
+    bool executeMethod(std::string,std::string,const LiteralValue*,const LiteralValue*);
     /**
      * @brief This method return a literal value casted to this (derived) data type
      * This method is overriden in derived classes in order to implement casting

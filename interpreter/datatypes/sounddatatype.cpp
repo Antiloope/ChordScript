@@ -62,6 +62,7 @@ LiteralValue* SoundDataType::cast(LiteralValue* value) const {
 }
 
 LiteralValue* SoundDataType::stop(
+    string variableName,
     const LiteralValue* value,
     const LiteralValue* args
     ) {
@@ -79,12 +80,13 @@ LiteralValue* SoundDataType::stop(
 
     SoundGenerator* generator = (SoundGenerator*)value->getValue();
 
-    generator->stop();
+    generator->stop(variableName);
 
     return new NullLiteralValue();
 }
 
 LiteralValue* SoundDataType::play(
+    string variableName,
     const LiteralValue* value,
     const LiteralValue* args
     ) {
@@ -103,7 +105,7 @@ LiteralValue* SoundDataType::play(
 
     if( argumentValues->empty() )
     {
-        generator->play({},0,startTick);
+        generator->play({},0,startTick,variableName);
         return new NullLiteralValue();
     }
 
@@ -126,7 +128,7 @@ LiteralValue* SoundDataType::play(
         it++;
         if( it == argumentValues->end() )
         {
-            generator->play(freqList,0,startTick);
+            generator->play(freqList,0,startTick,variableName);
             return new NullLiteralValue();
         }
 
@@ -139,7 +141,7 @@ LiteralValue* SoundDataType::play(
         if( it != argumentValues->end() )
             return nullptr;
 
-        generator->play(freqList,duration,startTick);
+        generator->play(freqList,duration,startTick,variableName);
         break;
     }
     case DataTypesId::Argument:
@@ -151,7 +153,7 @@ LiteralValue* SoundDataType::play(
 
             if( (*argIt)->getDataTypeId() != DataTypesId::Array )
             {
-                generator->stop();
+                generator->stop(variableName);
                 return nullptr;
             }
 
@@ -162,7 +164,7 @@ LiteralValue* SoundDataType::play(
             {
                 if( (*arrayIt)->getDataTypeId() != DataTypesId::Numeric )
                 {
-                    generator->stop();
+                    generator->stop(variableName);
                     return nullptr;
                 }
                 freqList.push_back(*(double*)(*arrayIt)->getValue());
@@ -170,13 +172,13 @@ LiteralValue* SoundDataType::play(
             argIt++;
             if( argIt == argumentList->end() )
             {
-                generator->stop();
+                generator->stop(variableName);
                 return nullptr;
             }
 
             if( (*argIt)->getDataTypeId() != DataTypesId::Numeric )
             {
-                generator->stop();
+                generator->stop(variableName);
                 return nullptr;
             }
 
@@ -185,11 +187,11 @@ LiteralValue* SoundDataType::play(
 
             if( argIt != argumentList->end() )
             {
-                generator->stop();
+                generator->stop(variableName);
                 return nullptr;
             }
 
-            generator->play(freqList,duration,startTick);
+            generator->play(freqList,duration,startTick,variableName);
             startTick += TimeHandler::getInstance()->segToTicks(duration);
         }
         break;
@@ -203,6 +205,7 @@ LiteralValue* SoundDataType::play(
 }
 
 LiteralValue* SoundDataType::setPanning(
+    string,
     const LiteralValue* value,
     const LiteralValue* args
     ) {
@@ -246,6 +249,7 @@ LiteralValue* SoundDataType::setPanning(
 }
 
 LiteralValue* SoundDataType::constantFreq(
+    string,
     const LiteralValue* value,
     const LiteralValue* args
     ) {
@@ -286,6 +290,7 @@ LiteralValue* SoundDataType::constantFreq(
 }
 
 LiteralValue* SoundDataType::freqFactor(
+    string,
     const LiteralValue* value,
     const LiteralValue* args
     ) {
@@ -323,6 +328,7 @@ LiteralValue* SoundDataType::freqFactor(
 }
 
 LiteralValue* SoundDataType::freqModulation(
+    string,
     const LiteralValue* value,
     const LiteralValue* args
     ) {
@@ -360,6 +366,7 @@ LiteralValue* SoundDataType::freqModulation(
 }
 
 LiteralValue* SoundDataType::ampFactor(
+    string,
     const LiteralValue* value,
     const LiteralValue* args
     ) {

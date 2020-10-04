@@ -4,8 +4,6 @@
 #include "AudioFile.h"
 #include "utils/timehandler.h"
 
-using namespace std;
-
 namespace CS {
 
 enum Channel {
@@ -16,7 +14,7 @@ enum Channel {
 constexpr unsigned short NOW = 0;
 
 typedef AudioFile<float>::AudioBuffer AudioBuffer;
-typedef vector<float> BufferChannel;
+typedef std::vector<float> BufferChannel;
 
 class Modifier;
 
@@ -88,7 +86,7 @@ private:
 class Sample : public Playable
 {
 public:
-    Sample(string);
+    Sample(std::string);
     Sample(const Sample&);
     ~Sample();
 
@@ -105,7 +103,7 @@ public:
     Sample* generate(double,tick_t);
     double getDurationInSeconds();
 private:
-    string _fileName;
+    std::string _fileName;
 
     Modifier* _panning;
     Modifier* _amplitudeFactor;

@@ -30,6 +30,7 @@ SampleDataType::SampleDataType() {
 SampleDataType::~SampleDataType() {}
 
 LiteralValue* SampleDataType::stop(
+    std::string variableName,
     const LiteralValue* value,
     const LiteralValue* args
     ) {
@@ -47,12 +48,13 @@ LiteralValue* SampleDataType::stop(
 
     SamplePlayer* player = (SamplePlayer*)value->getValue();
 
-    player->stop();
+    player->stop(variableName);
 
     return new NullLiteralValue();
 }
 
 LiteralValue* SampleDataType::play(
+    string variableName,
     const LiteralValue* value,
     const LiteralValue* args
     ) {
@@ -71,7 +73,7 @@ LiteralValue* SampleDataType::play(
 
     if( argumentValues->empty() )
     {
-        player->play(1,startTick);
+        player->play(1,startTick,variableName);
         return new NullLiteralValue();
     }
 
@@ -86,7 +88,7 @@ LiteralValue* SampleDataType::play(
         it++;
         if( it == argumentValues->end() )
         {
-            player->play(timeFactor,startTick);
+            player->play(timeFactor,startTick,variableName);
             return new NullLiteralValue();
         }
         return nullptr;
@@ -104,7 +106,7 @@ LiteralValue* SampleDataType::play(
 
             if( (*argIt)->getDataTypeId() != DataTypesId::Numeric )
             {
-                player->stop();
+                player->stop(variableName);
                 return nullptr;
             }
 
@@ -113,14 +115,14 @@ LiteralValue* SampleDataType::play(
             argIt++;
             if( argIt == argumentList->end() )
             {
-                player->play(timeFactor, startTick);
+                player->play(timeFactor, startTick, variableName);
                 startTick += TimeHandler::getInstance()->segToTicks(duration);
                 continue;
             }
 
             if( (*argIt)->getDataTypeId() != DataTypesId::Numeric )
             {
-                player->stop();
+                player->stop(variableName);
                 return nullptr;
             }
 
@@ -128,7 +130,7 @@ LiteralValue* SampleDataType::play(
             argIt++;
             if( argIt != argumentList->end() )
             {
-                player->stop();
+                player->stop(variableName);
                 return nullptr;
             }
             if( preFactor == 0 )
@@ -136,7 +138,7 @@ LiteralValue* SampleDataType::play(
                 startTick += TimeHandler::getInstance()->segToTicks(timeFactor);
                 continue;
             }
-            player->play(timeFactor,startTick);
+            player->play(timeFactor, startTick, variableName);
             startTick += TimeHandler::getInstance()->segToTicks(duration*preFactor);
         }
         break;
@@ -150,6 +152,7 @@ LiteralValue* SampleDataType::play(
 }
 
 LiteralValue* SampleDataType::setPanning(
+    string,
     const LiteralValue* value,
     const LiteralValue* args
     ) {

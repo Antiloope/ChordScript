@@ -59,11 +59,11 @@ void CS::Functions::stop() {
     {
         if( get<0>(playable.second) == DataTypesId::Sound )
         {
-            soundDataType.executeMethod("stop",(get<1>(playable.second)),new ArgumentLiteralValue({}));
+            soundDataType.executeMethod("stop",playable.first,(get<1>(playable.second)),new ArgumentLiteralValue({}));
         }
         else
         {
-            sampleDataType.executeMethod("stop",(get<1>(playable.second)),new ArgumentLiteralValue({}));
+            sampleDataType.executeMethod("stop",playable.first,(get<1>(playable.second)),new ArgumentLiteralValue({}));
         }
     }
 

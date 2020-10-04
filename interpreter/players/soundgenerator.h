@@ -5,8 +5,6 @@
 #include <list>
 #include "executor/buffer.h"
 
-using namespace std;
-
 namespace CS {
 
 class SoundDataType;
@@ -21,8 +19,8 @@ public:
     SoundGenerator(Sound);
     SoundGenerator(const SoundGenerator&);
     SoundGenerator* clone();
-    void play(list<double>,double,tick_t);
-    void stop();
+    void play(std::list<double>,double,tick_t,std::string);
+    void stop(std::string);
     SoundGenerator operator*(double);
     SoundGenerator operator/(double);
     SoundGenerator operator*(SoundGenerator&);
@@ -30,7 +28,7 @@ public:
     Sound getSound();
 private:
     Sound _baseSound;
-    list<Sound*> _generatedSounds;
+    std::list<Sound*> _generatedSounds;
 };
 
 }

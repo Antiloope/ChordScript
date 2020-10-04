@@ -3,12 +3,11 @@
 
 #include <vector>
 #include <functional>
-
-using namespace std;
+#include <string>
 
 namespace CS {
 
-typedef vector<vector<float>> AudioBuffer;
+typedef std::vector<std::vector<float>> AudioBuffer;
 
 class Playable;
 
@@ -18,13 +17,13 @@ public:
     static AudioBuffer getBuffer(double);
     static unsigned int getSampleRate();
     static char getSoundId();
-    static void addSound(Playable*);
-    static void removeSound(Playable*);
+    static void addSound(Playable*,std::string);
+    static void removeSound(std::string);
     static void removeAllSounds();
     static void closeAll();
     static void startRecording();
     static void stopRecording();
-    static int addObserver(function<void(const AudioBuffer&)>);
+    static int addObserver(std::function<void(const AudioBuffer&)>);
     static void removeObserver(int);
     static void startServer();
     static void restartServer();

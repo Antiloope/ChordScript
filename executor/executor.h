@@ -6,12 +6,11 @@
 #include "buffer.h"
 #include <functional>
 
-using namespace std;
-
 namespace CS {
 
 /**
- * @brief This class manages the interface with jack library. It has methods to manage what sounds are played.
+ * @brief This class manages the interface with jack library.
+ * It has methods to manage what sounds are played.
  */
 class Executor
 {
@@ -20,17 +19,19 @@ public:
     ~Executor();
 
     /**
-     * @brief Add the sound passed as parameter into a queue, waiting to be added later into the reproduction list.
+     * @brief Add the sound passed as parameter into a queue,
+     * waiting to be added later into the reproduction list.
      * @param newSound Poiter to a Sound to be played
      */
-    void addSound(Playable*) const;
+    void addSound(Playable*,std::string) const;
     /**
      * @brief This method must be called first of all.
-     * It start jack client and connect porst to the jack server and start a thread to handle queue and reproduction list sync
+     * It start jack client and connect porst to the jack server and
+     * start a thread to handle queue and reproduction list sync
      */
     void init();
 
-    void removeSound(Playable*) const;
+    void removeSound(Playable*,std::string) const;
 
     void removeAllSounds() const;
 
@@ -47,10 +48,10 @@ public:
     void restartServer();
     void killServer();
 
-    int addObserver(function<void(const AudioBuffer&)>);
+    int addObserver(std::function<void(const AudioBuffer&)>);
     void removeObserver(int);
 private:
-    static void loadBuffer(list<Playable*>* soundsList);
+    static void loadBuffer(std::list<std::tuple<Playable*,std::string>>* soundsList);
     void notify();
 
     void clientInit();
@@ -62,10 +63,10 @@ private:
 
     static Executor* _instance;
 
-    list<Playable*> _soundsList;
-    stack<char> _availableSounds;
+    std::list<std::tuple<Playable*,std::string>> _soundsList;
+    std::stack<char> _availableSounds;
 
-    list<tuple<int,function<void(const AudioBuffer&)>>> _observerList;
+    std::list<std::tuple<int,std::function<void(const AudioBuffer&)>>> _observerList;
     AudioFile<float> _record;
 
     bool _isServerRunning = false;

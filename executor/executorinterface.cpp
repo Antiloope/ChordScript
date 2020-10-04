@@ -3,6 +3,7 @@
 #include "utils/log.h"
 
 using namespace CS;
+using namespace std;
 
 AudioBuffer ExecutorInterface::getBuffer(double duration) {
     AudioBuffer ret(2);
@@ -20,12 +21,12 @@ char ExecutorInterface::getSoundId() {
     return Executor::getInstance()->getSoundId();
 }
 
-void ExecutorInterface::addSound(Playable* newSound) {
-    Executor::getInstance()->addSound(newSound);
+void ExecutorInterface::addSound(Playable* newSound,string variableName) {
+    Executor::getInstance()->addSound(newSound,variableName);
 }
 
-void ExecutorInterface::removeSound(Playable* sound) {
-    Executor::getInstance()->removeSound(sound);
+void ExecutorInterface::removeSound(string variableName) {
+    Executor::getInstance()->removeSound(nullptr,variableName);
 }
 
 void ExecutorInterface::removeAllSounds() {

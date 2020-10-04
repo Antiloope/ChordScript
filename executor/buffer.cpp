@@ -5,6 +5,7 @@
 #include <cstring>
 
 using namespace CS;
+using namespace std;
 
 Buffer::Buffer() {
     _buffer = nullptr;

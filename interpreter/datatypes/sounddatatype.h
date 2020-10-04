@@ -12,13 +12,13 @@ public:
     ~SoundDataType();
     LiteralValue* cast(LiteralValue*) const;
 private:
-    static LiteralValue* play(const LiteralValue*,const LiteralValue*);
-    static LiteralValue* stop(const LiteralValue*,const LiteralValue*);
-    static LiteralValue* setPanning(const LiteralValue*,const LiteralValue*);
-    static LiteralValue* constantFreq(const LiteralValue*,const LiteralValue*);
-    static LiteralValue* freqFactor(const LiteralValue*,const LiteralValue*);
-    static LiteralValue* freqModulation(const LiteralValue*,const LiteralValue*);
-    static LiteralValue* ampFactor(const LiteralValue*,const LiteralValue*);
+    static LiteralValue* play(std::string,const LiteralValue*,const LiteralValue*);
+    static LiteralValue* stop(std::string,const LiteralValue*,const LiteralValue*);
+    static LiteralValue* setPanning(std::string,const LiteralValue*,const LiteralValue*);
+    static LiteralValue* constantFreq(std::string,const LiteralValue*,const LiteralValue*);
+    static LiteralValue* freqFactor(std::string,const LiteralValue*,const LiteralValue*);
+    static LiteralValue* freqModulation(std::string,const LiteralValue*,const LiteralValue*);
+    static LiteralValue* ampFactor(std::string,const LiteralValue*,const LiteralValue*);
 };
 
 }

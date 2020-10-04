@@ -13,24 +13,18 @@ double SamplePlayer::getDurationInSeconds() {
     return _sample.getDurationInSeconds();
 }
 
-void SamplePlayer::play(double timeFactor,tick_t startTick) {
+void SamplePlayer::play(double timeFactor, tick_t startTick, string variableName) {
     Sample* newSample = _sample.generate(timeFactor, startTick);
     _generatedSounds.push_back(newSample);
-    ExecutorInterface::addSound(newSample);
+    ExecutorInterface::addSound(newSample,variableName);
 }
 
 SamplePlayer* SamplePlayer::clone() {
     return new SamplePlayer(*this);
 }
 
-void SamplePlayer::stop() {
-    auto i = _generatedSounds.begin();
-
-    while (i != _generatedSounds.end())
-    {
-        ExecutorInterface::removeSound(*i);
-        _generatedSounds.erase(i);
-    }
+void SamplePlayer::stop(string variableName) {
+    ExecutorInterface::removeSound(variableName);
 }
 
 SamplePlayer SamplePlayer::operator*(double factor) {

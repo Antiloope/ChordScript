@@ -3,12 +3,13 @@
 #include "executor/executorinterface.h"
 
 using namespace CS;
+using namespace std;
 
 SoundGenerator::SoundGenerator(double(*function)(double)) : _baseSound(function) {}
 
 SoundGenerator::SoundGenerator(Sound sound) : _baseSound(sound) {}
 
-SoundGenerator::SoundGenerator(const SoundGenerator& base) : _baseSound(base._baseSound) {}
+SoundGenerator::SoundGenerator(const SoundGenerator& base) : _baseSound(base._baseSound),_generatedSounds(base._generatedSounds) {}
 
 SoundGenerator* SoundGenerator::clone() {
     return new SoundGenerator(*this);
@@ -42,36 +43,26 @@ SoundGenerator SoundGenerator::operator+(SoundGenerator& sound) {
     return ret;
 }
 
-void SoundGenerator::play(list<double> freqList,double duration,tick_t startTick) {
+void SoundGenerator::play(list<double> freqList,double duration,tick_t startTick,string variableName) {
     if( freqList.empty() )
     {
         Sound* newSound = _baseSound.generate(0,duration,startTick);
-        _generatedSounds.push_back(newSound);
 
-        ExecutorInterface::addSound(newSound);
+        ExecutorInterface::addSound(newSound,variableName);
     }
     else
     {
         for( double freq : freqList )
         {
             Sound* newSound = _baseSound.generate(freq,duration,startTick);
-            _generatedSounds.push_back(newSound);
 
-            ExecutorInterface::addSound(newSound);
+            ExecutorInterface::addSound(newSound,variableName);
         }
     }
 }
 
-void SoundGenerator::stop() {
-    auto i = _generatedSounds.begin();
-
-    while (i != _generatedSounds.end())
-    {
-        auto tmp = i;
-        i++;
-        ExecutorInterface::removeSound((*tmp));
-        _generatedSounds.erase(tmp);
-    }
+void SoundGenerator::stop(string variableName) {
+    ExecutorInterface::removeSound(variableName);
 }
 
 Sound SoundGenerator::getSound() {
