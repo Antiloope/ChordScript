@@ -20,6 +20,7 @@ public:
     SoundGenerator(const SoundGenerator&);
     SoundGenerator* clone();
     void play(std::list<double>,double,tick_t,std::string);
+    void loop(std::list<double>,double,double,tick_t,std::string);
     void stop(std::string);
     SoundGenerator operator*(double);
     SoundGenerator operator/(double);

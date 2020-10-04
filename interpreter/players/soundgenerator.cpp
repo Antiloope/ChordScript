@@ -61,6 +61,25 @@ void SoundGenerator::play(list<double> freqList,double duration,tick_t startTick
     }
 }
 
+void SoundGenerator::loop(list<double> freqList,double duration,double totalLoopDuration,tick_t startTick,string variableName) {
+    if( freqList.empty() )
+    {
+        PeriodicSound* newSound = _baseSound.generate(0,duration,totalLoopDuration,startTick);
+
+        ExecutorInterface::addSound(newSound,variableName);
+    }
+    else
+    {
+        for( double freq : freqList )
+        {
+            PeriodicSound* newSound = _baseSound.generate(freq,duration,totalLoopDuration,startTick);
+
+            ExecutorInterface::addSound(newSound,variableName);
+        }
+    }
+}
+
+
 void SoundGenerator::stop(string variableName) {
     ExecutorInterface::removeSound(variableName);
 }

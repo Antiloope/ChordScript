@@ -13,6 +13,7 @@ public:
     LiteralValue* cast(LiteralValue*) const;
 private:
     static LiteralValue* play(std::string,const LiteralValue*,const LiteralValue*);
+    static LiteralValue* loop(std::string,const LiteralValue*,const LiteralValue*);
     static LiteralValue* stop(std::string,const LiteralValue*,const LiteralValue*);
     static LiteralValue* setPanning(std::string,const LiteralValue*,const LiteralValue*);
     static LiteralValue* constantFreq(std::string,const LiteralValue*,const LiteralValue*);

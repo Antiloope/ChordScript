@@ -15,6 +15,7 @@ typedef AudioFile<float>::AudioBuffer AudioBuffer;
 typedef std::vector<float> BufferChannel;
 
 class Modifier;
+class PeriodicSound;
 
 class Buffer
 {
@@ -49,7 +50,7 @@ public:
     Sound(double(*)(double), double, double, tick_t);
     virtual ~Sound();
 
-    void play(tick_t, Buffer&) override;
+    virtual void play(tick_t, Buffer&) override;
     inline double getInstantValue(double);
     inline double getPositiveInstantValue(double);
 
@@ -65,6 +66,7 @@ public:
     void setPanning(Sound);
 
     Sound* generate(double, double, tick_t);
+    PeriodicSound* generate(double, double, double, tick_t);
 protected:
     void load(double, double, tick_t);
 
@@ -78,6 +80,23 @@ protected:
     Modifier* _freqFactor;
     Modifier* _freqModulation;
     Modifier* _absoluteFreq = nullptr;
+private:
+};
+
+class PeriodicSound : public Sound
+{
+public:
+    friend Sound;
+    PeriodicSound(const Sound&);
+    PeriodicSound(const PeriodicSound&);
+    PeriodicSound(double(*)(double), double, double, double, tick_t);
+    virtual ~PeriodicSound();
+
+    void play(tick_t, Buffer&) override;
+protected:
+    void load(double, double, double, tick_t);
+
+    double _period;
 private:
 };
 

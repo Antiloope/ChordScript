@@ -207,6 +207,12 @@ Sound* Sound::generate(double freq, double duration, tick_t startTick) {
     return ret;
 }
 
+PeriodicSound* Sound::generate(double freq, double duration, double totalLoopDuration, tick_t startTick) {
+    PeriodicSound* ret = new PeriodicSound(*this);
+    ret->load(freq,duration,totalLoopDuration,startTick);
+    return ret;
+}
+
 void Sound::load(double freq, double duration, tick_t startTick) {
     _freq = freq;
     _duration = duration;
@@ -328,6 +334,93 @@ double Sound::getPositiveInstantValue(double freq) {
     _progress++;
 
     return ( ret + ampFactor - ampOffset ) / 2;
+}
+
+PeriodicSound::PeriodicSound(const Sound& sound) : Sound(sound) {
+    _period = 0;
+}
+
+PeriodicSound::PeriodicSound(const PeriodicSound& sound) : Sound(sound) {
+    _period = sound._period;
+}
+
+PeriodicSound::PeriodicSound(double(*function)(double), double freq, double duration, double totalLoopDuration, tick_t startTick) :
+    Sound(function,freq,duration,startTick) {
+    _period = totalLoopDuration;
+}
+
+PeriodicSound::~PeriodicSound() {}
+
+void PeriodicSound::play(tick_t currentTick,Buffer& bufferToLoad) {
+    static double sampleRate = ExecutorInterface::getSampleRate();
+
+    size_t bufferSize = bufferToLoad[Channel::right].size();
+
+    signed long span = currentTick - _startTick;
+
+    size_t cursor = 0;
+
+    tick_t durationTicks = (tick_t)((double)_duration * (double)ExecutorInterface::getSampleRate());
+
+    if( span <= 0 )
+    {
+        if( abs(span) >= (signed long)bufferSize )
+            return;
+        cursor = -span;
+    }
+
+    double freq;
+
+    for( ; cursor < bufferSize; cursor++ )
+    {
+        if( _absoluteFreq )
+            freq = _absoluteFreq->getPositiveValue(_freq);
+        else
+            freq = _freq * _freqFactor->getPositiveValue(_freq);
+
+        double value =
+            _function(
+                2. * M_PI * freq *
+                    std::fmod(
+                        (double)_progress / sampleRate,
+                        1./freq) +
+                _freqModulation->getValue(_freq) ) *
+                _amplitudeFactor->getPositiveValue(_freq) +
+            _amplitudeOffset->getValue(_freq);
+
+        if( _progress >= durationTicks - 1000 )
+        {
+            double factor = ((double)durationTicks - (double)_progress) / (1000);
+            value = value * factor;
+        }
+        if( _progress < 1000 )
+        {
+            double factor = ((double)_progress) / (1000.);
+            value = value * factor;
+        }
+        if( _progress >= durationTicks )
+        {
+            if( abs(value) < 0.001 )
+            {
+                _startTick += _period * (double)ExecutorInterface::getSampleRate();
+                _progress = 0;
+                return;
+            }
+        }
+        _progress++;
+
+        bufferToLoad[Channel::right][cursor] = _panning->getPositiveValue(_freq) * value;
+        bufferToLoad[Channel::left][cursor] = (1 - _panning->getPositiveValue(_freq)) * value;
+    }
+}
+
+void PeriodicSound::load(double freq, double duration, double totalLoopDuration, tick_t startTick) {
+    _freq = freq;
+    _duration = duration;
+    _startTick = startTick;
+    _progress = 0;
+    _isPlayed = false;
+    _period = totalLoopDuration;
 }
 
 Sample::Sample(string fileName) {
