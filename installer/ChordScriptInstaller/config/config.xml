@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>ChordScript</Name>
+    <Version>0.1.0</Version>
+    <Title>ChordScript Installer</Title>
+    <Publisher>Antiloope</Publisher>
+    <StartMenuDir>ChordScript</StartMenuDir>
+    <TargetDir>@HomeDir@/ChordScript</TargetDir>
+</Installer>
