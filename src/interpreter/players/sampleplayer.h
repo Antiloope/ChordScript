@@ -3,7 +3,7 @@
 
 #include <string>
 #include <list>
-#include "executor/buffer.h"
+#include "executor/playables/sample.h"
 
 using namespace std;
 

@@ -1,6 +1,7 @@
 #include "executor.h"
 #include "utils/timehandler.h"
 #include "utils/Exceptions/exception.h"
+#include "playables/playable.h"
 #include "utils/log.h"
 #include <cstring>
 #include <thread>
@@ -112,22 +113,22 @@ int processCallback(jack_nframes_t nframes,void*) {
     // Copy stereo outputBuffer to memory
     out = (jack_default_audio_sample_t*)
         jack_port_get_buffer(
-            stereoOutputPort[Channel::right],
+            stereoOutputPort[Channel::Right],
             nframes );
 
     memcpy(
         out,
-        &outputBuffer[currentBuffer][Channel::right][batchIndex * batchSize],
+        &outputBuffer[currentBuffer][Channel::Right][batchIndex * batchSize],
         sizeof (jack_default_audio_sample_t) * nframes );
 
     out = (jack_default_audio_sample_t*)
         jack_port_get_buffer (
-            stereoOutputPort[Channel::left],
+            stereoOutputPort[Channel::Left],
             nframes );
 
     memcpy(
         out,
-        &outputBuffer[currentBuffer][Channel::left][batchIndex * batchSize],
+        &outputBuffer[currentBuffer][Channel::Left][batchIndex * batchSize],
         sizeof (jack_default_audio_sample_t) * nframes );
 
     batchIndex++;
@@ -327,15 +328,15 @@ void Executor::removeAllSounds() const {
 }
 
 void Executor::addToRecord() {
-    _record.samples[Channel::right].insert(
-        _record.samples[Channel::right].end(),
-        outputBuffer[currentBuffer][Channel::right].begin(),
-        outputBuffer[currentBuffer][Channel::right].end());
+    _record.samples[Channel::Right].insert(
+        _record.samples[Channel::Right].end(),
+        outputBuffer[currentBuffer][Channel::Right].begin(),
+        outputBuffer[currentBuffer][Channel::Right].end());
 
-    _record.samples[Channel::left].insert(
-        _record.samples[Channel::left].end(),
-        outputBuffer[currentBuffer][Channel::left].begin(),
-        outputBuffer[currentBuffer][Channel::left].end());
+    _record.samples[Channel::Left].insert(
+        _record.samples[Channel::Left].end(),
+        outputBuffer[currentBuffer][Channel::Left].begin(),
+        outputBuffer[currentBuffer][Channel::Left].end());
 }
 
 unsigned int Executor::getSampleRate() const {
@@ -399,16 +400,16 @@ void Executor::clientInit() {
     jack_on_shutdown (jackClient, processShutdown, 0);
 
     // Crete ports
-    stereoOutputPort[Channel::left] = jack_port_register (jackClient, "LeftOutput",
+    stereoOutputPort[Channel::Left] = jack_port_register (jackClient, "LeftOutput",
                                                          JACK_DEFAULT_AUDIO_TYPE,
                                                          JackPortIsOutput, 0);
 
-    stereoOutputPort[Channel::right] = jack_port_register (jackClient, "RightOutput",
+    stereoOutputPort[Channel::Right] = jack_port_register (jackClient, "RightOutput",
                                                           JACK_DEFAULT_AUDIO_TYPE,
                                                           JackPortIsOutput, 0);
-    if (stereoOutputPort[Channel::left] == NULL)
+    if (stereoOutputPort[Channel::Left] == NULL)
         throw new LogException("No more JACK ports available");
-    if (stereoOutputPort[Channel::right] == NULL)
+    if (stereoOutputPort[Channel::Right] == NULL)
         throw new LogException("No more JACK ports available");
 
     // Activate client
@@ -426,8 +427,8 @@ void Executor::clientInit() {
     if (ports == NULL)
         throw new LogException("No physical playback ports");
 
-    if (jack_connect (jackClient, jack_port_name (stereoOutputPort[Channel::left]), ports[Channel::right]) ||
-        jack_connect (jackClient, jack_port_name (stereoOutputPort[Channel::right]), ports[Channel::left]))
+    if (jack_connect (jackClient, jack_port_name (stereoOutputPort[Channel::Left]), ports[Channel::Right]) ||
+        jack_connect (jackClient, jack_port_name (stereoOutputPort[Channel::Right]), ports[Channel::Left]))
         throw new LogException("Cannot connect output ports");
 
     free (ports);
@@ -542,8 +543,8 @@ void Executor::killServer() {
 
 void Executor::init() {
     // Set output buffer size based on default outputBufferSize
-    outputBuffer[Channel::right].setSize(outputBufferSize);
-    outputBuffer[Channel::left].setSize(outputBufferSize);
+    outputBuffer[Channel::Right].setSize(outputBufferSize);
+    outputBuffer[Channel::Left].setSize(outputBufferSize);
 
     recordingFile.lock();
 

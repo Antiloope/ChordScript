@@ -36,9 +36,17 @@ SOURCES += \
     UI/toolbox/toolbox.cpp \
     UI/uidefinitions.cpp \
     UI/uimanager.cpp \
-    executor/buffer.cpp \
+    executor/buffer/buffer.cpp \
+    executor/buffer/outputbuffer.cpp \
     executor/executor.cpp \
     executor/executorinterface.cpp \
+    executor/modifiers/constmodifier.cpp \
+    executor/modifiers/modifier.cpp \
+    executor/modifiers/soundmodifier.cpp \
+    executor/playables/periodicsound.cpp \
+    executor/playables/playable.cpp \
+    executor/playables/sample.cpp \
+    executor/playables/sound.cpp \
     interpreter/players/sampleplayer.cpp \
     interpreter/players/soundgenerator.cpp \
     interpreter/context.cpp \
@@ -109,9 +117,17 @@ HEADERS += \
     UI/uidefinitions.h \
     UI/uimanager.h \
     executor/AudioFile.h \
-    executor/buffer.h \
+    executor/buffer/buffer.h \
+    executor/buffer/outputbuffer.h \
     executor/executor.h \
     executor/executorinterface.h \
+    executor/modifiers/constmodifier.h \
+    executor/modifiers/modifier.h \
+    executor/modifiers/soundmodifier.h \
+    executor/playables/periodicsound.h \
+    executor/playables/playable.h \
+    executor/playables/sample.h \
+    executor/playables/sound.h \
     interpreter/players/sampleplayer.h \
     interpreter/players/soundgenerator.h \
     interpreter/context.h \

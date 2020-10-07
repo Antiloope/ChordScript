@@ -5,7 +5,6 @@
 #include "executor/AudioFile.h"
 #include "utils/Exceptions/exception.h"
 #include <cmath>
-#include "executor/buffer.h"
 #include "interpreter/players/sampleplayer.h"
 #include <string>
 

@@ -1,7 +1,6 @@
 #include "context.h"
 #include "functiondefinition.h"
 #include "languagedefinitions.h"
-#include "executor/buffer.h"
 #include <memory>
 #include "values/literalvalue.h"
 #include "players/soundgenerator.h"

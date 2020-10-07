@@ -3,10 +3,13 @@
 
 #include <list>
 #include <stack>
-#include "buffer.h"
+#include <string>
+#include "executor/buffer/buffer.h"
 #include <functional>
 
 namespace CS {
+
+class Playable;
 
 /**
  * @brief This class manages the interface with jack library.
