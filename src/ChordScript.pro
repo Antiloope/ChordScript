@@ -178,12 +178,14 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-INCLUDEPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
-DEPENDPATH += $$PWD/../../../../../usr/lib/x86_64-linux-gnu
+INCLUDEPATH += /usr/lib/x86_64-linux-gnu
+DEPENDPATH += /usr/lib/x86_64-linux-gnu
 
-unix: LIBS += -L$$PWD/../../../../../home/antiloope/Programs/Qt/5.14.2/gcc_64/lib/ -lQt5Core
+# Link version 5.14.2 QtCore lib
+unix: LIBS += -L/home/antiloope/Programs/Qt/5.14.2/gcc_64/lib/ -lQt5Core
 
-unix: LIBS += -L$$PWD/../../../../../usr/lib/x86_64-linux-gnu/ -ljack -ljackserver
+# Link jack and jack server libraries
+unix: LIBS += -L/usr/lib/x86_64-linux-gnu/ -ljack -ljackserver
 
 RESOURCES += \
     resources.qrc
