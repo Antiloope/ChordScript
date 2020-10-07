@@ -169,10 +169,10 @@ void Sound::setFreqFactor(double factor) {
 }
 
 void Sound::setFreqModulation(Sound sound) {
-    if( _freqFactor )
-        delete _freqFactor;
+    if( _freqModulation )
+        delete _freqModulation;
 
-    _freqFactor = new SoundModifier(sound);
+    _freqModulation = new SoundModifier(sound);
 }
 
 void Sound::setAbsoluteFreq(double freq) {
@@ -253,12 +253,12 @@ void Sound::play(tick_t currentTick,Buffer& bufferToLoad) {
 
         double value =
             _function(
-                2. * M_PI * freq *
-                std::fmod(
-                        (double)_progress / sampleRate,
-                        1./freq) +
-                _freqModulation->getValue(_freq) ) *
-                _amplitudeFactor->getPositiveValue(_freq) +
+                    2. * M_PI * freq *
+                    std::fmod(
+                            (double)_progress / sampleRate,
+                            1./freq) +
+                    _freqModulation->getValue(_freq) ) *
+            _amplitudeFactor->getPositiveValue(_freq) +
             _amplitudeOffset->getValue(_freq);
 
         if( !isPeriodic && _progress >= durationTicks - 1000 )
@@ -302,7 +302,7 @@ double Sound::getInstantValue(double freq) {
                     ((double)_progress / (double)sampleRate),
                     1./f) +
                 _freqModulation->getValue(freq)) *
-            _amplitudeFactor->getPositiveValue(freq) +
+        _amplitudeFactor->getPositiveValue(freq) +
         _amplitudeOffset->getValue(freq);
 
     _progress++;
