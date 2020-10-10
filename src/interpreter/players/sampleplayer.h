@@ -21,6 +21,8 @@ public:
 
     double getDurationInSeconds();
     void play(double,tick_t,std::string);
+    void loop(double,tick_t,std::string);
+    void loop(double,double,tick_t,std::string);
     void stop(std::string);
     SamplePlayer* clone();
     SamplePlayer operator*(double);

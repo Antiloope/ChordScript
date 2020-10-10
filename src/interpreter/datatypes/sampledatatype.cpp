@@ -25,6 +25,11 @@ SampleDataType::SampleDataType() {
             "setPanning",
             &SampleDataType::setPanning)
         );
+    _methods.insert(
+        pair<string,method_function_t>(
+            "loop",
+            &SampleDataType::loop)
+        );
 }
 
 SampleDataType::~SampleDataType() {}
@@ -162,7 +167,7 @@ LiteralValue* SampleDataType::loop(
 
     if( argumentValues->empty() )
     {
-        player->play(1,startTick,variableName);
+        player->loop(1,startTick,variableName);
         return new NullLiteralValue();
     }
 
@@ -173,11 +178,13 @@ LiteralValue* SampleDataType::loop(
     case DataTypesId::Numeric:
     {
         double timeFactor = *(double*)((NumberLiteralValue*)(*it))->getValue();
+        if( timeFactor == 0 )
+            return nullptr;
 
         it++;
         if( it == argumentValues->end() )
         {
-            player->play(timeFactor,startTick,variableName);
+            player->loop(timeFactor,startTick,variableName);
             return new NullLiteralValue();
         }
         return nullptr;
@@ -186,6 +193,7 @@ LiteralValue* SampleDataType::loop(
     case DataTypesId::Argument:
     {
         double duration = player->getDurationInSeconds();
+        double totalLoopDuration = 0;
         for( ; it != argumentValues->end(); it++ )
         {
             list<LiteralValue*>* argumentList =
@@ -201,32 +209,59 @@ LiteralValue* SampleDataType::loop(
             argIt++;
             if( argIt == argumentList->end() )
             {
-                player->play(timeFactor, startTick, variableName);
-                startTick += TimeHandler::getInstance()->segToTicks(duration);
+                if( timeFactor )
+                    totalLoopDuration += timeFactor * duration;
+                else
+                    totalLoopDuration += duration;
                 continue;
             }
 
             if( (*argIt)->getDataTypeId() != DataTypesId::Numeric )
-            {
-                player->stop(variableName);
                 return nullptr;
-            }
 
-            double preFactor = *(double*)(*argIt)->getValue();
+            double virtualDuration = *(double*)(*argIt)->getValue();
             argIt++;
             if( argIt != argumentList->end() )
-            {
-                player->stop(variableName);
                 return nullptr;
-            }
-            if( preFactor == 0 )
+
+            if( virtualDuration == 0 )
+                continue;
+
+            totalLoopDuration += virtualDuration;
+        }
+        auto it = argumentValues->begin();
+        for( ; it != argumentValues->end(); it++ )
+        {
+            list<LiteralValue*>* argumentList =
+                (list<LiteralValue*>*)((ArgumentLiteralValue*)(*it))->getValue();
+
+            auto argIt = argumentList->begin();
+
+            double timeFactor = *(double*)(*argIt)->getValue();
+
+            argIt++;
+            if( argIt == argumentList->end() )
             {
-                startTick += TimeHandler::getInstance()->segToTicks(timeFactor);
+                player->loop(timeFactor, totalLoopDuration, startTick, variableName);
+                if( timeFactor )
+                    startTick += TimeHandler::getInstance()->segToTicks(duration*timeFactor);
+                else
+                    startTick += TimeHandler::getInstance()->segToTicks(duration);
                 continue;
             }
-            player->play(timeFactor, startTick, variableName);
-            startTick += TimeHandler::getInstance()->segToTicks(duration*preFactor);
+
+            double virtualDuration = *(double*)(*argIt)->getValue();
+            argIt++;
+
+            if( virtualDuration == 0 )
+            {
+                player->loop(timeFactor, totalLoopDuration, startTick, variableName);
+                continue;
+            }
+            player->loop(timeFactor, totalLoopDuration, startTick, variableName);
+            startTick += TimeHandler::getInstance()->segToTicks(virtualDuration);
         }
+
         break;
     }
     default:

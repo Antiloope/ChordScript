@@ -8,6 +8,7 @@ namespace CS {
 
 class Sound;
 class Modifier;
+class PeriodicSample;
 
 class Sample : public Playable
 {
@@ -27,8 +28,9 @@ public:
     void setPanning(double);
     void setPanning(Sound);
     Sample* generate(double,tick_t);
+    PeriodicSample* generate(double, tick_t, tick_t);
     double getDurationInSeconds();
-private:
+protected:
     std::string _fileName;
 
     Modifier* _panning;
@@ -38,5 +40,7 @@ private:
 };
 
 }
+
+#include "periodicsample.h"
 
 #endif // SAMPLE_H

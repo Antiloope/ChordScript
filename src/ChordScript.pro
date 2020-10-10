@@ -43,6 +43,7 @@ SOURCES += \
     executor/modifiers/constmodifier.cpp \
     executor/modifiers/modifier.cpp \
     executor/modifiers/soundmodifier.cpp \
+    executor/playables/periodicsample.cpp \
     executor/playables/periodicsound.cpp \
     executor/playables/playable.cpp \
     executor/playables/sample.cpp \
@@ -124,6 +125,7 @@ HEADERS += \
     executor/modifiers/constmodifier.h \
     executor/modifiers/modifier.h \
     executor/modifiers/soundmodifier.h \
+    executor/playables/periodicsample.h \
     executor/playables/periodicsound.h \
     executor/playables/playable.h \
     executor/playables/sample.h \

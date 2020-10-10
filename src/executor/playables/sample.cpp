@@ -138,6 +138,23 @@ Sample* Sample::generate(double timeFactor,tick_t startTick) {
     return ret;
 }
 
+PeriodicSample* Sample::generate(double timeFactor, tick_t period, tick_t startTick) {
+    PeriodicSample* ret = new PeriodicSample(*this);
+    ret->_startTick = startTick;
+    if(timeFactor == 0)
+    {
+        ret->setTimeFactor(1);
+        ret->setAmplitudeFactor(0);
+    }
+    else
+        ret->setTimeFactor(timeFactor);
+
+    ret->_isPlayed = false;
+    ret->_progress = 0;
+    ret->_period = period;
+    return ret;
+}
+
 double Sample::getDurationInSeconds() {
     return Context::getInstance()->getAudioFile(_fileName)->getLengthInSeconds();
 }
