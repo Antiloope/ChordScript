@@ -197,6 +197,7 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
         {
         case DataTypesId::Numeric:
         case DataTypesId::Sound:
+        case DataTypesId::Sample:
         case DataTypesId::String:
             RPNStack.push(literalValue->clone());
             break;
@@ -291,6 +292,16 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                         RPNStack.pop();
 
                         RPNStack.push(new SoundLiteralValue(op1->operator*(op2).clone()));
+                        break;
+                    }
+                    case DataTypesId::Sample:
+                    {
+                        unique_ptr<SamplePlayer> op1 = unique_ptr<SamplePlayer>(((SamplePlayer*)RPNStack.top()->getValue())->clone());
+
+                        delete RPNStack.top();
+                        RPNStack.pop();
+
+                        RPNStack.push(new SampleLiteralValue(op1->operator*(op2).clone()));
                         break;
                     }
                     default:
@@ -412,6 +423,16 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                         RPNStack.push(new SoundLiteralValue((*op1 + *op2).clone()));
                         break;
                     }
+                    case DataTypesId::Sample:
+                    {
+                        unique_ptr<SamplePlayer> op1(((SamplePlayer*)RPNStack.top()->getValue())->clone());
+
+                        delete RPNStack.top();
+                        RPNStack.pop();
+
+                        RPNStack.push(new SampleLiteralValue((*op1 + *op2).clone()));
+                        break;
+                    }
                     default:
                         while(!RPNStack.empty())
                         {
@@ -446,6 +467,16 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                         RPNStack.pop();
 
                         RPNStack.push(new SoundLiteralValue(op1->operator*(*op2).clone()));
+                        break;
+                    }
+                    case DataTypesId::Sample:
+                    {
+                        unique_ptr<SamplePlayer> op1 = unique_ptr<SamplePlayer>(((SamplePlayer*)RPNStack.top()->getValue())->clone());
+
+                        delete RPNStack.top();
+                        RPNStack.pop();
+
+                        RPNStack.push(new SampleLiteralValue(op1->operator*(*op2).clone()));
                         break;
                     }
                     default:
@@ -483,6 +514,118 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
                         }
                         throw SyntaxException(
                             "Invalid divition operation between a number and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
+                            linkedValue->getCodeReference());
+                        break;
+                    }
+                    break;
+                }
+                default:
+                    while(!RPNStack.empty())
+                    {
+                        delete RPNStack.top();
+                        RPNStack.pop();
+                    }
+                    throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+                    break;
+                }
+                break;
+            }
+            case DataTypesId::Sample:
+            {
+                unique_ptr<SamplePlayer> op2 = unique_ptr<SamplePlayer>(((SamplePlayer*)RPNStack.top()->getValue())->clone());
+
+                delete RPNStack.top();
+                RPNStack.pop();
+
+                if( RPNStack.empty() )
+                    throw SyntaxException("Invalid operation",linkedValue->getCodeReference());
+
+                switch( *(char*)literalValue->getValue() )
+                {
+                case cCast(MathSymbols::Addition):
+                    switch ( RPNStack.top()->getDataTypeId() )
+                    {
+                    case DataTypesId::Sound:
+                    {
+                        unique_ptr<SoundGenerator> op1(((SoundGenerator*)RPNStack.top()->getValue())->clone());
+
+                        delete RPNStack.top();
+                        RPNStack.pop();
+
+                        RPNStack.push(new SampleLiteralValue((*op2 + *op1).clone()));
+                        break;
+                    }
+                    default:
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
+                        throw SyntaxException(
+                            "Invalid addition operation between a sample and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
+                            linkedValue->getCodeReference());
+                        break;
+                    }
+                    break;
+                case cCast(MathSymbols::Multiplication):
+                {
+                    switch ( RPNStack.top()->getDataTypeId() )
+                    {
+                    case DataTypesId::Numeric:
+                    {
+                        double op1 = *(double*)RPNStack.top()->getValue();
+
+                        delete RPNStack.top();
+                        RPNStack.pop();
+
+                        RPNStack.push(new SampleLiteralValue(op2->operator*(op1).clone()));
+                        break;
+                    }
+                    case DataTypesId::Sample:
+                    {
+                        unique_ptr<SoundGenerator> op1 = unique_ptr<SoundGenerator>(((SoundGenerator*)RPNStack.top()->getValue())->clone());
+
+                        delete RPNStack.top();
+                        RPNStack.pop();
+
+                        RPNStack.push(new SampleLiteralValue(op2->operator*(*op1).clone()));
+                        break;
+                    }
+                    default:
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
+                        throw SyntaxException(
+                            "Invalid multiplication operation between a sample and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
+                            linkedValue->getCodeReference());
+                        break;
+                    }
+                    break;
+                }
+                case cCast(MathSymbols::Divition):
+                {
+                    switch ( RPNStack.top()->getDataTypeId() )
+                    {
+                    case DataTypesId::Numeric:
+                    {
+                        double op1 = *(double*)RPNStack.top()->getValue();
+
+                        delete RPNStack.top();
+                        RPNStack.pop();
+
+                        RPNStack.push(new SampleLiteralValue(op2->operator/(op1).clone()));
+                        break;
+                    }
+                    default:
+                        while(!RPNStack.empty())
+                        {
+                            delete RPNStack.top();
+                            RPNStack.pop();
+                        }
+                        throw SyntaxException(
+                            "Invalid divition operation between a sample and a " + DataType::getDataTypeString(RPNStack.top()->getDataTypeId()),
                             linkedValue->getCodeReference());
                         break;
                     }
