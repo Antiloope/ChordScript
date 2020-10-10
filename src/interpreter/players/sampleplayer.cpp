@@ -21,7 +21,7 @@ void SamplePlayer::play(double timeFactor, tick_t startTick, string variableName
 void SamplePlayer::loop(double timeFactor,tick_t startTick,string variableName) {
     PeriodicSample* newSample = _sample.generate(
         timeFactor,
-        TimeHandler::getInstance()->msToTicks(timeFactor * getDurationInSeconds() * 1000),
+        TimeHandler::getInstance()->segToTicks(timeFactor * getDurationInSeconds()),
         startTick);
     _generatedSounds.push_back(newSample);
     ExecutorInterface::addSound(newSample,variableName);
@@ -30,7 +30,7 @@ void SamplePlayer::loop(double timeFactor,tick_t startTick,string variableName) 
 void SamplePlayer::loop(double timeFactor,double period,tick_t startTick,string variableName) {
     PeriodicSample* newSample = _sample.generate(
         timeFactor,
-        TimeHandler::getInstance()->msToTicks(period*1000),
+        TimeHandler::getInstance()->segToTicks(period),
         startTick);
     _generatedSounds.push_back(newSample);
     ExecutorInterface::addSound(newSample,variableName);
