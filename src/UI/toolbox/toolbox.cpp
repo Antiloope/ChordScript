@@ -28,8 +28,8 @@ ToolBox::ToolBox(QWidget *parent)
     this->addItem(_soundVisualizer,"Sound Visualizer");
 
     QTextBrowser* documentation = new QTextBrowser(this);
-    documentation->setSearchPaths({"/home/antiloope/Documents/tesis/ChordScript/doc/html/"});
-    documentation->setSource(QUrl("/home/antiloope/Documents/tesis/ChordScript/doc/html/annotated.html"),QTextDocument::HtmlResource);
+    documentation->setSearchPaths({"./docs/"});
+    documentation->setSource(QUrl("./docs/Language-Documentation.html"));
     documentation->setOpenExternalLinks(true);
     documentation->setStyleSheet(
         "QTextBrowser {"
