@@ -14,6 +14,10 @@ AudioBuffer ExecutorInterface::getBuffer(double duration) {
     return ret;
 }
 
+void ExecutorInterface::init() {
+    Executor::getInstance()->init();
+}
+
 unsigned int ExecutorInterface::getSampleRate() {
     return Executor::getInstance()->getSampleRate();
 }

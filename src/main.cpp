@@ -1,42 +1,44 @@
 #include <QApplication>
-#include "UI/uimanager.h"
 #include "executor/executor.h"
+#include "executor/executorinterface.h"
 #include "utils/log.h"
-#include "utils/Exceptions/exception.h"
-#include <stdlib.h>
-#include "interpreter/interpreter.h"
 #include "interpreter/context.h"
-
-#include <iostream>
+#include "UI/maininterface.h"
 
 using namespace CS;
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    QApplication app(argc, argv);
+    app.setWindowIcon(UI::UiDefinitions::getInstance()->getIcon(UI::IconId::App));
 
     Log::getInstance().write("Program started",Log::info_t);
 
+    // Init an interpreter context with start values.
     Context::getInstance()->load();
 
-    Executor* audio = Executor::getInstance();
-    audio->init();
+    // Init global executor.
+    ExecutorInterface::init();
 
-    UI::UiManager ui;
-    ui.init(a);
+    // Init main window interface
+    UI::MainInterface* mainWindow = new UI::MainInterface();
+    mainWindow->show();
 
     int ret;
     try
     {
-        ret = a.exec();
+        ret = app.exec();
     }
-    catch( const exception& e)
+    catch( const exception& e )
     {
         Log::getInstance().write(e.what(),Log::error_t);
     }
 
-    audio->closeAll();
+    ExecutorInterface::closeAll();
+
     Log::getInstance().write("Program closed",Log::info_t);
+
+    delete mainWindow;
     return ret;
 }

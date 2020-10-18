@@ -16,6 +16,7 @@ class ExecutorInterface
 public:
     static AudioBuffer getBuffer(double);
     static unsigned int getSampleRate();
+    static void init();
     static char getSoundId();
     static void addSound(Playable*,std::string);
     static void removeSound(std::string);

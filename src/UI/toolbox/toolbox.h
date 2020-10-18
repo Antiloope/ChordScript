@@ -8,6 +8,7 @@ namespace CS {
 namespace UI {
 
 class SoundVisualizer;
+class DocumentationViewer;
 
 class ToolBox : public QToolBox
 {
@@ -15,8 +16,11 @@ class ToolBox : public QToolBox
 public:
     explicit ToolBox(QWidget *parent = nullptr);
 private slots:
+    void showTutorial();
+    void openCSPage();
 private:
     SoundVisualizer* _soundVisualizer;
+    DocumentationViewer* _documentation;
 
 signals:
 

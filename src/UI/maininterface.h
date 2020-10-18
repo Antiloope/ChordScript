@@ -2,6 +2,7 @@
 #define MAININTERFACE_H
 
 #include <QMainWindow>
+#include "uidefinitions.h"
 
 namespace CS {
 
@@ -10,19 +11,19 @@ class Interpreter;
 namespace UI {
 
 class CodeEditorTabs;
-class UiManager;
 class ConsoleTabs;
+class TopBar;
 
 class MainInterface : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit MainInterface(UiManager*,QWidget *parent = nullptr);
+    explicit MainInterface(QWidget *parent = nullptr);
     ~MainInterface();
 private:
-    UiManager* _manager;
     CodeEditorTabs* _editorTabs;
     ConsoleTabs* _consoleTabs;
+    TopBar* _topBar;
 protected slots:
     void playButton();
     void stopButton();

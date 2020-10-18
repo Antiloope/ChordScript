@@ -6,6 +6,7 @@
 #include <QTabBar>
 #include <QSplitter>
 #include "finder.h"
+#include "outputlog.h"
 
 using namespace CS::UI;
 
@@ -44,10 +45,7 @@ ConsoleTabs::ConsoleTabs(QWidget *parent)
         "}"
         );
 
-    _outputLog = new QTextBrowser(this);
-    _outputLog->setSource(QUrl("log.md"),QTextDocument::MarkdownResource);
-    _outputLog->setFont(UiDefinitions::getInstance()->getFont(FontId::Code));
-    _outputLog->setAcceptRichText(true);
+    _outputLog = new OutputLog(this);
     this->addTab(_outputLog,"Output Log");
 
     _finder = new Finder(this);

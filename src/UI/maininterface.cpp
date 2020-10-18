@@ -4,12 +4,14 @@
 #include "toolbox/toolbox.h"
 #include "consoletabs/consoletabs.h"
 #include "utils/Exceptions/exception.h"
-#include "uimanager.h"
 #include "uidefinitions.h"
 #include <iostream>
 #include <thread>
 #include <mutex>
 #include "interpreter/interpreter.h"
+#include "bars/topbar.h"
+#include "utils/globalconfig.h"
+#include "tutorial/maintutorial.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -27,7 +29,6 @@ using namespace CS::UI;
 namespace {
 
 const QString WINDOW_NAME = QString::fromUtf8("MainWindow");
-const int DEFAULT_WINDOW_WIDTH = 500;
 const QString WINDOW_ICON_RESOURCE = QString::fromUtf8(":/resources/circulo.svg");
 const QString ACTION_PLAY_ICON_RESOURCE = QString::fromUtf8(":/resources/play.svg");
 const QString ACTION_STOP_ICON_RESOURCE = QString::fromUtf8(":/resources/stop.svg");
@@ -36,7 +37,6 @@ const QString ACTION_RECORDING_ICON_RESOURCE = QString::fromUtf8(":/resources/re
 const QString ACTION_SAVE_ICON_RESOURCE = QString::fromUtf8(":/resources/save.svg");
 const QString ACTION_NEW_FILE_ICON_RESOURCE = QString::fromUtf8(":/resources/new.svg");
 const QString ACTION_OPEN_ICON_RESOURCE = QString::fromUtf8(":/resources/open.svg");
-const int DEFAULT_MENU_BAR_HEIGHT = 20;
 const QString FILE_MENU_TITLE = QString::fromUtf8("&File");
 const QString EDIT_MENU_TITLE = QString::fromUtf8("&Edit");
 const QString SERVER_MENU_TITLE = QString::fromUtf8("&Server");
@@ -71,8 +71,8 @@ const QString DOCUMENTATION_ACTION_TITLE = QString::fromUtf8("Open &Documentatio
 
 std::atomic_flag flag = ATOMIC_FLAG_INIT;
 
-MainInterface::MainInterface(UiManager* manager,QWidget *parent)
-    : QMainWindow(parent), _manager(manager) {
+MainInterface::MainInterface(QWidget *parent)
+    : QMainWindow(parent) {
 
     UiDefinitions* def = UiDefinitions::getInstance();
 
@@ -146,19 +146,7 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     centralWidget->setSizePolicy(sizePolicy);
     this->setCentralWidget(centralWidget);
 
-    // Top menu
-    QMenuBar* menuBar = new QMenuBar(this);
-    menuBar->setGeometry(QRect(0, 0, DEFAULT_WINDOW_WIDTH, DEFAULT_MENU_BAR_HEIGHT));
-    menuBar->setAutoFillBackground(false);
-    menuBar->setPalette(UiDefinitions::getInstance()->getPalette(PaletteId::Global));
-    menuBar->setStyleSheet(
-        "QMenuBar{"
-            "background-color:" + UiDefinitions::getInstance()->getColorRGB(ColorId::Background) + ";"
-        "}"
-        "QMenu::item:selected { "
-            "background: " + def->getColorRGB(ColorId::Primary) + ";"
-        "}"
-        );
+    _topBar = new TopBar(this);
 
     QAction* openAction = new QAction(OPEN_ACTION_TITLE,this);
     openAction->setShortcut(tr("CTRL+O"));
@@ -202,8 +190,8 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     QAction* reportBugAction = new QAction(REPORT_BUG_ACTION_TITLE,this);
     QAction* documentationAction = new QAction(DOCUMENTATION_ACTION_TITLE,this);
 
-    QMenu* menuFile = new QMenu(menuBar);
-    menuFile->setTitle(FILE_MENU_TITLE);
+    QMenu* menuFile = new QMenu(_topBar);
+    menuFile->setTitle(QString(GlobalConfig::getInstance()->getParameter(ConfigDefinitions::Section::TopBar,ConfigDefinitions::Parameter::FileTitle)));
     menuFile->addAction(newFileAction);
     menuFile->addSeparator();
     menuFile->addAction(openAction);
@@ -213,7 +201,7 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     menuFile->addSeparator();
     menuFile->addAction(closeFileAction);
     menuFile->addAction(exitAction);
-    QMenu* menuEdit = new QMenu(menuBar);
+    QMenu* menuEdit = new QMenu(_topBar);
     menuEdit->setTitle(EDIT_MENU_TITLE);
     menuEdit->addAction(undoAction);
     menuEdit->addAction(redoAction);
@@ -227,7 +215,7 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     menuEdit->addSeparator();
     menuEdit->addAction(findAction);
     menuEdit->addAction(commentAction);
-    QMenu* menuServer = new QMenu(menuBar);
+    QMenu* menuServer = new QMenu(_topBar);
     menuServer->setTitle(SERVER_MENU_TITLE);
     menuServer->addAction(serverStartAction);
     menuServer->addAction(serverKillAction);
@@ -236,7 +224,7 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     menuServer->addAction(serverRecordAction);
     menuServer->addSeparator();
     menuServer->addAction(serverConfigAction);
-    QMenu* menuHelp = new QMenu(menuBar);
+    QMenu* menuHelp = new QMenu(_topBar);
     menuHelp->setTitle(HELP_MENU_TITLE);
     menuHelp->addAction(documentationAction);
     menuHelp->addAction(tutorialAction);
@@ -245,7 +233,12 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     menuHelp->addAction(reportBugAction);
     menuHelp->addSeparator();
     menuHelp->addAction(checkUpdatesAction);
-    this->setMenuBar(menuBar);
+    this->setMenuBar(_topBar);
+
+    _topBar->addAction(menuFile->menuAction());
+    _topBar->addAction(menuEdit->menuAction());
+    _topBar->addAction(menuServer->menuAction());
+    _topBar->addAction(menuHelp->menuAction());
 
     // Status bar
     QStatusBar* statusbar = new QStatusBar(this);
@@ -282,11 +275,6 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
             "background-color: #ffffff;"
             "padding:3px;"
         "}");
-
-    menuBar->addAction(menuFile->menuAction());
-    menuBar->addAction(menuEdit->menuAction());
-    menuBar->addAction(menuServer->menuAction());
-    menuBar->addAction(menuHelp->menuAction());
 
     toolBar->addAction(actionPlay);
     toolBar->addAction(actionStop);
@@ -390,8 +378,7 @@ MainInterface::MainInterface(UiManager* manager,QWidget *parent)
     connect(_editorTabs,SIGNAL(tabCloseRequested(int)),this,SLOT(closeFile(int)));
 }
 
-MainInterface::~MainInterface() {
-}
+MainInterface::~MainInterface() {}
 
 void MainInterface::stopButton() {
     Interpreter::interpret("STOP();");

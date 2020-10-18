@@ -2,6 +2,9 @@
 #include "UI/uidefinitions.h"
 #include <QPushButton>
 #include "soundvisualizer.h"
+#include "documentationviewer.h"
+#include "UI/tutorial/maintutorial.h"
+#include <QDesktopServices>
 
 using namespace CS::UI;
 
@@ -27,15 +30,8 @@ ToolBox::ToolBox(QWidget *parent)
     _soundVisualizer = new SoundVisualizer(this);
     this->addItem(_soundVisualizer,"Sound Visualizer");
 
-    QTextBrowser* documentation = new QTextBrowser(this);
-    documentation->setSearchPaths({"./docs/"});
-    documentation->setSource(QUrl("./docs/Language-Documentation.html"));
-    documentation->setOpenExternalLinks(true);
-    documentation->setStyleSheet(
-        "QTextBrowser {"
-            "border:none;"
-        "}");
-    this->addItem(documentation,"Language Documentation");
+    _documentation = new DocumentationViewer(this);
+    this->addItem(_documentation,"Language Documentation");
 
     QFrame* learnButtons = new QFrame(this);
     learnButtons->setStyleSheet(
@@ -57,7 +53,22 @@ ToolBox::ToolBox(QWidget *parent)
         "}");
     QGridLayout* learnButtonsLayout = new QGridLayout(learnButtons);
     learnButtons->setLayout(learnButtonsLayout);
-    learnButtonsLayout->addWidget(new QPushButton("Start Tutorial",learnButtons),0,0,1,1);
-    learnButtonsLayout->addWidget(new QPushButton("Go To ChordScript Page",learnButtons),1,0,1,1,Qt::AlignTop);
+
+    QPushButton* tutorialButton = new QPushButton("Start Tutorial",learnButtons);
+    learnButtonsLayout->addWidget(tutorialButton,0,0,1,1);
+    QPushButton* pageButton = new QPushButton("Go To ChordScript Page",learnButtons);
+    learnButtonsLayout->addWidget(pageButton,1,0,1,1,Qt::AlignTop);
     this->addItem(learnButtons,"Learn more");
+
+    connect(tutorialButton,SIGNAL(clicked()),this, SLOT(showTutorial()));
+    connect(pageButton,SIGNAL(clicked()),this, SLOT(openCSPage()));
+}
+
+void ToolBox::showTutorial() {
+    auto tutorial = MainTutorial();
+    tutorial.exec();
+}
+
+void ToolBox::openCSPage() {
+    QDesktopServices::openUrl(QUrl("https://antiloope.github.io/ChordScriptPage/"));
 }

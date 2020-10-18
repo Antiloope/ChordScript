@@ -24,18 +24,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    UI/bars/topbar.cpp \
     UI/consoletabs/consoletabs.cpp \
     UI/consoletabs/finder.cpp \
+    UI/consoletabs/outputlog.cpp \
     UI/editor/codeeditor.cpp \
     UI/editor/codeeditortabs.cpp \
     UI/editor/linenumberarea.cpp \
     UI/editor/syntaxhighlighter.cpp \
     UI/maininterface.cpp \
+    UI/toolbox/documentationviewer.cpp \
     UI/toolbox/plotsettingsdialog.cpp \
     UI/toolbox/soundvisualizer.cpp \
     UI/toolbox/toolbox.cpp \
+    UI/tutorial/maintutorial.cpp \
     UI/uidefinitions.cpp \
-    UI/uimanager.cpp \
     executor/buffer/buffer.cpp \
     executor/buffer/outputbuffer.cpp \
     executor/executor.cpp \
@@ -105,18 +108,21 @@ SOURCES += \
     utils/timehandler.cpp
 
 HEADERS += \
+    UI/bars/topbar.h \
     UI/consoletabs/consoletabs.h \
     UI/consoletabs/finder.h \
+    UI/consoletabs/outputlog.h \
     UI/editor/codeeditor.h \
     UI/editor/codeeditortabs.h \
     UI/editor/linenumberarea.h \
     UI/editor/syntaxhighlighter.h \
     UI/maininterface.h \
+    UI/toolbox/documentationviewer.h \
     UI/toolbox/plotsettingsdialog.h \
     UI/toolbox/soundvisualizer.h \
     UI/toolbox/toolbox.h \
+    UI/tutorial/maintutorial.h \
     UI/uidefinitions.h \
-    UI/uimanager.h \
     executor/AudioFile.h \
     executor/buffer/buffer.h \
     executor/buffer/outputbuffer.h \
@@ -207,3 +213,10 @@ unix: LIBS += -L/usr/lib/x86_64-linux-gnu/ -ljack -ljackserver
 
 RESOURCES += \
     resources.qrc
+
+win32: LIBS += -L$$PWD/'../../../../../Program Files (x86)/Jack/lib/' -llibjack64 -llibjackserver64
+
+win32: INCLUDEPATH += $$PWD/'../../../../../Program Files (x86)/Jack/includes'
+win32: DEPENDPATH += $$PWD/'../../../../../Program Files (x86)/Jack/includes'
+
+win32: RC_FILE = chordscript.rc

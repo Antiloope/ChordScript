@@ -7,23 +7,16 @@ using namespace std;
 using namespace mINI;
 using namespace ConfigDefinitions;
 
-#define uCast static_cast<unsigned>
+const char* GLOBAL_CONFIG_INI_FILE = "./etc/config.ini";
+const char* ENGLISH_INI_FILE = "./etc/lang/en.ini";
+const char* SPANISH_INI_FILE = "./etc/lang/es.ini";
 
-const string GLOBAL_CONFIG_INI_FILE = ":/etc/config.ini";
-const string ENGLISH_INI_FILE = ":/etc/lang/en.ini";
-const string SPANISH_INI_FILE = ":/etc/lang/es.ini";
+const char* STARTUP_SETTINGS_SECTION = "global";
+const char* TOP_BAR_SECTION = "topBar";
 
-const string STARTUP_SETTINGS_SECTION = "global";
-
-const string CURRENT_LANGUAGE_KEY = "lang";
-const string IS_FIRST_TIME_OPENED_KEY = "firstTime";
-
-enum class ConfigFile {
-    GlobalConfig = 0,
-    EnglishFile,
-    SpanishFile,
-    ConfigFileCount
-};
+const char* CURRENT_LANGUAGE_KEY = "lang";
+const char* IS_FIRST_TIME_OPENED_KEY = "firstTime";
+const char* FILE_TITLE_KEY = "fileTitle";
 
 GlobalConfig* GlobalConfig::_instance = new GlobalConfig();
 
@@ -33,21 +26,21 @@ GlobalConfig* GlobalConfig::getInstance() {
 
 GlobalConfig::~GlobalConfig() {
     for( unsigned i = 0; i < uCast(ConfigFile::ConfigFileCount); i++ )
-    {
         delete _filesData[i];
-    }
-    delete[] _filesData;
 }
 
 GlobalConfig::GlobalConfig() {
 
-    _filesData = new INIStructure*[uCast(ConfigFile::ConfigFileCount)]();
     _filesData[uCast(ConfigFile::GlobalConfig)] = new INIStructure;
     _filesData[uCast(ConfigFile::EnglishFile)] = new INIStructure;
     _filesData[uCast(ConfigFile::SpanishFile)] = new INIStructure;
 
-    INIFile file(GLOBAL_CONFIG_INI_FILE);
-    file.read(*_filesData[uCast(ConfigFile::GlobalConfig)]);
+    INIFile fileGlobalConfig(GLOBAL_CONFIG_INI_FILE);
+    fileGlobalConfig.read(*_filesData[uCast(ConfigFile::GlobalConfig)]);
+    INIFile fileEnglishLanguage(ENGLISH_INI_FILE);
+    fileEnglishLanguage.read(*_filesData[uCast(ConfigFile::EnglishFile)]);
+    INIFile fileSpanishLanguage(SPANISH_INI_FILE);
+    fileSpanishLanguage.read(*_filesData[uCast(ConfigFile::SpanishFile)]);
 
     if( !checkIntegrity(_filesData[uCast(ConfigFile::GlobalConfig)]) )
     {
@@ -60,9 +53,13 @@ GlobalConfig::GlobalConfig() {
         [CURRENT_LANGUAGE_KEY];
 
     if( lang == "en" )
+    {
         _currentLanguage = Language::English;
+    }
     else if( lang == "es" )
+    {
         _currentLanguage = Language::Spanish;
+    }
     else
     {
         Log::getInstance().write("Invalid language in config file. Default: english",Log::error_t);
@@ -93,7 +90,7 @@ bool GlobalConfig::isFirstTimeOpened() {
 bool GlobalConfig::setParameter(
     Section section,
     Parameter parameter,
-    string value) {
+    const char* value) {
 
     switch( section )
     {
@@ -116,13 +113,26 @@ bool GlobalConfig::setParameter(
             return false;
         }
         break;
+    default:
+        return false;
     }
     return true;
 }
 
-string GlobalConfig::getParameter(
+const char* GlobalConfig::getParameter(
     Section section,
     Parameter parameter) {
+
+    ConfigFile configFile;
+    switch( _currentLanguage )
+    {
+    case Language::English:
+        configFile = ConfigFile::EnglishFile;
+        break;
+    case Language::Spanish:
+        configFile = ConfigFile::SpanishFile;
+        break;
+    }
 
     switch( section )
     {
@@ -132,19 +142,30 @@ string GlobalConfig::getParameter(
         case Parameter::CurrentLanguage:
             return (*_filesData[uCast(ConfigFile::GlobalConfig)])
                 [STARTUP_SETTINGS_SECTION]
-                [CURRENT_LANGUAGE_KEY];
+                [CURRENT_LANGUAGE_KEY].c_str();
             break;
 
         case Parameter::IsFirstTimeOpened:
             return (*_filesData[uCast(ConfigFile::GlobalConfig)])
                 [STARTUP_SETTINGS_SECTION]
-                [IS_FIRST_TIME_OPENED_KEY];
+                [IS_FIRST_TIME_OPENED_KEY].c_str();
             break;
 
         default:
             break;
         }
         break;
+    case Section::TopBar:
+        switch( parameter )
+        {
+        case Parameter::FileTitle:
+            return (*_filesData[uCast(configFile)])
+                [TOP_BAR_SECTION]
+                [FILE_TITLE_KEY].c_str();
+            break;
+        default:
+            break;
+        }
     }
     return "";
 }

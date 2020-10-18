@@ -10,6 +10,7 @@ namespace CS {
 namespace UI {
 
 class Finder;
+class OutputLog;
 
 class ConsoleTabs : public QTabWidget {
     Q_OBJECT
@@ -17,7 +18,7 @@ public:
     explicit ConsoleTabs(QWidget *parent = nullptr);
     void setFocusFind();
 private:
-    QTextBrowser* _outputLog;
+    OutputLog* _outputLog;
     Finder* _finder;
 private slots:
     void findRequested(bool,bool,bool,QString);

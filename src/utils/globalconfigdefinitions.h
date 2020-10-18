@@ -13,12 +13,14 @@ enum Language
 enum Section
 {
     StartupSettings,
+    TopBar,
 };
 
 enum Parameter
 {
     IsFirstTimeOpened,
     CurrentLanguage,
+    FileTitle,
 };
 
 }
