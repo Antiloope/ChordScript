@@ -39,35 +39,34 @@ void PeriodicSample::play(tick_t currentTick, Buffer& bufferToLoad) {
 
     double timeFactor = _timeFactor->getPositiveValue(0);
 
+    tick_t newSampleLength = (fileLength - 1) / timeFactor;
+
     for( ; cursor < bufferSize; cursor++ )
     {
+        double progress = _progress * timeFactor;
         double valueLeft, valueRight;
         valueRight =
+            audioFile->samples[Channel::Right][(unsigned)progress] +
             (
-                ( ( _progress - _progress/(double)timeFactor ) /
-                 ( (_progress + 1)/(double)timeFactor - _progress/(double)timeFactor ) ) *
-                    ( (double)audioFile->samples[Channel::Right][(_progress+1)/(double)timeFactor] -
-                     (double)audioFile->samples[Channel::Right][(_progress)/(double)timeFactor] ) +
-                (double)audioFile->samples[Channel::Right][(_progress)/(double)timeFactor] ) *
-                _amplitudeFactor->getPositiveValue(0) + _amplitudeOffset->getValue(0);
+                audioFile->samples[Channel::Right][((unsigned)progress)+1] -
+                audioFile->samples[Channel::Right][(unsigned)progress]
+            ) *
+            timeFactor *
+            _amplitudeFactor->getPositiveValue(0) + _amplitudeOffset->getValue(0);
 
         if( audioFile->isMono() )
-        {
             valueLeft = valueRight;
-        }
         else
-        {
             valueLeft =
+                audioFile->samples[Channel::Left][(unsigned)progress] +
                 (
-                    ( ( _progress - _progress/(double)timeFactor ) /
-                     ( (_progress + 1)/(double)timeFactor - _progress/(double)timeFactor ) ) *
-                        ( (double)audioFile->samples[Channel::Left][(_progress+1)/(double)timeFactor] -
-                         (double)audioFile->samples[Channel::Left][(_progress)/(double)timeFactor] ) +
-                    (double)audioFile->samples[Channel::Left][(_progress)/(double)timeFactor] ) *
-                    _amplitudeFactor->getPositiveValue(0) + _amplitudeOffset->getValue(0);
-        }
+                    audioFile->samples[Channel::Left][((unsigned)progress)+1] -
+                    audioFile->samples[Channel::Left][(unsigned)progress]
+                ) *
+                timeFactor *
+                _amplitudeFactor->getPositiveValue(0) + _amplitudeOffset->getValue(0);
 
-        if( _progress >= fileLength * timeFactor - 1 )
+        if( _progress >= newSampleLength )
         {
             _startTick += _period;
             _progress = 0;

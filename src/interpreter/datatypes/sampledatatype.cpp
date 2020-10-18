@@ -178,7 +178,7 @@ LiteralValue* SampleDataType::loop(
     case DataTypesId::Numeric:
     {
         double timeFactor = *(double*)((NumberLiteralValue*)(*it))->getValue();
-        if( timeFactor == 0 )
+        if( timeFactor <= 0 )
             return nullptr;
 
         it++;
@@ -209,7 +209,7 @@ LiteralValue* SampleDataType::loop(
             argIt++;
             if( argIt == argumentList->end() )
             {
-                if( timeFactor )
+                if( timeFactor > 0 )
                     totalLoopDuration += timeFactor * duration;
                 else
                     totalLoopDuration += duration;
@@ -244,7 +244,7 @@ LiteralValue* SampleDataType::loop(
             {
                 player->loop(timeFactor, totalLoopDuration, startTick, variableName);
                 if( timeFactor )
-                    startTick += TimeHandler::getInstance()->segToTicks(duration*timeFactor);
+                    startTick += TimeHandler::getInstance()->segToTicks(duration/timeFactor);
                 else
                     startTick += TimeHandler::getInstance()->segToTicks(duration);
                 continue;
