@@ -45,6 +45,50 @@ void AssignationExpression::load(list<TerminalExpression*>* terminalExpressionsL
         throw SyntaxException("Expected = after name",tmp->getCodeReference() );
     tmp = terminalExpressionsList->front();
 
+    if( tmp->getType() == cCast(TerminalExpressionType::Addition) )
+    {
+        terminalExpressionsList->pop_front();
+        if( terminalExpressionsList->empty())
+            throw SyntaxException("Expected " + _varName + "++ ",tmp->getCodeReference() );
+        terminalExpressionsList->front();
+
+        if( tmp->getType() != cCast(TerminalExpressionType::Addition) )
+            throw SyntaxException("Expected " + _varName + "++ ",tmp->getCodeReference() );
+
+        terminalExpressionsList->pop_front();
+        if( terminalExpressionsList->empty() ||
+            (terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::EOE) &&
+             terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::CloseParenthesis)))
+            throw SyntaxException("Expected ;",tmp->getCodeReference() );
+
+        terminalExpressionsList->push_front(new NumericExpression(tmp->getCodeReference()-1,cCast(TerminalExpressionType::Numeric),1));
+        terminalExpressionsList->push_front(new TerminalExpression(tmp->getCodeReference()-2,cCast(TerminalExpressionType::Addition)));
+        terminalExpressionsList->push_front(new NameExpression(tmp->getCodeReference()-3,cCast(TerminalExpressionType::Name),_varName));
+        terminalExpressionsList->push_front(new TerminalExpression(tmp->getCodeReference()-2,cCast(TerminalExpressionType::Equal)));
+    }
+    else if( tmp->getType() == cCast(TerminalExpressionType::Substract) )
+    {
+        terminalExpressionsList->pop_front();
+        if( terminalExpressionsList->empty())
+            throw SyntaxException("Expected " + _varName + "-- ",tmp->getCodeReference() );
+        terminalExpressionsList->front();
+
+        if( tmp->getType() != cCast(TerminalExpressionType::Substract) )
+            throw SyntaxException("Expected " + _varName + "-- ",tmp->getCodeReference() );
+
+        terminalExpressionsList->pop_front();
+        if( terminalExpressionsList->empty() ||
+           (terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::EOE) &&
+            terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::CloseParenthesis) ))
+            throw SyntaxException("Expected ;",tmp->getCodeReference() );
+
+        terminalExpressionsList->push_front(new NumericExpression(tmp->getCodeReference()-1,cCast(TerminalExpressionType::Numeric),1));
+        terminalExpressionsList->push_front(new TerminalExpression(tmp->getCodeReference()-2,cCast(TerminalExpressionType::Substract)));
+        terminalExpressionsList->push_front(new NameExpression(tmp->getCodeReference()-3,cCast(TerminalExpressionType::Name),_varName));
+        terminalExpressionsList->push_front(new TerminalExpression(tmp->getCodeReference()-2,cCast(TerminalExpressionType::Equal)));
+    }
+    tmp = terminalExpressionsList->front();
+
     if( tmp->getType() != cCast(TerminalExpressionType::Equal) )
         throw SyntaxException("Expected = ",tmp->getCodeReference());
 
