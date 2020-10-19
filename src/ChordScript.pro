@@ -51,6 +51,7 @@ SOURCES += \
     executor/playables/playable.cpp \
     executor/playables/sample.cpp \
     executor/playables/sound.cpp \
+    interpreter/datatypes/arraydatatype.cpp \
     interpreter/players/sampleplayer.cpp \
     interpreter/players/soundgenerator.cpp \
     interpreter/context.cpp \
@@ -136,6 +137,7 @@ HEADERS += \
     executor/playables/playable.h \
     executor/playables/sample.h \
     executor/playables/sound.h \
+    interpreter/datatypes/arraydatatype.h \
     interpreter/players/sampleplayer.h \
     interpreter/players/soundgenerator.h \
     interpreter/context.h \

@@ -116,15 +116,18 @@ void ForInstructionExpression::interpret(){
 
     Context::getInstance()->setReturnValue(nullptr);
     _assignation->interpret();
-
     unique_ptr<LiteralValue> booleanCondition = unique_ptr<LiteralValue>(_booleanOperation->getValue());
+
+    Context::getInstance()->setReturnValue(nullptr);
     while(
-        !Context::getInstance()->existReturnValue() &&
         *(bool*)booleanCondition->getValue() )
     {
-        booleanCondition = unique_ptr<LiteralValue>(_booleanOperation->getValue());
         _function->interpret();
+        if( Context::getInstance()->existReturnValue() )
+            break;
+
         _endAssignation->interpret();
+        booleanCondition = unique_ptr<LiteralValue>(_booleanOperation->getValue());
     }
     Context::getInstance()->removeScope(tmp);
 }

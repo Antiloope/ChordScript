@@ -41,6 +41,7 @@ namespace Constants {
     const std::string SOUND             = "sound";
     const std::string NUMBER            = "number";
     const std::string ARGUMENT          = "argument";
+    const std::string ARRAY             = "array";
     const std::string GROUP             = "group";
     const std::string BOOLEAN           = "boolean";
     const std::string STRING            = "string";
@@ -65,6 +66,7 @@ namespace Constants {
         case getHash("sound"):
         case getHash("number"):
         case getHash("argument"):
+        case getHash("array"):
         case getHash("group"):
         case getHash("boolean"):
         case getHash("string"):

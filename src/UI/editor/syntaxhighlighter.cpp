@@ -25,6 +25,8 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent)
     dataTypeKeywords << tmp;
     tmp = "\\b" + QString(CS::Constants::ARGUMENT.c_str()) + "\\b";
     dataTypeKeywords << tmp;
+    tmp = "\\b" + QString(CS::Constants::ARRAY.c_str()) + "\\b";
+    dataTypeKeywords << tmp;
     tmp = "\\b" + QString(CS::Constants::GROUP.c_str()) + "\\b";
     dataTypeKeywords << tmp;
     tmp = "\\b" + QString(CS::Constants::STRING.c_str()) + "\\b";

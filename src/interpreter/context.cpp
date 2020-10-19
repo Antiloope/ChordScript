@@ -91,6 +91,7 @@ Context::Context() {
         {DataTypesId::Sound,       new SoundDataType()},
         {DataTypesId::Numeric,     new NumberDataType()},
         {DataTypesId::Argument,    new ArgumentDataType()},
+        {DataTypesId::Array,       new ArrayDataType()},
         {DataTypesId::Group,       new GroupDataType()},
         {DataTypesId::Boolean,     new BooleanDataType()},
         {DataTypesId::String,      new StringDataType()},

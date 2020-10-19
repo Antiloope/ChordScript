@@ -65,6 +65,7 @@ protected:
 }
 
 #include "argumentdatatype.h"
+#include "arraydatatype.h"
 #include "booleandatatype.h"
 #include "groupdatatype.h"
 #include "nulldatatype.h"

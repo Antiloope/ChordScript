@@ -13,7 +13,7 @@ string DataType::getDataTypeString(DataTypesId dataType) {
     case DataTypesId::Argument: return ARGUMENT;
     case DataTypesId::Sample: return SAMPLE;
     case DataTypesId::Operator: return "operator";
-    case DataTypesId::Array: return "array";
+    case DataTypesId::Array: return ARRAY;
     case DataTypesId::Group: return GROUP;
     case DataTypesId::Boolean: return BOOLEAN;
     case DataTypesId::String: return STRING;
@@ -27,7 +27,7 @@ DataTypesId DataType::getDataTypeId(string dataType) {
     if ( !dataType.compare(ARGUMENT) ) return DataTypesId::Argument;
     if ( !dataType.compare(SAMPLE) ) return DataTypesId::Sample;
     if ( !dataType.compare("operator") ) return DataTypesId::Operator;
-    if ( !dataType.compare("array") ) return DataTypesId::Array;
+    if ( !dataType.compare(ARRAY) ) return DataTypesId::Array;
     if ( !dataType.compare(GROUP) ) return DataTypesId::Group;
     if ( !dataType.compare(BOOLEAN) ) return DataTypesId::Boolean;
     if ( !dataType.compare(STRING) ) return DataTypesId::String;
