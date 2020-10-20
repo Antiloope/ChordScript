@@ -151,6 +151,11 @@ LiteralValue* SoundDataType::play(
     }
     case DataTypesId::Argument:
     {
+        if( ((list<LiteralValue*>*)((ArgumentLiteralValue*)(*it))->getValue())->front()->getDataTypeId() == DataTypesId::Argument )
+        {
+            argumentValues = (list<LiteralValue*>*)((ArgumentLiteralValue*)(*it))->getValue();
+            it = argumentValues->begin();
+        }
         for( ; it != argumentValues->end(); it++ )
         {
             const list<LiteralValue*>* argumentList = (list<LiteralValue*>*)((ArgumentLiteralValue*)(*it))->getValue();
@@ -171,7 +176,10 @@ LiteralValue* SoundDataType::play(
             }
             argIt++;
             if( argIt == argumentList->end() )
-                return nullptr;
+            {
+                generator->play(freqList,0,startTick,variableName);
+                return new NullLiteralValue();
+            }
 
             if( (*argIt)->getDataTypeId() != DataTypesId::Numeric )
                 return nullptr;
