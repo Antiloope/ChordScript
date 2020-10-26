@@ -18,8 +18,8 @@ ArrayDataType::ArrayDataType() {
         );
     _methods.insert(
         pair<string,method_function_t>(
-            "append",
-            &ArrayDataType::append)
+            "push",
+            &ArrayDataType::push)
         );
     _methods.insert(
         pair<string,method_function_t>(
@@ -108,7 +108,7 @@ LiteralValue* ArrayDataType::at(
     return (*it)->clone();
 }
 
-LiteralValue* ArrayDataType::append(
+LiteralValue* ArrayDataType::push(
     string variableName,
     const LiteralValue* value,
     const LiteralValue* args
