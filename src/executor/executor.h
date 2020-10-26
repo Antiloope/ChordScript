@@ -51,8 +51,6 @@ public:
     void restartServer();
     void killServer();
 
-    int addObserver(std::function<void(const AudioBuffer&)>);
-    void removeObserver(int);
 private:
     static void loadBuffer(std::list<std::tuple<Playable*,std::string>>* soundsList);
     void notify();
@@ -69,7 +67,6 @@ private:
     std::list<std::tuple<Playable*,std::string>> _soundsList;
     std::stack<char> _availableSounds;
 
-    std::list<std::tuple<int,std::function<void(const AudioBuffer&)>>> _observerList;
     AudioFile<float> _record;
 
     bool _isServerRunning = false;

@@ -19,7 +19,6 @@ private slots:
     void showTutorial();
     void openCSPage();
 private:
-    SoundVisualizer* _soundVisualizer;
     DocumentationViewer* _documentation;
 
 signals:

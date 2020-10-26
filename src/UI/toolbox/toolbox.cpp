@@ -1,10 +1,10 @@
 #include "toolbox.h"
 #include "UI/uidefinitions.h"
 #include <QPushButton>
-#include "soundvisualizer.h"
 #include "documentationviewer.h"
 #include "UI/tutorial/maintutorial.h"
 #include <QDesktopServices>
+#include <QGridLayout>
 
 using namespace CS::UI;
 
@@ -26,9 +26,6 @@ ToolBox::ToolBox(QWidget *parent)
             "color: " + def->getColorRGB(ColorId::TextPrimary) + ";"
         "}"
         );
-
-    _soundVisualizer = new SoundVisualizer(this);
-    this->addItem(_soundVisualizer,"Sound Visualizer");
 
     _documentation = new DocumentationViewer(this);
     this->addItem(_documentation,"Language Documentation");

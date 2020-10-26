@@ -34,8 +34,6 @@ SOURCES += \
     UI/editor/syntaxhighlighter.cpp \
     UI/maininterface.cpp \
     UI/toolbox/documentationviewer.cpp \
-    UI/toolbox/plotsettingsdialog.cpp \
-    UI/toolbox/soundvisualizer.cpp \
     UI/toolbox/toolbox.cpp \
     UI/tutorial/maintutorial.cpp \
     UI/uidefinitions.cpp \
@@ -119,8 +117,6 @@ HEADERS += \
     UI/editor/syntaxhighlighter.h \
     UI/maininterface.h \
     UI/toolbox/documentationviewer.h \
-    UI/toolbox/plotsettingsdialog.h \
-    UI/toolbox/soundvisualizer.h \
     UI/toolbox/toolbox.h \
     UI/tutorial/maintutorial.h \
     UI/uidefinitions.h \

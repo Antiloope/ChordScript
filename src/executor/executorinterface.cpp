@@ -49,14 +49,6 @@ void ExecutorInterface::stopRecording() {
     Executor::getInstance()->stopRecording();
 }
 
-int ExecutorInterface::addObserver(function<void(const AudioBuffer&)> callback) {
-    return Executor::getInstance()->addObserver(callback);
-}
-
-void ExecutorInterface::removeObserver(int index) {
-    Executor::getInstance()->removeObserver(index);
-}
-
 void ExecutorInterface::startServer() {
     if( !Executor::getInstance()->isServerRunning() )
         Executor::getInstance()->startServer();
