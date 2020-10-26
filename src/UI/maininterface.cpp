@@ -376,6 +376,8 @@ MainInterface::MainInterface(QWidget *parent)
     connect(serverRecordAction,SIGNAL(triggered(bool)),actionRecord,SLOT(setChecked(bool)));
 //    connect(serverConfigAction,SIGNAL(triggered()),this,SLOT(configServer()));
     connect(_editorTabs,SIGNAL(tabCloseRequested(int)),this,SLOT(closeFile(int)));
+    connect(aboutAction,SIGNAL(triggered()),this,SLOT(showAbout()));
+    connect(checkUpdatesAction,SIGNAL(triggered()),this,SLOT(openMaintenance()));
 }
 
 MainInterface::~MainInterface() {}
@@ -405,6 +407,23 @@ void MainInterface::recordButton(bool checked) {
         Interpreter::interpret("START_RECORDING();");
     else
         Interpreter::interpret("STOP_RECORDING();");
+}
+
+void MainInterface::showAbout() {
+    QMessageBox::information(
+        this,
+        "About",
+        "ChordScript v" +
+            QString(GlobalConfig::getInstance()->getParameter(ConfigDefinitions::StartupSettings,ConfigDefinitions::Version)) +
+            "\nLicensed under GPL v3.0");
+}
+
+void MainInterface::openMaintenance() {
+#ifdef _WIN32
+    system((QDir::currentPath() + "maintenanceTool.exe").toStdString().c_str());
+#else
+
+#endif
 }
 
 void MainInterface::openFile() {

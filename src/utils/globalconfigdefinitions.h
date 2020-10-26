@@ -21,6 +21,7 @@ enum Parameter
     IsFirstTimeOpened,
     CurrentLanguage,
     FileTitle,
+    Version,
 };
 
 }

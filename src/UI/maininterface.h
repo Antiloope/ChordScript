@@ -38,6 +38,8 @@ protected slots:
     void startServer();
     void restartServer();
     void killServer();
+    void showAbout();
+    void openMaintenance();
 signals:
 
 };

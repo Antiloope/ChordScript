@@ -16,6 +16,7 @@ const char* TOP_BAR_SECTION = "topBar";
 
 const char* CURRENT_LANGUAGE_KEY = "lang";
 const char* IS_FIRST_TIME_OPENED_KEY = "firstTime";
+const char* VERSION_KEY = "version";
 const char* FILE_TITLE_KEY = "fileTitle";
 
 GlobalConfig* GlobalConfig::_instance = new GlobalConfig();
@@ -53,13 +54,9 @@ GlobalConfig::GlobalConfig() {
         [CURRENT_LANGUAGE_KEY];
 
     if( lang == "en" )
-    {
         _currentLanguage = Language::English;
-    }
     else if( lang == "es" )
-    {
         _currentLanguage = Language::Spanish;
-    }
     else
     {
         Log::getInstance().write("Invalid language in config file. Default: english",Log::error_t);
@@ -149,6 +146,12 @@ const char* GlobalConfig::getParameter(
             return (*_filesData[uCast(ConfigFile::GlobalConfig)])
                 [STARTUP_SETTINGS_SECTION]
                 [IS_FIRST_TIME_OPENED_KEY].c_str();
+            break;
+
+        case Parameter::Version:
+            return (*_filesData[uCast(ConfigFile::GlobalConfig)])
+                [STARTUP_SETTINGS_SECTION]
+                [VERSION_KEY].c_str();
             break;
 
         default:
