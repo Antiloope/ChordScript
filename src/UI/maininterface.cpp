@@ -101,6 +101,7 @@ MainInterface::MainInterface(QWidget *parent)
     actionPlay->setShortcutVisibleInContextMenu(true);
     actionPlay->setShortcut(QString("Ctrl+Space"));
     actionPlay->setToolTip("Run");
+    actionPlay->setAutoRepeat(false);
 
     QAction* actionStop = new QAction(this);
     QIcon icon2;
@@ -109,6 +110,7 @@ MainInterface::MainInterface(QWidget *parent)
     actionStop->setShortcutVisibleInContextMenu(true);
     actionStop->setShortcut(QString("Ctrl+P"));
     actionStop->setToolTip("Stop All");
+    actionStop->setAutoRepeat(false);
 
     QAction* actionRecord = new QAction(this);
     actionRecord->setCheckable(true);
@@ -184,6 +186,7 @@ MainInterface::MainInterface(QWidget *parent)
     QAction* serverRecordAction = new QAction(SERVER_RECORD_ACTION_TITLE,this);
     serverRecordAction->setCheckable(true);
     serverRecordAction->setShortcut(tr("CTRL+R"));
+    serverRecordAction->setAutoRepeat(false);
     QAction* tutorialAction = new QAction(TUTORIAL_ACTION_TITLE,this);
     QAction* aboutAction = new QAction(ABOUT_ACTION_TITLE,this);
     QAction* checkUpdatesAction = new QAction(CHECK_UPDATES_ACTION_TITLE,this);
