@@ -644,6 +644,22 @@ bool Context::executeMethod(string variableName,string methodName,LiteralValue* 
     return true;
 }
 
+bool Context::executeMethod(
+    LiteralValue* variableValue,
+    string methodName,
+    LiteralValue* arguments) {
+
+    DataTypesId dataTypeId = variableValue->getDataTypeId();
+    DataType* dataType = _dataTypes.find(dataTypeId)->second;
+
+    if( !dataType->executeMethod(methodName,"",variableValue,arguments) )
+    {
+        return false;
+    }
+
+    return true;
+}
+
 LiteralValue* Context::getVariableValue(string name) {
     stack<scope_index> tmpStack;
     while( !_scopeStack.empty() )

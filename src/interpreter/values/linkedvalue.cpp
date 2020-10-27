@@ -166,12 +166,6 @@ LinkedValue* LinkedValue::detectOperation(
                     tmp = *it;
 
                     switch (tmp->getType()) {
-                    case cCast(TerminalExpressionType::Addition):
-                    case cCast(TerminalExpressionType::Substract):
-                    case cCast(TerminalExpressionType::Divition):
-                    case cCast(TerminalExpressionType::Multiplication):
-                        ret = new MathOperationLinkedValue(codeReference);
-                        break;
                     case cCast(TerminalExpressionType::Equal):
                     case cCast(TerminalExpressionType::GreaterThan):
                     case cCast(TerminalExpressionType::LessThan):
@@ -181,7 +175,7 @@ LinkedValue* LinkedValue::detectOperation(
                         ret = new BooleanOperationLinkedValue(codeReference);
                         break;
                     default:
-                        ret = new ExecutionLinkedValue(codeReference);
+                        ret = new MathOperationLinkedValue(codeReference);
                         break;
                     }
                     break;

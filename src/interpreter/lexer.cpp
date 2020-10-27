@@ -65,7 +65,7 @@ list<TerminalExpression*> Lexer::tokenize(const string sourceCode){
                 tokens.push_back(new TerminalExpression(i,cCast(TerminalExpressionType::OpenParenthesis)));
                 break;
             case CLOSE_PARENTHESIS:
-                containersStack.top() == '('
+                ( !containersStack.empty() && containersStack.top() == '(' )
                     ? containersStack.pop()
                     : throw SyntaxException("Closing a wrong parenthesis", i);
 
@@ -76,7 +76,7 @@ list<TerminalExpression*> Lexer::tokenize(const string sourceCode){
                 tokens.push_back(new TerminalExpression(i,cCast(TerminalExpressionType::OpenBracket)));
                 break;
             case CLOSE_BRACKET:
-                containersStack.top() == '['
+                ( !containersStack.empty() && containersStack.top() == '[' )
                     ? containersStack.pop()
                     : throw SyntaxException("Closing a wrong bracket", i);
 
@@ -87,7 +87,7 @@ list<TerminalExpression*> Lexer::tokenize(const string sourceCode){
                 tokens.push_back(new TerminalExpression(i,cCast(TerminalExpressionType::OpenBrace)));
                 break;
             case CLOSE_BRACE:
-                containersStack.top() == '{'
+                ( !containersStack.empty() && containersStack.top() == '{' )
                     ? containersStack.pop()
                     : throw SyntaxException("Closing a wrong brace", i);
 

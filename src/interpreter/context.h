@@ -190,6 +190,16 @@ public:
      */
     bool executeMethod(std::string,std::string,LiteralValue*);
 
+
+    /**
+     * @brief executeMethod
+     * @param variableValue
+     * @param methodName
+     * @param arguments
+     * @return true if method could be executed correctly
+     */
+    bool executeMethod(LiteralValue*,std::string,LiteralValue*);
+
     /**
      * @brief newScope
      * @return Index to new scope. Usefull to switch later.

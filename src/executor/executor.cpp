@@ -12,6 +12,7 @@
 #include <jack/control.h>
 #include <ctime>
 #include <future>
+#include <filesystem>
 
 using namespace CS;
 using namespace std;
@@ -519,6 +520,8 @@ void Executor::init() {
     outputBuffer[Channel::Left].setSize(outputBufferSize);
 
     recordingFile.lock();
+
+    std::filesystem::create_directory("records");
 
     // Start the trhead
     bufferHandlerThread = thread(loadBuffer,&_soundsList);

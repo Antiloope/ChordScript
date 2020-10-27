@@ -73,6 +73,8 @@ void ExecutionLinkedValue::load(
             ArrayLinkedValue* aux = new ArrayLinkedValue(tmp->getCodeReference());
             _methodsList.push_back(tuple<string,ArrayLinkedValue*>(name,aux));
             aux->load(terminalExpressionsList);
+
+            tmp = terminalExpressionsList->front();
         }
         else
             isValidMethod = false;
@@ -89,21 +91,35 @@ ExecutionLinkedValue::~ExecutionLinkedValue() {
 }
 
 LiteralValue* ExecutionLinkedValue::getValue() const {
+    unique_ptr<LiteralValue> intermediateValue = nullptr;
     if( _name == get<0>(_methodsList.front()) )
     {
         if( !Context::getInstance()->executeFunction(_name,get<1>(_methodsList.front())->getValue()) )
             throw SemanticException("Unknown function name", this->getCodeReference());
+        intermediateValue = unique_ptr<LiteralValue>(Context::getInstance()->getReturnValue());
     }
     else
     {
+        bool firstMethod = true;
         for( auto method : _methodsList )
         {
             unique_ptr<LiteralValue> args = unique_ptr<LiteralValue>(get<1>(method)->getValue());
 
-            if( !Context::getInstance()->executeMethod(_name,get<0>(method),args.get()) )
-                throw SyntaxException("Unknown method name",get<1>(method)->getCodeReference());
+            if( firstMethod )
+            {
+                if( !Context::getInstance()->executeMethod(_name,get<0>(method),args.get()) )
+                    throw SyntaxException("Unknown method name",get<1>(method)->getCodeReference());
+                firstMethod = false;
+                intermediateValue = unique_ptr<LiteralValue>(Context::getInstance()->getReturnValue());
+            }
+            else
+            {
+                if( !Context::getInstance()->executeMethod(intermediateValue.get(),get<0>(method),args.get()) )
+                    throw SyntaxException("Returned value has not this method",get<1>(method)->getCodeReference());
+                intermediateValue = unique_ptr<LiteralValue>(Context::getInstance()->getReturnValue());
+            }
         }
     }
 
-    return Context::getInstance()->getReturnValue();
+    return intermediateValue.get()->clone();
 }
