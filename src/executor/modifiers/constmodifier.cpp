@@ -19,11 +19,7 @@ double ConstModifier::getPositiveValue(double) {
     return - _value;
 }
 
-bool ConstModifier::setAmplitudeOffset(Sound) {
-    return false;
-}
-
-bool ConstModifier::setAmplitudeFactor(Sound) {
+bool ConstModifier::setAmplitudeModulation(Sound) {
     return false;
 }
 

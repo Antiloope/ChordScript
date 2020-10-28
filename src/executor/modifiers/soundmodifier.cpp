@@ -14,13 +14,8 @@ double SoundModifier::getPositiveValue(double freq) {
     return _sound.getPositiveInstantValue(freq);
 }
 
-bool SoundModifier::setAmplitudeOffset(Sound sound) {
-    _sound.setAmplitudeOffset(sound);
-    return true;
-}
-
-bool SoundModifier::setAmplitudeFactor(Sound sound) {
-    _sound.setAmplitudeFactor(sound);
+bool SoundModifier::setAmplitudeModulation(Sound sound) {
+    _sound.setAmplitudeModulation(sound);
     return true;
 }
 

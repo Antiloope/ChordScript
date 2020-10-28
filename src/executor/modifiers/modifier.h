@@ -12,8 +12,7 @@ public:
     virtual ~Modifier() {};
     virtual double getValue(double) = 0;
     virtual double getPositiveValue(double) = 0;
-    virtual bool setAmplitudeOffset(Sound) = 0;
-    virtual bool setAmplitudeFactor(Sound) = 0;
+    virtual bool setAmplitudeModulation(Sound) = 0;
     virtual Modifier* clone() = 0;
 private:
 };

@@ -20,6 +20,7 @@ private:
     static LiteralValue* freqFactor(std::string,const LiteralValue*,const LiteralValue*);
     static LiteralValue* freqModulation(std::string,const LiteralValue*,const LiteralValue*);
     static LiteralValue* ampFactor(std::string,const LiteralValue*,const LiteralValue*);
+    static LiteralValue* ampModulation(std::string,const LiteralValue*,const LiteralValue*);
 };
 
 }

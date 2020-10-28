@@ -13,8 +13,7 @@ public:
     ~SoundModifier();
     double getValue(double) override;
     double getPositiveValue(double) override;
-    bool setAmplitudeOffset(Sound) override;
-    bool setAmplitudeFactor(Sound) override;
+    bool setAmplitudeModulation(Sound) override;
     Modifier * clone() override;
 private:
     Sound _sound;

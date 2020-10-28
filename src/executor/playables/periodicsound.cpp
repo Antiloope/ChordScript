@@ -56,8 +56,9 @@ void PeriodicSound::play(tick_t currentTick,Buffer& bufferToLoad) {
                         (double)_progress / sampleRate,
                         1./freq) +
                 _freqModulation->getValue(_freq) ) *
-                _amplitudeFactor->getPositiveValue(_freq) +
-            _amplitudeOffset->getValue(_freq);
+            _amplitudeFactor->getPositiveValue(_freq) *
+            ( 1 + _amplitudeModulation->getValue(_freq) ) +
+            _addedSound->getValue(_freq);
 
         if( _progress >= durationTicks - 1000 )
         {

@@ -21,15 +21,14 @@ public:
     double getPositiveInstantValue(double);
 
     void setAmplitudeFactor(double);
-    void setAmplitudeFactor(Sound);
-    void setAmplitudeOffset(double);
-    void setAmplitudeOffset(Sound);
+    void setAmplitudeModulation(Sound);
     void setFreqFactor(double);
     void setFreqModulation(Sound);
     void setAbsoluteFreq(double);
     void clearAbsoluteFreq();
     void setPanning(double);
     void setPanning(Sound);
+    void addSound(Sound);
 
     Sound* generate(double, double, tick_t);
     PeriodicSound* generate(double, double, double, tick_t);
@@ -42,7 +41,8 @@ protected:
 
     Modifier* _panning;
     Modifier* _amplitudeFactor;
-    Modifier* _amplitudeOffset;
+    Modifier* _amplitudeModulation;
+    Modifier* _addedSound;
     Modifier* _freqFactor;
     Modifier* _freqModulation;
     Modifier* _absoluteFreq = nullptr;

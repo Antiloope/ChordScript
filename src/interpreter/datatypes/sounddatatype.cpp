@@ -50,6 +50,11 @@ SoundDataType::SoundDataType() {
             "ampFactor",
             &SoundDataType::ampFactor)
         );
+    _methods.insert(
+        pair<string,method_function_t>(
+            "ampModulation",
+            &SoundDataType::ampModulation)
+        );
 }
 
 SoundDataType::~SoundDataType() {}
@@ -511,12 +516,6 @@ LiteralValue* SoundDataType::ampFactor(
 
     switch( argumentValues->front()->getDataTypeId() )
     {
-    case DataTypesId::Sound:
-    {
-        Sound factorValue = ((SoundGenerator*)argumentValues->front()->getValue())->getSound();
-        generator->_baseSound.setAmplitudeFactor(factorValue);
-        break;
-    }
     case DataTypesId::Numeric:
     {
         double factorValue = *(double*)argumentValues->front()->getValue();
@@ -524,7 +523,45 @@ LiteralValue* SoundDataType::ampFactor(
         break;
     }
     default:
-        throw SemanticException("Invalid cast parameter data type in ampFactor method. Must be a number or a sound.");
+        throw SemanticException("Invalid cast parameter data type in ampFactor method. Must be a number.");
+        break;
+    }
+
+    return new SoundLiteralValue(generator->clone());
+}
+
+LiteralValue* SoundDataType::ampModulation(
+    string,
+    const LiteralValue* value,
+    const LiteralValue* args
+    ) {
+
+    if( args->getDataTypeId() != DataTypesId::Argument )
+        return nullptr;
+
+    const auto argumentValues = (list<LiteralValue*>*)args->getValue();
+
+    if( !value )
+        return nullptr;
+
+    if( argumentValues->empty() )
+        throw SemanticException("Invalid call of method ampModulation without arguments.");
+
+    if( argumentValues->size() > 1 )
+        throw SemanticException("Invalid call of method ampModulation more than one parameter.");
+
+    unique_ptr<SoundGenerator> generator = unique_ptr<SoundGenerator>(((SoundGenerator*)value->getValue())->clone());
+
+    switch( argumentValues->front()->getDataTypeId() )
+    {
+    case DataTypesId::Sound:
+    {
+        Sound modulation = ((SoundGenerator*)argumentValues->front()->getValue())->getSound();
+        generator->_baseSound.setAmplitudeModulation(modulation);
+        break;
+    }
+    default:
+        throw SemanticException("Invalid cast parameter data type in ampModulation method. Must be a sound.");
         break;
     }
 

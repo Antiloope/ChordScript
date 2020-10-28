@@ -16,7 +16,8 @@ Sound::Sound(const Sound& sound) {
     _duration = sound._freq;
     _function = sound._function;
     _amplitudeFactor = sound._amplitudeFactor->clone();
-    _amplitudeOffset = sound._amplitudeOffset->clone();
+    _amplitudeModulation = sound._amplitudeModulation->clone();
+    _addedSound = sound._addedSound->clone();
     _freqFactor = sound._freqFactor->clone();
     _freqModulation= sound._freqModulation->clone();
     _absoluteFreq = sound._absoluteFreq ? sound._absoluteFreq->clone() :  nullptr;
@@ -26,7 +27,8 @@ Sound::Sound(const Sound& sound) {
 Sound::Sound(double(*function)(double)) {
     _function = function;
     _amplitudeFactor = new ConstModifier(1);
-    _amplitudeOffset = new ConstModifier(0);
+    _amplitudeModulation = new ConstModifier(0);
+    _addedSound = new ConstModifier(0);
     _freqFactor = new ConstModifier(1);
     _freqModulation = new ConstModifier(0);
     _panning = new ConstModifier(0.5);
@@ -38,7 +40,8 @@ Sound::Sound(double(*function)(double), double freq, double duration, tick_t sta
     _duration = duration;
     _startTick = startTick;
     _amplitudeFactor = new ConstModifier(1);
-    _amplitudeOffset = new ConstModifier(0);
+    _amplitudeModulation = new ConstModifier(0);
+    _addedSound = new ConstModifier(0);
     _freqFactor = new ConstModifier(1);
     _freqModulation = new ConstModifier(0);
     _panning = new ConstModifier(0.5);
@@ -47,7 +50,8 @@ Sound::Sound(double(*function)(double), double freq, double duration, tick_t sta
 Sound::~Sound() {
     if( _amplitudeFactor ) delete _amplitudeFactor;
     if( _freqFactor ) delete _freqFactor;
-    if( _amplitudeOffset ) delete _amplitudeOffset;
+    if( _amplitudeModulation ) delete _amplitudeModulation;
+    if( _addedSound ) delete _addedSound;
     if( _freqModulation ) delete _freqModulation;
     if( _absoluteFreq ) delete _absoluteFreq;
     if( _panning ) delete _panning;
@@ -64,34 +68,23 @@ void Sound::setAmplitudeFactor(double factor) {
     _amplitudeFactor = new ConstModifier(factor);
 }
 
-void Sound::setAmplitudeFactor(Sound sound) {
-    if( _amplitudeFactor )
+void Sound::setAmplitudeModulation(Sound sound) {
+    if( _amplitudeModulation )
     {
-        if( _amplitudeFactor->setAmplitudeFactor(sound) )
+        if( _amplitudeModulation->setAmplitudeModulation(sound) )
             return;
         else
-            delete _amplitudeFactor;
+            delete _amplitudeModulation;
     }
 
-    _amplitudeFactor = new SoundModifier(sound);
+    _amplitudeModulation = new SoundModifier(sound);
 }
 
-void Sound::setAmplitudeOffset(double offset) {
-    if( _amplitudeOffset )
-        delete _amplitudeOffset;
+void Sound::addSound(Sound sound) {
+    if( _addedSound )
+        delete _addedSound;
 
-    _amplitudeOffset = new ConstModifier(offset);
-}
-
-void Sound::setAmplitudeOffset(Sound sound) {
-    if( _amplitudeOffset )
-    {
-        if( _amplitudeOffset->setAmplitudeOffset(sound) )
-            return;
-        else
-            delete _amplitudeOffset;
-    }
-    _amplitudeOffset = new SoundModifier(sound);
+    _addedSound = new SoundModifier(sound);
 }
 
 void Sound::setFreqFactor(double factor) {
@@ -191,8 +184,9 @@ void Sound::play(tick_t currentTick,Buffer& bufferToLoad) {
                         (double)_progress / sampleRate,
                         1./freq) +
                 _freqModulation->getValue(_freq) ) *
-                _amplitudeFactor->getPositiveValue(_freq) +
-            _amplitudeOffset->getValue(_freq);
+            _amplitudeFactor->getPositiveValue(_freq) *
+            ( 1 + _amplitudeModulation->getValue(_freq) ) +
+            _addedSound->getValue(_freq);
 
         if( !isPeriodic && _progress >= durationTicks - 1000 )
         {
@@ -235,8 +229,9 @@ double Sound::getInstantValue(double freq) {
                     ((double)_progress / (double)sampleRate),
                     1./f) +
             _freqModulation->getValue(freq)) *
-            _amplitudeFactor->getPositiveValue(freq) +
-        _amplitudeOffset->getValue(freq);
+        _amplitudeFactor->getPositiveValue(freq) *
+        ( 1 + _amplitudeModulation->getValue(freq) ) +
+        _addedSound->getValue(freq);
 
     _progress++;
 
@@ -252,7 +247,7 @@ double Sound::getPositiveInstantValue(double freq) {
     else
         f = freq * _freqFactor->getPositiveValue(freq);
 
-    double ampOffset = _amplitudeOffset->getValue(freq);
+    double ampModulation = _amplitudeModulation->getValue(freq);
     double ampFactor = _amplitudeFactor->getPositiveValue(freq);
     double ret =
         _function(
@@ -260,11 +255,12 @@ double Sound::getPositiveInstantValue(double freq) {
                 std::fmod(
                     ((double)_progress / (double)sampleRate),
                     1./f) +
-            _freqModulation->getValue(freq)) *
-            ampFactor +
-        ampOffset;
+            ( 1 + _freqModulation->getValue(freq)) ) *
+        ampFactor *
+        ( 1 + ampModulation ) +
+        _addedSound->getValue(freq);
 
     _progress++;
 
-    return ( ret + ampFactor - ampOffset ) / 2;
+    return ( ret + 1 ) / 2;
 }

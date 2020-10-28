@@ -31,14 +31,14 @@ SoundGenerator SoundGenerator::operator/(double factor) {
 
 SoundGenerator SoundGenerator::operator*(SoundGenerator& sound) {
     Sound copySound = _baseSound;
-    copySound.setAmplitudeFactor(sound._baseSound);
+    copySound.setAmplitudeModulation(sound._baseSound);
     SoundGenerator ret(copySound);
     return ret;
 }
 
 SoundGenerator SoundGenerator::operator+(SoundGenerator& sound) {
     Sound copySound = _baseSound;
-    copySound.setAmplitudeOffset(sound._baseSound);
+    copySound.addSound(sound._baseSound);
     SoundGenerator ret(copySound);
     return ret;
 }
