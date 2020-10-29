@@ -9,6 +9,8 @@ using namespace CS;
 using namespace CS::Constants;
 using namespace std;
 
+unsigned PROCESSING_DELAY_CORRECTION = 5000;
+
 SoundDataType::SoundDataType() {
     _methods.insert(
         pair<string,method_function_t>(
@@ -111,7 +113,7 @@ LiteralValue* SoundDataType::play(
 
     SoundGenerator* generator = (SoundGenerator*)value->getValue();
 
-    tick_t startTick = TimeHandler::getInstance()->getCurrentTick();
+    tick_t startTick = TimeHandler::getInstance()->getCurrentTick() + PROCESSING_DELAY_CORRECTION;
 
     if( argumentValues->empty() )
     {
