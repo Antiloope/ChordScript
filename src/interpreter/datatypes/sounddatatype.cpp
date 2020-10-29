@@ -270,6 +270,11 @@ LiteralValue* SoundDataType::loop(
     }
     case DataTypesId::Argument:
     {
+        if( ((list<LiteralValue*>*)((ArgumentLiteralValue*)(*it))->getValue())->front()->getDataTypeId() == DataTypesId::Argument )
+        {
+            argumentValues = (list<LiteralValue*>*)((ArgumentLiteralValue*)(*it))->getValue();
+            it = argumentValues->begin();
+        }
         double totalLoopDuration = 0;
         for( ; it != argumentValues->end(); it++ )
         {
