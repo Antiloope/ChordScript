@@ -1,19 +1,25 @@
 #include "argumentdatatype.h"
 #include "interpreter/values/literalvalue.h"
 #include "interpreter/context.h"
+#include "utils/Exceptions/exception.h"
 
 using namespace CS;
 using namespace std;
 
+namespace  {
+const char* POP_METHOD_NAME  = "pop";
+const char* PUSH_METHOD_NAME = "push";
+}
+
 ArgumentDataType::ArgumentDataType() {
     _methods.insert(
         pair<string,method_function_t>(
-            "pop",
+            POP_METHOD_NAME,
             &ArgumentDataType::pop)
         );
     _methods.insert(
         pair<string,method_function_t>(
-            "push",
+            PUSH_METHOD_NAME,
             &ArgumentDataType::push)
         );
 }
@@ -21,7 +27,7 @@ ArgumentDataType::ArgumentDataType() {
 ArgumentDataType::~ArgumentDataType() {}
 
 LiteralValue* ArgumentDataType::cast(LiteralValue* value) const {
-    switch ( value->getDataTypeId() )
+    switch( value->getDataTypeId() )
     {
     case DataTypesId::Argument:
         return value;
@@ -39,15 +45,15 @@ LiteralValue* ArgumentDataType::pop(
     ) {
 
     if( args->getDataTypeId() != DataTypesId::Argument )
-        return nullptr;
+        throw SyntaxException("Invalid argument in pop method");
 
     auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
     if( argumentValues->size() != 0 )
-        return nullptr;
+        throw SyntaxException("Pop method must receive no parameters");
 
     if( !value )
-        return nullptr;
+        throw SemanticException("Variable " + variableName + "has not a value");
 
     auto array = (list<LiteralValue*>*)value->getValue();
 
@@ -71,15 +77,15 @@ LiteralValue* ArgumentDataType::push(
     ) {
 
     if( args->getDataTypeId() != DataTypesId::Argument )
-        return nullptr;
+        throw SyntaxException("Invalid argument in push method");
 
     auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
     if( argumentValues->size() != 1 )
-        return nullptr;
+        throw SyntaxException("Push method must receive one parameter");
 
     if( !value )
-        return nullptr;
+        throw SemanticException("Variable " + variableName + "has not a value");
 
     auto array = (list<LiteralValue*>*)value->getValue();
 

@@ -9,52 +9,64 @@ using namespace CS;
 using namespace CS::Constants;
 using namespace std;
 
+namespace  {
+const char* PLAY_METHOD_NAME                = "play";
+const char* LOOP_METHOD_NAME                = "loop";
+const char* STOP_METHOD_NAME                = "stop";
+const char* SET_PANNING_METHOD_NAME         = "setPanning";
+const char* CONSTANT_FREQ_METHOD_NAME       = "constantFreq";
+const char* FREQ_FACTOR_METHOD_NAME         = "freqFactor";
+const char* FREQ_MODULATION_METHOD_NAME     = "freqModulation";
+const char* AMP_FACTOR_METHOD_NAME          = "ampFactor";
+const char* AMP_MODULATION_METHOD_NAME      = "ampModulation";
+
 unsigned PROCESSING_DELAY_CORRECTION = 5000;
+}
 
 SoundDataType::SoundDataType() {
     _methods.insert(
         pair<string,method_function_t>(
-            "play",
+            PLAY_METHOD_NAME,
             &SoundDataType::play)
         );
     _methods.insert(
         pair<string,method_function_t>(
-            "loop",
+            LOOP_METHOD_NAME,
             &SoundDataType::loop)
         );
     _methods.insert(
         pair<string,method_function_t>(
-            "stop",
+            STOP_METHOD_NAME,
             &SoundDataType::stop)
         );
     _methods.insert(
         pair<string,method_function_t>(
-            "setPanning",
+            SET_PANNING_METHOD_NAME,
             &SoundDataType::setPanning)
         );
     _methods.insert(
         pair<string,method_function_t>(
-            "constantFreq",
+            CONSTANT_FREQ_METHOD_NAME,
             &SoundDataType::constantFreq)
         );
     _methods.insert(
         pair<string,method_function_t>(
-            "freqFactor",
+            FREQ_FACTOR_METHOD_NAME,
             &SoundDataType::freqFactor)
         );
     _methods.insert(
         pair<string,method_function_t>(
-            "freqModulation",
+            FREQ_MODULATION_METHOD_NAME,
             &SoundDataType::freqModulation)
         );
     _methods.insert(
         pair<string,method_function_t>(
-            "ampFactor",
+            AMP_FACTOR_METHOD_NAME,
             &SoundDataType::ampFactor)
         );
     _methods.insert(
         pair<string,method_function_t>(
-            "ampModulation",
+            AMP_MODULATION_METHOD_NAME,
             &SoundDataType::ampModulation)
         );
 }
@@ -80,15 +92,15 @@ LiteralValue* SoundDataType::stop(
     ) {
 
     if( args->getDataTypeId() != DataTypesId::Argument )
-        return nullptr;
+        throw SyntaxException("Invalid argument in stop method");
 
     const auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
     if( !argumentValues->empty() )
-        return nullptr;
+        throw SyntaxException("Stop method must receive no parameters");
 
     if( !value )
-        return nullptr;
+        throw SemanticException("Variable " + variableName + "has not a value");
 
     SoundGenerator* generator = (SoundGenerator*)value->getValue();
 
@@ -104,12 +116,12 @@ LiteralValue* SoundDataType::play(
     ) {
 
     if( args->getDataTypeId() != DataTypesId::Argument )
-        return nullptr;
+        throw SyntaxException("Invalid argument in play method");
 
     auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
     if( !value )
-        return nullptr;
+        throw SemanticException("Variable " + variableName + "has not a value");
 
     SoundGenerator* generator = (SoundGenerator*)value->getValue();
 
@@ -133,7 +145,7 @@ LiteralValue* SoundDataType::play(
         for(auto arrayIt = arrayValues->begin(); arrayIt != arrayValues->end(); arrayIt++)
         {
             if( (*arrayIt)->getDataTypeId() != DataTypesId::Numeric )
-                return nullptr;
+                throw SemanticException("Invalid notes to play");
 
             freqList.push_back(*(double*)(*arrayIt)->getValue());
         }
@@ -145,13 +157,13 @@ LiteralValue* SoundDataType::play(
         }
 
         if( (*it)->getDataTypeId() != DataTypesId::Numeric )
-            return nullptr;
+            throw SemanticException("Invalid duration in play method");
 
         double duration = *(double*)(*it)->getValue();
         it++;
 
         if( it != argumentValues->end() )
-            return nullptr;
+            throw SyntaxException("Invalid syntax inside arguments of play method, after duration. Expected no more parameters");
 
         generator->play(freqList,duration,startTick,variableName);
         break;
@@ -169,7 +181,7 @@ LiteralValue* SoundDataType::play(
             auto argIt = argumentList->begin();
 
             if( (*argIt)->getDataTypeId() != DataTypesId::Array )
-                return nullptr;
+                throw SyntaxException("Invalid argument contents to play");
 
             const list<LiteralValue*>* arrayValues = (list<LiteralValue*>*)((ArrayLiteralValue*)(*argIt))->getValue();
             list<double> freqList;
@@ -177,7 +189,7 @@ LiteralValue* SoundDataType::play(
             for( auto arrayIt = arrayValues->begin(); arrayIt != arrayValues->end(); arrayIt++ )
             {
                 if( (*arrayIt)->getDataTypeId() != DataTypesId::Numeric )
-                    return nullptr;
+                    throw SyntaxException("Invalid notes to play");
 
                 freqList.push_back(*(double*)(*arrayIt)->getValue());
             }
@@ -189,13 +201,13 @@ LiteralValue* SoundDataType::play(
             }
 
             if( (*argIt)->getDataTypeId() != DataTypesId::Numeric )
-                return nullptr;
+                throw SemanticException("Invalid duration in play method");
 
             double duration = *(double*)(*argIt)->getValue();
             argIt++;
 
             if( argIt != argumentList->end() )
-                return nullptr;
+                throw SyntaxException("Invalid syntax inside arguments of play method, after duration. Expected no more parameters");
 
 
             generator->play(freqList,duration,startTick,variableName);
@@ -218,12 +230,12 @@ LiteralValue* SoundDataType::loop(
     ) {
 
     if( args->getDataTypeId() != DataTypesId::Argument )
-        return nullptr;
+        throw SyntaxException("Invalid argument in loop method");
 
     auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
     if( !value )
-        return nullptr;
+        throw SemanticException("Variable " + variableName + "has not a value");
 
     SoundGenerator* generator = (SoundGenerator*)value->getValue();
 
@@ -247,7 +259,7 @@ LiteralValue* SoundDataType::loop(
         for(auto arrayIt = arrayValues->begin(); arrayIt != arrayValues->end(); arrayIt++)
         {
             if( (*arrayIt)->getDataTypeId() != DataTypesId::Numeric )
-                return nullptr;
+                throw SemanticException("Invalid notes to play");
 
             freqList.push_back(*(double*)(*arrayIt)->getValue());
         }
@@ -259,13 +271,13 @@ LiteralValue* SoundDataType::loop(
         }
 
         if( (*it)->getDataTypeId() != DataTypesId::Numeric )
-            return nullptr;
+            throw SemanticException("Invalid duration in loop method");
 
         double duration = *(double*)(*it)->getValue();
         it++;
 
         if( it != argumentValues->end() )
-            return nullptr;
+            throw SyntaxException("Invalid syntax inside arguments of loop method, after duration. Expected no more parameters");
 
         generator->loop(freqList,duration,duration,startTick,variableName);
         break;
@@ -284,7 +296,7 @@ LiteralValue* SoundDataType::loop(
             auto argIt = argumentList->begin();
 
             if( (*argIt)->getDataTypeId() != DataTypesId::Array )
-                return nullptr;
+                throw SyntaxException("Invalid argument contents to play in loop");
 
             const list<LiteralValue*>* arrayValues = (list<LiteralValue*>*)((ArrayLiteralValue*)(*argIt))->getValue();
             list<double> freqList;
@@ -292,21 +304,21 @@ LiteralValue* SoundDataType::loop(
             for( auto arrayIt = arrayValues->begin(); arrayIt != arrayValues->end(); arrayIt++ )
             {
                 if( (*arrayIt)->getDataTypeId() != DataTypesId::Numeric )
-                    return nullptr;
+                    throw SyntaxException("Invalid notes to play in loop");
                 freqList.push_back(*(double*)(*arrayIt)->getValue());
             }
             argIt++;
             if( argIt == argumentList->end() )
-                return nullptr;
+                throw SemanticException("Invalid duration in loop method");
 
             if( (*argIt)->getDataTypeId() != DataTypesId::Numeric )
-                return nullptr;
+                throw SemanticException("Invalid duration in loop method");
 
             totalLoopDuration += *(double*)(*argIt)->getValue();
             argIt++;
 
             if( argIt != argumentList->end() )
-                return nullptr;
+                throw SyntaxException("Invalid syntax inside arguments of loop method, after duration. Expected no more parameters");
         }
         auto it = argumentValues->begin();
         for( ; it != argumentValues->end(); it++ )
@@ -339,18 +351,18 @@ LiteralValue* SoundDataType::loop(
 }
 
 LiteralValue* SoundDataType::setPanning(
-    string,
+    string variableName,
     const LiteralValue* value,
     const LiteralValue* args
     ) {
 
     if( args->getDataTypeId() != DataTypesId::Argument )
-        return nullptr;
+        throw SyntaxException("Invalid argument in setPanning method");
 
     const auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
     if( !value )
-        return nullptr;
+        throw SemanticException("Variable " + variableName + "has not a value");
 
     unique_ptr<SoundGenerator> generator = unique_ptr<SoundGenerator>(((SoundGenerator*)value->getValue())->clone());
 
@@ -383,18 +395,18 @@ LiteralValue* SoundDataType::setPanning(
 }
 
 LiteralValue* SoundDataType::constantFreq(
-    string,
+    string variableName,
     const LiteralValue* value,
     const LiteralValue* args
     ) {
 
     if( args->getDataTypeId() != DataTypesId::Argument )
-        return nullptr;
+        throw SyntaxException("Invalid argument in constantFreq method");
 
     const auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
     if( !value )
-        return nullptr;
+        throw SemanticException("Variable " + variableName + "has not a value");
 
     unique_ptr<SoundGenerator> generator = unique_ptr<SoundGenerator>(((SoundGenerator*)value->getValue())->clone());
 
@@ -424,18 +436,18 @@ LiteralValue* SoundDataType::constantFreq(
 }
 
 LiteralValue* SoundDataType::freqFactor(
-    string,
+    string variableName,
     const LiteralValue* value,
     const LiteralValue* args
     ) {
 
     if( args->getDataTypeId() != DataTypesId::Argument )
-        return nullptr;
+        throw SyntaxException("Invalid argument in freqFactor method");
 
     const auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
     if( !value )
-        return nullptr;
+        throw SemanticException("Variable " + variableName + "has not a value");
 
     if( argumentValues->empty() )
         throw SemanticException("Invalid call of method freqFactor without arguments.");
@@ -462,18 +474,18 @@ LiteralValue* SoundDataType::freqFactor(
 }
 
 LiteralValue* SoundDataType::freqModulation(
-    string,
+    string variableName,
     const LiteralValue* value,
     const LiteralValue* args
     ) {
 
     if( args->getDataTypeId() != DataTypesId::Argument )
-        return nullptr;
+        throw SyntaxException("Invalid argument in freqModulation method");
 
     const auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
     if( !value )
-        return nullptr;
+        throw SemanticException("Variable " + variableName + "has not a value");
 
     if( argumentValues->empty() )
         throw SemanticException("Invalid call of method freqOffset without arguments.");
@@ -500,18 +512,18 @@ LiteralValue* SoundDataType::freqModulation(
 }
 
 LiteralValue* SoundDataType::ampFactor(
-    string,
+    string variableName,
     const LiteralValue* value,
     const LiteralValue* args
     ) {
 
     if( args->getDataTypeId() != DataTypesId::Argument )
-        return nullptr;
+        throw SyntaxException("Invalid argument in ampFactor method");
 
     const auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
     if( !value )
-        return nullptr;
+        throw SemanticException("Variable " + variableName + "has not a value");
 
     if( argumentValues->empty() )
         throw SemanticException("Invalid call of method ampFactor without arguments.");
@@ -538,18 +550,18 @@ LiteralValue* SoundDataType::ampFactor(
 }
 
 LiteralValue* SoundDataType::ampModulation(
-    string,
+    string variableName,
     const LiteralValue* value,
     const LiteralValue* args
     ) {
 
     if( args->getDataTypeId() != DataTypesId::Argument )
-        return nullptr;
+        throw SyntaxException("Invalid argument in ampModulation method");
 
     const auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
     if( !value )
-        return nullptr;
+        throw SemanticException("Variable " + variableName + "has not a value");
 
     if( argumentValues->empty() )
         throw SemanticException("Invalid call of method ampModulation without arguments.");

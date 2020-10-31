@@ -5,6 +5,10 @@
 
 namespace CS {
 
+/**
+ * @brief This class represents the null data type.
+ * It can't be instanciated in the code but is the value returned by void functions
+ */
 class NullDataType : public DataType
 {
 public:

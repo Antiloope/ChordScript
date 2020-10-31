@@ -4,12 +4,21 @@
 #include "nonterminalexpression.h"
 
 namespace CS {
-
+/**
+ * @brief This class interpret functions and variables definitions.
+ */
 class DefinitionExpression : public NonTerminalExpression {
 public:
-    DefinitionExpression(size_t);
+    DefinitionExpression(size_t codeReference);
     ~DefinitionExpression();
-    void load(std::list<TerminalExpression*>*) override;
+    /**
+     * @brief It loads in Context the function
+     * @param terminalExpressionsList A list of tokens
+     */
+    void load(std::list<TerminalExpression*>* terminalExpressionsList) override;
+    /**
+     * @brief Do nothing because function was loaded before
+     */
     void interpret() override;
 };
 

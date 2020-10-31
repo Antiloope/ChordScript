@@ -5,6 +5,9 @@
 
 namespace CS {
 
+/**
+ * @brief This class represents the group data type.
+ */
 class GroupDataType : public DataType
 {
 public:

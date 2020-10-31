@@ -7,7 +7,8 @@ using namespace CS::Constants;
 using namespace std;
 
 string DataType::getDataTypeString(DataTypesId dataType) {
-    switch (dataType) {
+    switch( dataType )
+    {
     case DataTypesId::Null: return S_NULL;
     case DataTypesId::Numeric: return NUMBER;
     case DataTypesId::Argument: return ARGUMENT;
@@ -23,15 +24,24 @@ string DataType::getDataTypeString(DataTypesId dataType) {
 }
 
 DataTypesId DataType::getDataTypeId(string dataType) {
-    if ( !dataType.compare(NUMBER) ) return DataTypesId::Numeric;
-    if ( !dataType.compare(ARGUMENT) ) return DataTypesId::Argument;
-    if ( !dataType.compare(SAMPLE) ) return DataTypesId::Sample;
-    if ( !dataType.compare("operator") ) return DataTypesId::Operator;
-    if ( !dataType.compare(ARRAY) ) return DataTypesId::Array;
-    if ( !dataType.compare(GROUP) ) return DataTypesId::Group;
-    if ( !dataType.compare(BOOLEAN) ) return DataTypesId::Boolean;
-    if ( !dataType.compare(STRING) ) return DataTypesId::String;
-    if ( !dataType.compare(SOUND) ) return DataTypesId::Sound;
+    if ( !dataType.compare(NUMBER) )
+        return DataTypesId::Numeric;
+    if ( !dataType.compare(ARGUMENT) )
+        return DataTypesId::Argument;
+    if ( !dataType.compare(SAMPLE) )
+        return DataTypesId::Sample;
+    if ( !dataType.compare("operator") )
+        return DataTypesId::Operator;
+    if ( !dataType.compare(ARRAY) )
+        return DataTypesId::Array;
+    if ( !dataType.compare(GROUP) )
+        return DataTypesId::Group;
+    if ( !dataType.compare(BOOLEAN) )
+        return DataTypesId::Boolean;
+    if ( !dataType.compare(STRING) )
+        return DataTypesId::String;
+    if ( !dataType.compare(SOUND) )
+        return DataTypesId::Sound;
     return DataTypesId::Null;
 }
 

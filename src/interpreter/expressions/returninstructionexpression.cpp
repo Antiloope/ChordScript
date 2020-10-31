@@ -11,31 +11,34 @@ using namespace std;
 ReturnInstructionExpression::ReturnInstructionExpression(size_t codeReference) :
     NonTerminalExpression(codeReference) {}
 
-void ReturnInstructionExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
-    TerminalExpression* tmp = terminalExpressionsList->front();
+void ReturnInstructionExpression::load(
+    list<TerminalExpression*>* terminalExpressionsList) {
+    TerminalExpression* aux = terminalExpressionsList->front();
 
-    if( tmp->getType() != cCast(TerminalExpressionType::Return) )
-        throw SyntaxException("Expected return", tmp->getCodeReference());
+    if( aux->getType() != cCast(TerminalExpressionType::Return) )
+        throw SyntaxException("Expected return", aux->getCodeReference());
 
     if( Context::getInstance()->getCurrentScope() == GLOBAL_SCOPE )
-        throw SyntaxException("Return is not valid in global scope",tmp->getCodeReference());
+        throw SyntaxException("Return is not valid in global scope",aux->getCodeReference());
 
     terminalExpressionsList->pop_front();
     if ( terminalExpressionsList->empty() )
-        throw SyntaxException("Expected a return value or end of line",tmp->getCodeReference());
-    tmp = terminalExpressionsList->front();
+        throw SyntaxException("Expected a return value or ;",aux->getCodeReference());
 
-    if ( tmp->getType() == cCast(TerminalExpressionType::EOE) )
+    delete aux;
+    aux = terminalExpressionsList->front();
+
+    if ( aux->getType() == cCast(TerminalExpressionType::EOE) )
     {
-        _returnValue = new NullLinkedValue(tmp->getCodeReference());
+        _returnValue = new NullLinkedValue(aux->getCodeReference());
         _returnValue->load(terminalExpressionsList);
     }
     else
     {
         _returnValue = LinkedValue::generateLinkedValue(terminalExpressionsList);
-        tmp = terminalExpressionsList->front();
-        if ( tmp->getType() != cCast(TerminalExpressionType::EOE) )
-            throw SyntaxException("Expected ;",tmp->getCodeReference());
+        aux = terminalExpressionsList->front();
+        if ( aux->getType() != cCast(TerminalExpressionType::EOE) )
+            throw SyntaxException("Expected ;",aux->getCodeReference());
     }
 }
 

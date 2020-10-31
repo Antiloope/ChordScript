@@ -5,16 +5,46 @@
 
 namespace CS {
 
+// Defined on instructionexpression.h
 class InstructionExpression;
 
+/**
+ * @brief It holds a list of instructions to be interpreted
+ */
 class ProgramExpression : public NonTerminalExpression {
 public:
-    ProgramExpression(size_t);
+    /**
+     * @brief Default constructor.
+     */
     ProgramExpression();
+    /**
+     * @brief Constructor to use in functions and if/for bodies.
+     * @param codeReference
+     */
+    ProgramExpression(size_t codeReference);
+    /**
+     * @brief Default destructor. Free list of instructions
+     */
     ~ProgramExpression();
-    void load(std::list<TerminalExpression*>*) override;
+
+    /**
+     * @brief It generates instructions based on tokens received.
+     * This method remove processed expressions from the list.
+     * @param terminalExpressionsList A list of tokens.
+     */
+    void load(std::list<TerminalExpression*>* terminalExpressionsList) override;
+
+    /**
+     * @brief It interpret all instructions previously loaded in the program.
+     */
     void interpret() override;
-    void interpret(std::list<TerminalExpression*>);
+    /**
+     * @brief It generates instructions based on the received expressions and
+     * interprets them immediately afterwards.
+     * @param terminalExpressionsList A list of tokens
+     */
+    void interpret(std::list<TerminalExpression*>* terminalExpressionsList);
+
 private:
     std::list<InstructionExpression*> _instructionsList;
 };

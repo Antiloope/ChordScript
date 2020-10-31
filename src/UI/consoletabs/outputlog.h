@@ -11,6 +11,8 @@ class OutputLog : public QTextBrowser {
     Q_OBJECT
 public:
     explicit OutputLog(QWidget *parent = nullptr);
+private slots:
+    void scrollToBottom();
 };
 
 }

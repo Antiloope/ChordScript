@@ -5,6 +5,9 @@
 
 namespace CS {
 
+/**
+ * @brief This class represents the sound data type.
+ */
 class SoundDataType : public DataType
 {
 public:

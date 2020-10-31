@@ -5,14 +5,27 @@
 
 namespace CS {
 
+// Defined in linkedvalue.h
 class LinkedValue;
+// Defined in programexpression.h
 class ProgramExpression;
 
+/**
+ * @brief This class represents an if statement
+ */
 class IfInstructionExpression : public NonTerminalExpression {
 public:
-    IfInstructionExpression(size_t);
+    IfInstructionExpression(size_t codeReference);
     ~IfInstructionExpression();
-    void load(std::list<TerminalExpression*>*) override;
+    /**
+     * @brief It loads the if condition and the content of the if.
+     * At this moment, all values are LinkedValues.
+     * @param terminalExpressionsList A list of tokens
+     */
+    void load(std::list<TerminalExpression*>* terminalExpressionsList) override;
+    /**
+     * @brief It checks the condition and run the code in the if
+     */
     void interpret() override;
 private:
     size_t _context;

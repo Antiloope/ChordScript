@@ -13,73 +13,80 @@ ExecutionExpression::ExecutionExpression(size_t codeReference) :
     NonTerminalExpression(codeReference) {}
 
 void ExecutionExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
-    TerminalExpression* tmp = terminalExpressionsList->front();
+    auto aux = terminalExpressionsList->front();
+    auto codeReference = aux->getCodeReference();
 
-    if ( tmp->getType() != cCast(TerminalExpressionType::Name) )
-        throw SyntaxException("Expected a name", tmp->getCodeReference());
+    Context* ctx = Context::getInstance();
 
-    _name = ((NameExpression*)tmp)->getName();
+    if( aux->getType() != cCast(TerminalExpressionType::Name) )
+        throw SyntaxException("Expected a name", codeReference);
 
-    if ( !Context::getInstance()->isValidName(_name) )
-        throw SyntaxException("Invalid name",tmp->getCodeReference());
+    _name = ((NameExpression*)aux)->getName();
 
-    if (
-        !Context::getInstance()->nameExist(_name) &&
-        !Context::getInstance()->functionNameExist(_name)
-        )
-        throw SemanticException("Unrecognized name",tmp->getCodeReference());
+    if( !ctx->isValidName(_name) )
+        throw SyntaxException("Invalid name",codeReference);
+
+    if(
+        !ctx->nameExist(_name) &&
+        !ctx->functionNameExist(_name) )
+        throw SemanticException("Unrecognized name",codeReference);
 
     terminalExpressionsList->pop_front();
-    if ( terminalExpressionsList->empty() )
-        throw SyntaxException("Expected arguments",tmp->getCodeReference());
-    tmp = terminalExpressionsList->front();
+    if( terminalExpressionsList->empty() )
+        throw SyntaxException("Expected arguments",aux->getCodeReference());
 
-    if ( tmp->getType() == cCast(TerminalExpressionType::OpenParenthesis) )
+    delete aux;
+    aux = terminalExpressionsList->front();
+
+    if( aux->getType() == cCast(TerminalExpressionType::OpenParenthesis) )
     {
-        ArrayLinkedValue* aux = new ArrayLinkedValue(tmp->getCodeReference());
-        _methodsList.push_back(tuple<string,ArrayLinkedValue*>(_name,aux));
-        aux->load(terminalExpressionsList);
+        ArrayLinkedValue* args = new ArrayLinkedValue(aux->getCodeReference());
+        _methodsList.push_back(tuple<string,ArrayLinkedValue*>(_name,args));
+        args->load(terminalExpressionsList);
     }
     bool isValidMethod = true;
     while( isValidMethod )
     {
-        if( tmp->getType() == cCast(TerminalExpressionType::MemberAccess) )
+        if( aux->getType() == cCast(TerminalExpressionType::MemberAccess) )
         {
             terminalExpressionsList->pop_front();
             if ( terminalExpressionsList->empty() )
-                throw SyntaxException("Expected arguments",tmp->getCodeReference());
-            tmp = terminalExpressionsList->front();
+                throw SyntaxException("Expected arguments after .",aux->getCodeReference());
 
-            if ( tmp->getType() != cCast(TerminalExpressionType::Name) )
-                throw SyntaxException("Expected a name", tmp->getCodeReference());
+            delete aux;
+            aux = terminalExpressionsList->front();
 
-            string name = ((NameExpression*)tmp)->getName();
+            if ( aux->getType() != cCast(TerminalExpressionType::Name) )
+                throw SyntaxException("Expected a method name", aux->getCodeReference());
+
+            string name = ((NameExpression*)aux)->getName();
 
             terminalExpressionsList->pop_front();
             if ( terminalExpressionsList->empty() )
-                throw SyntaxException("Expected (",tmp->getCodeReference());
-            tmp = terminalExpressionsList->front();
+                throw SyntaxException("Expected (",aux->getCodeReference());
 
-            if ( tmp->getType() != cCast(TerminalExpressionType::OpenParenthesis) )
-                throw SyntaxException("Expected (",tmp->getCodeReference());
+            delete aux;
+            aux = terminalExpressionsList->front();
 
-            ArrayLinkedValue* aux = new ArrayLinkedValue(tmp->getCodeReference());
-            _methodsList.push_back(tuple<string,ArrayLinkedValue*>(name,aux));
-            aux->load(terminalExpressionsList);
+            if ( aux->getType() != cCast(TerminalExpressionType::OpenParenthesis) )
+                throw SyntaxException("Expected (",aux->getCodeReference());
+
+            ArrayLinkedValue* args = new ArrayLinkedValue(aux->getCodeReference());
+            _methodsList.push_back(tuple<string,ArrayLinkedValue*>(name,args));
+            args->load(terminalExpressionsList);
         }
         else
         {
             isValidMethod = false;
             if (
                 !terminalExpressionsList->front() ||
-                terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::EOE)
-                )
-                throw SyntaxException("Expected ;",tmp->getCodeReference());
+                terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::EOE) )
+                throw SyntaxException("Expected ;",aux->getCodeReference());
         }
     }
 }
 
-ExecutionExpression::~ExecutionExpression(){
+ExecutionExpression::~ExecutionExpression() {
     while( !_methodsList.empty() )
     {
         tuple<string,ArrayLinkedValue*> tmp = _methodsList.front();
@@ -89,18 +96,34 @@ ExecutionExpression::~ExecutionExpression(){
 }
 
 void ExecutionExpression::interpret() {
+    Context* ctx = Context::getInstance();
     if( _name == get<0>(_methodsList.front()) )
     {
-        if( !Context::getInstance()->executeFunction(_name,get<1>(_methodsList.front())->getValue()) )
-            throw SemanticException("Unknown function name", this->getCodeReference());
+        try
+        {
+            if( !ctx->executeFunction(_name,get<1>(_methodsList.front())->getValue()) )
+                throw SemanticException("Unknown function name", this->getCodeReference());
+        }
+        catch( Exception& e )
+        {
+            throw SemanticException(e.what(),this->getCodeReference());
+        }
     }
     else
         for( auto method : _methodsList )
         {
             unique_ptr<LiteralValue> args = unique_ptr<LiteralValue>(get<1>(method)->getValue());
-            if( !Context::getInstance()->executeMethod(_name,get<0>(method),args.get()) )
-                throw SyntaxException("Unknown method name",get<1>(method)->getCodeReference());
+
+            try
+            {
+                if( !ctx->executeMethod(_name,get<0>(method),args.get()) )
+                    throw SyntaxException("Unknown method name",get<1>(method)->getCodeReference());
+            }
+            catch( Exception& e )
+            {
+                throw SemanticException(e.what(),this->getCodeReference()+1);
+            }
         }
 
-    Context::getInstance()->setReturnValue(nullptr);
+    ctx->setReturnValue(nullptr);
 }

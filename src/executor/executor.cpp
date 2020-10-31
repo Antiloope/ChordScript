@@ -12,7 +12,6 @@
 #include <jack/control.h>
 #include <ctime>
 #include <future>
-#include <filesystem>
 
 using namespace CS;
 using namespace std;
@@ -259,18 +258,24 @@ Executor::Executor() {
 }
 
 void Executor::startRecording() {
+    Log::getInstance().write("Start recording",Log::info_t);
     recordingFile.unlock();
 }
 
 void Executor::stopRecording() {
     recordingFile.lock();
+    string fileName = "records/rec_";
 
     try
     {
         time_t now = time(0);
         char stringTime[17];
+#ifdef _WIN32
+        strftime(stringTime,20,"%y_%m_%d_%H_%M_%S",localtime(&now));
+#else
         strftime(stringTime,20,"%g_%m_%d_%H_%M_%S",localtime(&now));
-        string fileName = "records/rec_";
+#endif
+
         fileName.append(stringTime);
         fileName += ".wav";
         _record.save(fileName);
@@ -280,6 +285,7 @@ void Executor::stopRecording() {
         Log::getInstance().write(e.what(),Log::logType::error_t);
     }
 
+    Log::getInstance().write("Stop recording. File " + fileName,Log::info_t);
 }
 
 void Executor::addSound(Playable* newSound, string variableName) const {
@@ -521,8 +527,6 @@ void Executor::init() {
 
     recordingFile.lock();
 
-    std::filesystem::create_directory("records");
-
     // Start the trhead
     bufferHandlerThread = thread(loadBuffer,&_soundsList);
 
@@ -538,4 +542,6 @@ void Executor::init() {
 
     _record.setSampleRate(sampleRate);
     _record.setAudioBufferSize(ChannelMode::Stereo,0);
+
+    Log::getInstance().write("Sample rate: " + to_string(sampleRate) + ".",Log::info_t);
 }

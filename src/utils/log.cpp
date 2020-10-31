@@ -1,11 +1,12 @@
 #include "log.h"
 #include <fstream>
 #include <ctime>
+#include <iostream>
 
 using namespace CS;
 using namespace std;
 
-const string LOG_FILE_NAME = "log.md";
+const char * LOG_FILE_NAME = "cs.log";
 
 Log& Log::getInstance() {
     static Log instance;
@@ -13,7 +14,14 @@ Log& Log::getInstance() {
 }
 
 Log::Log() {
-    remove(LOG_FILE_NAME.c_str());
+    _file = new ofstream(LOG_FILE_NAME, ofstream::app);
+    cout.rdbuf(_file->rdbuf());
+    cerr.rdbuf(_file->rdbuf());
+    clog.rdbuf(_file->rdbuf());
+}
+
+Log::~Log() {
+    delete _file;
 }
 
 void Log::write(const char * text, logType type) {
@@ -38,25 +46,21 @@ void Log::_write(string text, logType type) {
     time.pop_back();
     time = time.substr(11,8);
 
-    file << "**" << time;
+    file << time;
 
     switch ( type ) {
     case error_t:
-        file << " ERROR** ";
+        file << ": ERROR ";
         break;
     case warning_t:
-        file << " WARNING** ";
+        file << ": WARNING ";
         break;
     case info_t:
-        file << " INFO** ";
+        file << ": ";
         break;
     }
 
-    file << text << endl << endl;
+    file << text << endl;
 
     file.close();
-}
-
-Log& Log::operator=(const Log&) {
-    return *this;
 }

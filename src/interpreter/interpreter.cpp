@@ -13,8 +13,11 @@ void Interpreter::interpret(const string sourceCode) {
 
     try
     {
+        // Get the tokens
         expressionsList = Lexer::tokenize(sourceCode);
-        program.interpret(expressionsList);
+
+        // Send tokens to a base program expression to interpret
+        program.interpret(&expressionsList);
     }
     catch( const SyntaxException& e )
     {
@@ -23,7 +26,7 @@ void Interpreter::interpret(const string sourceCode) {
         {
             tmp = expressionsList.front();
             expressionsList.pop_front();
-            delete tmp;
+             delete tmp;
         }
         throw e;
     }

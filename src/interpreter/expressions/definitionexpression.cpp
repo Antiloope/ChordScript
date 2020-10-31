@@ -11,46 +11,51 @@ DefinitionExpression::DefinitionExpression(size_t codeReference) :
     NonTerminalExpression(codeReference) {}
 
 void DefinitionExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
-    TerminalExpression* tmp = terminalExpressionsList->front();
+    TerminalExpression* aux = terminalExpressionsList->front();
+
+    Context* ctx = Context::getInstance();
 
     if(
-        tmp->getType() != cCast(TerminalExpressionType::Name) ||
-        !Context::getInstance()->isDataType(DataType::getDataTypeId(((NameExpression*)tmp)->getName()))
-        )
-        throw SyntaxException("Expected data type",tmp->getCodeReference());
+        aux->getType() != cCast(TerminalExpressionType::Name) ||
+        !ctx->isDataType(DataType::getDataTypeId(((NameExpression*)aux)->getName())) )
+        throw SyntaxException("Expected data type",aux->getCodeReference());
 
-    DataTypesId dataType = DataType::getDataTypeId(((NameExpression*)tmp)->getName());
-
-    terminalExpressionsList->pop_front();
-    if( terminalExpressionsList->empty())
-        throw SyntaxException("Expected a name",tmp->getCodeReference() );
-    tmp = terminalExpressionsList->front();
-
-    if( tmp->getType() != cCast(TerminalExpressionType::Name) )
-        throw SyntaxException("Expected a name",tmp->getCodeReference());
-
-    if( !Context::getInstance()->isValidName(((NameExpression*)tmp)->getName()) )
-        throw SyntaxException("Invalid name", tmp->getCodeReference());
-
-    string varName = ((NameExpression*)tmp)->getName();
+    DataTypesId dataType = DataType::getDataTypeId(((NameExpression*)aux)->getName());
 
     terminalExpressionsList->pop_front();
     if( terminalExpressionsList->empty())
-        throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
-    tmp = terminalExpressionsList->front();
+        throw SyntaxException("Expected a name",aux->getCodeReference() );
 
-    if( tmp->getType() == cCast(TerminalExpressionType::EOE) )
+    delete aux;
+    aux = terminalExpressionsList->front();
+
+    if( aux->getType() != cCast(TerminalExpressionType::Name) )
+        throw SyntaxException("Expected a name",aux->getCodeReference());
+
+    if( !ctx->isValidName(((NameExpression*)aux)->getName()) )
+        throw SyntaxException("Invalid name", aux->getCodeReference());
+
+    string varName = ((NameExpression*)aux)->getName();
+
+    terminalExpressionsList->pop_front();
+    if( terminalExpressionsList->empty())
+        throw SyntaxException("Expected ; or a function definition",aux->getCodeReference() );
+
+    delete aux;
+    aux = terminalExpressionsList->front();
+
+    if( aux->getType() == cCast(TerminalExpressionType::EOE) )
     {
         terminalExpressionsList->pop_front();
-        Context::getInstance()->newVariable(varName,dataType);
+        ctx->newVariable(varName,dataType);
     }
-    else if ( tmp->getType() == cCast(TerminalExpressionType::OpenParenthesis) )
+    else if( aux->getType() == cCast(TerminalExpressionType::OpenParenthesis) )
     {
-        FunctionDefinition* function = Context::getInstance()->newFunction(varName,dataType);
+        auto function = ctx->newFunction(varName,dataType);
         function->load(terminalExpressionsList);
     }
     else
-        throw SyntaxException("Expected an end of line or a function definition",tmp->getCodeReference());
+        throw SyntaxException("Expected ; or a function definition",aux->getCodeReference());
 }
 
 DefinitionExpression::~DefinitionExpression() {}

@@ -5,6 +5,9 @@
 
 namespace CS {
 
+/**
+ * @brief This class represents the number data type.
+ */
 class NumberDataType : public DataType
 {
 public:

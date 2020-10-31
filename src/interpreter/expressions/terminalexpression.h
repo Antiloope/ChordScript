@@ -39,6 +39,10 @@ enum struct TerminalExpressionType : char {
     Numeric
 };
 
+/**
+ * @brief This class creates a common interface for terminal expressions
+ * and implements the storage of the type
+ */
 class TerminalExpression : public Expression {
 public:
     TerminalExpression(size_t codeReference, char type) :
@@ -61,7 +65,7 @@ public:
     StringExpression(const StringExpression& t) :
         TerminalExpression(t.getCodeReference(),t.getType()), _text(t.getText()) {}
 
-    inline std::string getText() const { return _text; }
+    inline const char* getText() const { return _text.c_str(); }
 private:
     std::string _text;
 };
@@ -74,7 +78,7 @@ public:
     NameExpression(const NameExpression& t) :
         TerminalExpression(t.getCodeReference(),t.getType()), _name(t.getName()) {}
 
-    inline std::string getName() const { return _name; }
+    inline const char* getName() const { return _name.c_str(); }
 private:
     std::string _name;
 };

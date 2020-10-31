@@ -1,6 +1,5 @@
 #include "lexer.h"
 #include "utils/Exceptions/exception.h"
-#include "utils/log.h"
 #include "languageConstants.h"
 #include "expressions/terminalexpression.h"
 #include <stack>
@@ -114,7 +113,7 @@ list<TerminalExpression*> Lexer::tokenize(const string sourceCode){
                 while( sourceCode[i] != STIRNG_DELIMITATOR )
                 {
                     if( i >= sourceCode.length() )
-                        throw SyntaxException("String delimitator never closed",i);
+                        throw SyntaxException("String delimitator \" never closed",i);
                     tmp.push_back(sourceCode[i]);
                     i++;
                 }

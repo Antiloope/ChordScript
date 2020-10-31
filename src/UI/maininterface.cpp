@@ -4,6 +4,7 @@
 #include "toolbox/toolbox.h"
 #include "consoletabs/consoletabs.h"
 #include "utils/Exceptions/exception.h"
+#include "utils/output.h"
 #include "uidefinitions.h"
 #include <iostream>
 #include <thread>
@@ -23,6 +24,10 @@
 #include <QSplitter>
 #include <QMessageBox>
 #include <QFileDialog>
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 using namespace CS::UI;
 
@@ -76,9 +81,10 @@ MainInterface::MainInterface(QWidget *parent)
 
     UiDefinitions* def = UiDefinitions::getInstance();
 
+    CS::Output::getInstance().clean();
+
     // Setting name, size, color palette and font
     this->setObjectName(WINDOW_NAME);
-    this->setWindowState(Qt::WindowMaximized);
 
     QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     sizePolicy.setHorizontalStretch(0);
@@ -381,6 +387,8 @@ MainInterface::MainInterface(QWidget *parent)
     connect(_editorTabs,SIGNAL(tabCloseRequested(int)),this,SLOT(closeFile(int)));
     connect(aboutAction,SIGNAL(triggered()),this,SLOT(showAbout()));
     connect(checkUpdatesAction,SIGNAL(triggered()),this,SLOT(openMaintenance()));
+
+    setWindowState(Qt::WindowMaximized);
 }
 
 MainInterface::~MainInterface() {}
@@ -505,6 +513,13 @@ void MainInterface::saveFile(int index) {
 }
 
 void MainInterface::exit() {
+    int ms = 500;
+#ifdef _WIN32
+    Sleep(uint(ms));
+#else
+    struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
+    nanosleep(&ts, NULL);
+#endif
     this->close();
 }
 
@@ -516,12 +531,12 @@ void MainInterface::playButton() {
             Interpreter::interpret(code);
         } catch (CS::SyntaxException& e) {
             _editorTabs->setError(e.getCharacterRefference());
-            CS::Log::getInstance().write(e.what(),CS::Log::info_t);
+            CS::Output::getInstance().write(e.what());
         } catch (CS::SemanticException& e) {
             _editorTabs->setError(e.getCharacterRefference());
-            CS::Log::getInstance().write(e.what(),CS::Log::info_t);
+            CS::Output::getInstance().write(e.what());
         } catch (std::exception& e) {
-            CS::Log::getInstance().write(e.what(),CS::Log::info_t);
+            CS::Log::getInstance().write(e.what(),CS::Log::error_t);
         }
 
         ((QTextBrowser*)_consoleTabs->widget(0))->reload();

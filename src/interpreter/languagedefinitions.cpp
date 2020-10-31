@@ -57,13 +57,9 @@ void CS::Functions::stop() {
     for( auto&& playable : Context::getInstance()->getAllPlayables() )
     {
         if( get<0>(playable.second) == DataTypesId::Sound )
-        {
             soundDataType.executeMethod("stop",playable.first,(get<1>(playable.second)),new ArgumentLiteralValue({}));
-        }
         else
-        {
             sampleDataType.executeMethod("stop",playable.first,(get<1>(playable.second)),new ArgumentLiteralValue({}));
-        }
     }
 
     ctx->setReturnValue();

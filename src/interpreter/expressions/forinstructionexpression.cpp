@@ -9,92 +9,101 @@
 using namespace CS;
 using namespace std;
 
-ForInstructionExpression::ForInstructionExpression(size_t codeReference) : NonTerminalExpression(codeReference) {}
+ForInstructionExpression::ForInstructionExpression(size_t codeReference) :
+    NonTerminalExpression(codeReference) {}
 
-void ForInstructionExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
-    TerminalExpression* tmp = terminalExpressionsList->front();
-    if( tmp->getType() != cCast(TerminalExpressionType::For) )
-        throw SyntaxException("Expected for",tmp->getCodeReference());
+void ForInstructionExpression::load(
+    list<TerminalExpression*>* terminalExpressionsList) {
 
-    terminalExpressionsList->pop_front();
-    if( terminalExpressionsList->empty())
-        throw SyntaxException("Expected for arguments",tmp->getCodeReference() );
-    tmp = terminalExpressionsList->front();
+    TerminalExpression* aux = terminalExpressionsList->front();
 
-    if( tmp->getType() != cCast(TerminalExpressionType::OpenParenthesis) )
-        throw SyntaxException("Expected (",tmp->getCodeReference());
+    if( aux->getType() != cCast(TerminalExpressionType::For) )
+        throw SyntaxException("Expected 'for'",aux->getCodeReference());
 
     terminalExpressionsList->pop_front();
     if( terminalExpressionsList->empty())
-        throw SyntaxException("Expected for arguments",tmp->getCodeReference() );
-    tmp = terminalExpressionsList->front();
+        throw SyntaxException("Expected for arguments",aux->getCodeReference() );
+
+    delete aux;
+    aux = terminalExpressionsList->front();
+
+    if( aux->getType() != cCast(TerminalExpressionType::OpenParenthesis) )
+        throw SyntaxException("Expected (",aux->getCodeReference());
+
+    terminalExpressionsList->pop_front();
+    if( terminalExpressionsList->empty())
+        throw SyntaxException("Expected for arguments",aux->getCodeReference() );
+
+    delete aux;
+    aux = terminalExpressionsList->front();
 
     Context* ctx = Context::getInstance();
 
     _context = ctx->newScope();
 
-    _assignation = new AssignationExpression(tmp->getCodeReference());
+    _assignation = new AssignationExpression(aux->getCodeReference());
     _assignation->load(terminalExpressionsList);
 
     if(
         terminalExpressionsList->empty() ||
-        terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::EOE)
-        )
-        throw SyntaxException("Expected ;",tmp->getCodeReference() );
+        terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::EOE) )
+        throw SyntaxException("Expected ;",this->getCodeReference() );
 
+    delete terminalExpressionsList->front();
     terminalExpressionsList->pop_front();
-    tmp = terminalExpressionsList->front();
+    aux = terminalExpressionsList->front();
 
-    _booleanOperation = new BooleanOperationLinkedValue(tmp->getCodeReference());
+    _booleanOperation = new BooleanOperationLinkedValue(aux->getCodeReference());
     _booleanOperation->load(terminalExpressionsList);
 
     if(
         terminalExpressionsList->empty() ||
-        terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::EOE)
-        )
-        throw SyntaxException("Expected ;",tmp->getCodeReference() );
+        terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::EOE) )
+        throw SyntaxException("Expected ;",this->getCodeReference() );
 
+    delete terminalExpressionsList->front();
     terminalExpressionsList->pop_front();
-    tmp = terminalExpressionsList->front();
+    aux = terminalExpressionsList->front();
 
-    _endAssignation = new AssignationExpression(tmp->getCodeReference());
+    _endAssignation = new AssignationExpression(aux->getCodeReference());
     _endAssignation->load(terminalExpressionsList);
 
     if(
         terminalExpressionsList->empty() ||
-        terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::CloseParenthesis)
-        )
-        throw SyntaxException("Expected )",tmp->getCodeReference() );
+        terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::CloseParenthesis) )
+        throw SyntaxException("Expected )",this->getCodeReference() );
 
+    delete terminalExpressionsList->front();
     terminalExpressionsList->pop_front();
-    tmp = terminalExpressionsList->front();
+    aux = terminalExpressionsList->front();
 
     if(
         terminalExpressionsList->empty() ||
-        terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::OpenBrace)
-        )
-        throw SyntaxException("Expected {",tmp->getCodeReference() );
+        terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::OpenBrace) )
+        throw SyntaxException("Expected {",aux->getCodeReference() );
 
+    delete terminalExpressionsList->front();
     terminalExpressionsList->pop_front();
-    tmp = terminalExpressionsList->front();
+    aux = terminalExpressionsList->front();
 
-    _function = new ProgramExpression(tmp->getCodeReference());
+    _function = new ProgramExpression(aux->getCodeReference());
     _function->load(terminalExpressionsList);
 
     if( terminalExpressionsList->empty() )
-        throw SyntaxException("Expected }",tmp->getCodeReference() );
+        throw SyntaxException("Expected }",aux->getCodeReference() );
 
-    tmp = terminalExpressionsList->front();
+    aux = terminalExpressionsList->front();
 
-    if( tmp->getType() != cCast(TerminalExpressionType::CloseBrace) )
-        throw SyntaxException("Expected }",tmp->getCodeReference());
+    if( aux->getType() != cCast(TerminalExpressionType::CloseBrace) )
+        throw SyntaxException("Expected }",aux->getCodeReference());
 
     terminalExpressionsList->pop_front();
+    delete aux;
 
     ctx->returnScope();
 }
 
-ForInstructionExpression::~ForInstructionExpression(){
+ForInstructionExpression::~ForInstructionExpression() {
     if( _function )
         delete _function;
     if( _endAssignation )
@@ -108,26 +117,29 @@ ForInstructionExpression::~ForInstructionExpression(){
     Context::getInstance()->removeScope(_context);
 }
 
-void ForInstructionExpression::interpret(){
-    _runningContext = Context::getInstance()->switchScope(_context);
+void ForInstructionExpression::interpret() {
+    Context* ctx = Context::getInstance();
+    _runningContext = ctx->switchScope(_context);
+
     scope_index tmp = _runningContext;
+
     if( !_runningContext )
         throw SemanticException("Invalid switch to unknown context",this->getCodeReference());
 
-    Context::getInstance()->setReturnValue(nullptr);
-    _assignation->interpret();
-    unique_ptr<LiteralValue> booleanCondition = unique_ptr<LiteralValue>(_booleanOperation->getValue());
+    ctx->setReturnValue(nullptr);
 
-    Context::getInstance()->setReturnValue(nullptr);
-    while(
-        *(bool*)booleanCondition->getValue() )
+    _assignation->interpret();
+    auto booleanCondition = unique_ptr<LiteralValue>(_booleanOperation->getValue());
+
+    ctx->setReturnValue(nullptr);
+    while( *(bool*)booleanCondition->getValue() )
     {
         _function->interpret();
-        if( Context::getInstance()->existReturnValue() )
+        if( ctx->existReturnValue() )
             break;
 
         _endAssignation->interpret();
         booleanCondition = unique_ptr<LiteralValue>(_booleanOperation->getValue());
     }
-    Context::getInstance()->removeScope(tmp);
+    ctx->removeScope(tmp);
 }

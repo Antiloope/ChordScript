@@ -5,6 +5,10 @@
 
 namespace CS {
 
+/**
+ * @brief This class represents the argument data type.
+ * It has not available casts and has two methods: push and pop.
+ */
 class ArgumentDataType : public DataType
 {
 public:

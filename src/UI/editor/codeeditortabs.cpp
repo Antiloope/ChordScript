@@ -307,6 +307,7 @@ void CodeEditorTabs::setError(int charReference) {
     QTextEdit::ExtraSelection selection;
     selection.cursor = editor->textCursor();
     selection.cursor.setPosition(charReference);
+    selection.cursor.movePosition(QTextCursor::NextCharacter,QTextCursor::MoveMode::MoveAnchor);
     selection.cursor.movePosition(QTextCursor::WordLeft,QTextCursor::MoveMode::MoveAnchor);
     selection.cursor.movePosition(QTextCursor::EndOfWord,QTextCursor::MoveMode::KeepAnchor);
     selection.format = QTextCharFormat();

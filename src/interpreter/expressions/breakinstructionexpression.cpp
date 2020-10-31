@@ -6,17 +6,23 @@
 using namespace CS;
 using namespace std;
 
-BreakInstructionExpression::BreakInstructionExpression(size_t codeReference) : NonTerminalExpression(codeReference) {}
+BreakInstructionExpression::BreakInstructionExpression(size_t codeReference) :
+    NonTerminalExpression(codeReference) {}
 
-void BreakInstructionExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
+void BreakInstructionExpression::load(
+    list<TerminalExpression*>* terminalExpressionsList) {
+
     if(Context::getInstance()->getCurrentScope() == GLOBAL_SCOPE)
-        throw SyntaxException("Break is not valid in global scope",terminalExpressionsList->front()->getCodeReference());
+        throw SyntaxException("Break is not valid in global scope",
+                              terminalExpressionsList->front()->getCodeReference());
 
+    delete terminalExpressionsList->front();
     terminalExpressionsList->pop_front();
+
     if( terminalExpressionsList->empty() ||
-        terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::EOE)
-        )
-        throw SyntaxException("Expected ;",terminalExpressionsList->front()->getCodeReference());
+        terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::EOE) )
+        throw SyntaxException("Expected ;",
+                              terminalExpressionsList->front()->getCodeReference());
 }
 
 BreakInstructionExpression::~BreakInstructionExpression() {}

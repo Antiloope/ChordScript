@@ -2,28 +2,30 @@
 #define NONTERMINALEXPRESSION_H
 
 #include "expression.h"
+#include <list>
 
 namespace CS {
 
+// Defined in terminalexpression.h
 class TerminalExpression;
 
 /**
- * @brief Base clas for non terminal expressions.
+ * @brief Base class for non terminal expressions.
  * Define two pure virtual methods (load and interpret)
  */
 class NonTerminalExpression : public Expression {
 public:
     NonTerminalExpression();
-    NonTerminalExpression(size_t);
+    NonTerminalExpression(size_t codeReference);
     virtual ~NonTerminalExpression();
     /**
-     * @brief This method load internal state based on list of expressions
+     * @brief It loads an internal state based on list of expressions
      * recived by argument.
-     * @param terminalExpressionsList
+     * @param terminalExpressionsList A list of tokens
      */
     virtual void load(std::list<TerminalExpression*>*) = 0;
     /**
-     * @brief Execute the expression based on internal stored data
+     * @brief It executes the expression based on internal stored data
      */
     virtual void interpret() = 0;
 };

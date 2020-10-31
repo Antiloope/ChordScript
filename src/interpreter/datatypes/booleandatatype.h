@@ -5,6 +5,9 @@
 
 namespace CS {
 
+/**
+ * @brief This class represents the boolean data type.
+ */
 class BooleanDataType : public DataType
 {
 public:

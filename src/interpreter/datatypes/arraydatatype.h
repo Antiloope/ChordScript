@@ -5,6 +5,9 @@
 
 namespace CS {
 
+/**
+ * @brief This class represents the array data type.
+ */
 class ArrayDataType : public DataType
 {
 public:

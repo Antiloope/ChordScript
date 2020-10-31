@@ -10,102 +10,123 @@ using namespace std;
 AssignationExpression::AssignationExpression(size_t codeReference) :
     NonTerminalExpression(codeReference) {}
 
-void AssignationExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
-    TerminalExpression* tmp = terminalExpressionsList->front();
+void AssignationExpression::load(
+    list<TerminalExpression*>* terminalExpressionsList) {
+
+    TerminalExpression* aux = terminalExpressionsList->front();
+
     DataTypesId dataType;
     bool isDataTypeDefinition = false;
 
+    Context* ctx = Context::getInstance();
+
     if(
-        tmp->getType() == cCast(TerminalExpressionType::Name) &&
-        Context::getInstance()->isDataType(DataType::getDataTypeId(((NameExpression*)tmp)->getName())) )
+        aux->getType() == cCast(TerminalExpressionType::Name) &&
+        ctx->isDataType(DataType::getDataTypeId(((NameExpression*)aux)->getName())) )
     {
-        dataType = DataType::getDataTypeId(((NameExpression*)tmp)->getName());
+        dataType = DataType::getDataTypeId(((NameExpression*)aux)->getName());
 
         terminalExpressionsList->pop_front();
         if( terminalExpressionsList->empty())
-            throw SyntaxException("Expected variable name",tmp->getCodeReference() );
-        tmp = terminalExpressionsList->front();
+            throw SyntaxException("Expected variable name",aux->getCodeReference() );
 
-        if( tmp->getType() != cCast(TerminalExpressionType::Name) )
-            throw SyntaxException("Expected variable name",tmp->getCodeReference());
+        delete aux;
+        aux = terminalExpressionsList->front();
+
+        if( aux->getType() != cCast(TerminalExpressionType::Name) )
+            throw SyntaxException("Expected variable name",aux->getCodeReference());
+
         isDataTypeDefinition = true;
     }
-    else if( Context::getInstance()->nameExist(((NameExpression*)tmp)->getName()) )
-        dataType = Context::getInstance()->getVariableDataType(((NameExpression*)tmp)->getName());
+    else if(
+        aux->getType() == cCast(TerminalExpressionType::Name) &&
+        ctx->nameExist(((NameExpression*)aux)->getName()) )
+        dataType = ctx->getVariableDataType(((NameExpression*)aux)->getName());
     else
-        throw SyntaxException("Expected another symbol",tmp->getCodeReference());
+        throw SyntaxException("Expected an assignation",aux->getCodeReference());
 
-    _varName = ((NameExpression*)tmp)->getName();
+    _varName = ((NameExpression*)aux)->getName();
 
-    if( !Context::getInstance()->isValidName(_varName) )
-        throw SyntaxException("Invalid name",tmp->getCodeReference());
+    if( !ctx->isValidName(_varName) )
+        throw SyntaxException("Invalid variable name",aux->getCodeReference());
 
     terminalExpressionsList->pop_front();
     if( terminalExpressionsList->empty())
-        throw SyntaxException("Expected = after name",tmp->getCodeReference() );
-    tmp = terminalExpressionsList->front();
+        throw SyntaxException("Expected = after name",aux->getCodeReference() );
 
-    if( tmp->getType() == cCast(TerminalExpressionType::Addition) )
+    delete aux;
+    aux = terminalExpressionsList->front();
+
+    if( aux->getType() == cCast(TerminalExpressionType::Addition) )
     {
         terminalExpressionsList->pop_front();
         if( terminalExpressionsList->empty())
-            throw SyntaxException("Expected " + _varName + "++ ",tmp->getCodeReference() );
-        terminalExpressionsList->front();
+            throw SyntaxException("Expected " + _varName + "++ ",aux->getCodeReference() );
 
-        if( tmp->getType() != cCast(TerminalExpressionType::Addition) )
-            throw SyntaxException("Expected " + _varName + "++ ",tmp->getCodeReference() );
+        delete aux;
+        aux = terminalExpressionsList->front();
+
+        if( aux->getType() != cCast(TerminalExpressionType::Addition) )
+            throw SyntaxException("Expected " + _varName + "++ ",aux->getCodeReference() );
 
         terminalExpressionsList->pop_front();
         if( terminalExpressionsList->empty() ||
             (terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::EOE) &&
              terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::CloseParenthesis)))
-            throw SyntaxException("Expected ;",tmp->getCodeReference() );
+            throw SyntaxException("Expected ;",aux->getCodeReference() );
 
-        terminalExpressionsList->push_front(new NumericExpression(tmp->getCodeReference()-1,cCast(TerminalExpressionType::Numeric),1));
-        terminalExpressionsList->push_front(new TerminalExpression(tmp->getCodeReference()-2,cCast(TerminalExpressionType::Addition)));
-        terminalExpressionsList->push_front(new NameExpression(tmp->getCodeReference()-3,cCast(TerminalExpressionType::Name),_varName));
-        terminalExpressionsList->push_front(new TerminalExpression(tmp->getCodeReference()-2,cCast(TerminalExpressionType::Equal)));
+        terminalExpressionsList->push_front(new NumericExpression(aux->getCodeReference()-1,cCast(TerminalExpressionType::Numeric),1));
+        terminalExpressionsList->push_front(new TerminalExpression(aux->getCodeReference()-2,cCast(TerminalExpressionType::Addition)));
+        terminalExpressionsList->push_front(new NameExpression(aux->getCodeReference()-3,cCast(TerminalExpressionType::Name),_varName));
+        terminalExpressionsList->push_front(new TerminalExpression(aux->getCodeReference()-2,cCast(TerminalExpressionType::Equal)));
+
+        delete aux;
     }
-    else if( tmp->getType() == cCast(TerminalExpressionType::Substract) )
+    else if( aux->getType() == cCast(TerminalExpressionType::Substract) )
     {
         terminalExpressionsList->pop_front();
         if( terminalExpressionsList->empty())
-            throw SyntaxException("Expected " + _varName + "-- ",tmp->getCodeReference() );
-        terminalExpressionsList->front();
+            throw SyntaxException("Expected " + _varName + "-- ",aux->getCodeReference() );
 
-        if( tmp->getType() != cCast(TerminalExpressionType::Substract) )
-            throw SyntaxException("Expected " + _varName + "-- ",tmp->getCodeReference() );
+        delete aux;
+        aux = terminalExpressionsList->front();
+
+        if( aux->getType() != cCast(TerminalExpressionType::Substract) )
+            throw SyntaxException("Expected " + _varName + "-- ",aux->getCodeReference() );
 
         terminalExpressionsList->pop_front();
         if( terminalExpressionsList->empty() ||
            (terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::EOE) &&
             terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::CloseParenthesis) ))
-            throw SyntaxException("Expected ;",tmp->getCodeReference() );
+            throw SyntaxException("Expected ;",aux->getCodeReference() );
 
-        terminalExpressionsList->push_front(new NumericExpression(tmp->getCodeReference()-1,cCast(TerminalExpressionType::Numeric),1));
-        terminalExpressionsList->push_front(new TerminalExpression(tmp->getCodeReference()-2,cCast(TerminalExpressionType::Substract)));
-        terminalExpressionsList->push_front(new NameExpression(tmp->getCodeReference()-3,cCast(TerminalExpressionType::Name),_varName));
-        terminalExpressionsList->push_front(new TerminalExpression(tmp->getCodeReference()-2,cCast(TerminalExpressionType::Equal)));
+        terminalExpressionsList->push_front(new NumericExpression(aux->getCodeReference()-1,cCast(TerminalExpressionType::Numeric),1));
+        terminalExpressionsList->push_front(new TerminalExpression(aux->getCodeReference()-2,cCast(TerminalExpressionType::Substract)));
+        terminalExpressionsList->push_front(new NameExpression(aux->getCodeReference()-3,cCast(TerminalExpressionType::Name),_varName));
+        terminalExpressionsList->push_front(new TerminalExpression(aux->getCodeReference()-2,cCast(TerminalExpressionType::Equal)));
+
+        delete aux;
     }
-    tmp = terminalExpressionsList->front();
+    aux = terminalExpressionsList->front();
 
-    if( tmp->getType() != cCast(TerminalExpressionType::Equal) )
-        throw SyntaxException("Expected = ",tmp->getCodeReference());
+    if( aux->getType() != cCast(TerminalExpressionType::Equal) )
+        throw SyntaxException("Expected = ",aux->getCodeReference());
 
     terminalExpressionsList->pop_front();
     if( terminalExpressionsList->empty())
-        throw SyntaxException("Expected a value after = ",tmp->getCodeReference() );
-    terminalExpressionsList->front();
+        throw SyntaxException("Expected a value after = ",aux->getCodeReference() );
+
+    delete aux;
+    aux = terminalExpressionsList->front();
 
     _value = LinkedValue::generateLinkedValue(terminalExpressionsList);
     if (
         terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::EOE) &&
-        terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::CloseParenthesis)
-        )
-        throw SyntaxException("Expected ;",terminalExpressionsList->front()->getCodeReference());
+        terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::CloseParenthesis) )
+        throw SyntaxException("Expected ;",aux->getCodeReference());
 
     if( isDataTypeDefinition )
-        Context::getInstance()->newVariable( _varName, dataType);
+        ctx->newVariable( _varName, dataType);
 }
 
 AssignationExpression::~AssignationExpression() {
@@ -114,16 +135,16 @@ AssignationExpression::~AssignationExpression() {
 }
 
 void AssignationExpression::interpret() {
-    if( !Context::getInstance()->setVariableValue(_varName,_value->getValue()) )
+    Context* ctx = Context::getInstance();
+    if( !ctx->setVariableValue(_varName,_value->getValue()) )
     {
         string errorDescription = "Invalid conversion from ";
         errorDescription.append(DataType::getDataTypeString(_value->getDataTypeId()));
         errorDescription.append(" to ");
         errorDescription.append(
             DataType::getDataTypeString(
-                Context::getInstance()->getVariableDataType(_varName))
-            );
+                ctx->getVariableDataType(_varName)) );
         throw SemanticException(errorDescription,this->getCodeReference());
     }
-    Context::getInstance()->setReturnValue(nullptr);
+    ctx->setReturnValue(nullptr);
 }

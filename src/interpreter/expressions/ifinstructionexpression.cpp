@@ -8,68 +8,83 @@
 using namespace CS;
 using namespace std;
 
-IfInstructionExpression::IfInstructionExpression(size_t codeReference) : NonTerminalExpression(codeReference) {}
+IfInstructionExpression::IfInstructionExpression(size_t codeReference) :
+    NonTerminalExpression(codeReference) {}
 
-void IfInstructionExpression::load(list<TerminalExpression*>* terminalExpressionsList) {
-    TerminalExpression* tmp = terminalExpressionsList->front();
-    if( tmp->getType() != cCast(TerminalExpressionType::If) )
-        throw SyntaxException("Expected if",tmp->getCodeReference());
+void IfInstructionExpression::load(
+    list<TerminalExpression*>* terminalExpressionsList) {
 
-    terminalExpressionsList->pop_front();
-    if( terminalExpressionsList->empty())
-        throw SyntaxException("Expected if arguments",tmp->getCodeReference() );
+    TerminalExpression* aux = terminalExpressionsList->front();
 
-    tmp = terminalExpressionsList->front();
-
-    if( tmp->getType() != cCast(TerminalExpressionType::OpenParenthesis) )
-        throw SyntaxException("Expected (",tmp->getCodeReference());
+    if( aux->getType() != cCast(TerminalExpressionType::If) )
+        throw SyntaxException("Expected 'if'",aux->getCodeReference());
 
     terminalExpressionsList->pop_front();
     if( terminalExpressionsList->empty())
-        throw SyntaxException("Expected if arguments",tmp->getCodeReference() );
-    tmp = terminalExpressionsList->front();
+        throw SyntaxException("Expected if arguments",aux->getCodeReference() );
 
-    _condition = new BooleanOperationLinkedValue(tmp->getCodeReference());
+    delete aux;
+    aux = terminalExpressionsList->front();
+
+    if( aux->getType() != cCast(TerminalExpressionType::OpenParenthesis) )
+        throw SyntaxException("Expected (",aux->getCodeReference());
+
+    terminalExpressionsList->pop_front();
+    if( terminalExpressionsList->empty())
+        throw SyntaxException("Expected if arguments",aux->getCodeReference() );
+
+    delete aux;
+    aux = terminalExpressionsList->front();
+
+    _condition = new BooleanOperationLinkedValue(aux->getCodeReference());
     _condition->load(terminalExpressionsList);
 
     if( terminalExpressionsList->empty())
-        throw SyntaxException("Expected )",tmp->getCodeReference() );
-    tmp = terminalExpressionsList->front();
-    if( tmp->getType() != cCast(TerminalExpressionType::CloseParenthesis) )
-        throw SyntaxException("Expected )",tmp->getCodeReference());
+        throw SyntaxException("Expected )",this->getCodeReference() );
+
+    aux = terminalExpressionsList->front();
+
+    if( aux->getType() != cCast(TerminalExpressionType::CloseParenthesis) )
+        throw SyntaxException("Expected )",aux->getCodeReference());
 
     terminalExpressionsList->pop_front();
     if( terminalExpressionsList->empty())
-        throw SyntaxException("Expected {",tmp->getCodeReference() );
+        throw SyntaxException("Expected {",aux->getCodeReference() );
 
-    tmp = terminalExpressionsList->front();
+    delete aux;
+    aux = terminalExpressionsList->front();
 
-    if( tmp->getType() != cCast(TerminalExpressionType::OpenBrace) )
-        throw SyntaxException("Expected {",tmp->getCodeReference());
+    if( aux->getType() != cCast(TerminalExpressionType::OpenBrace) )
+        throw SyntaxException("Expected {",aux->getCodeReference());
+
 
     terminalExpressionsList->pop_front();
     if( terminalExpressionsList->empty())
-        throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
-    tmp = terminalExpressionsList->front();
+        throw SyntaxException("Expected another symbol",aux->getCodeReference() );
+
+    delete aux;
+    aux = terminalExpressionsList->front();
 
     Context* ctx = Context::getInstance();
 
     _context = ctx->newScope();
 
-    _function = new ProgramExpression(tmp->getCodeReference());
+    _function = new ProgramExpression(aux->getCodeReference());
     _function->load(terminalExpressionsList);
 
     ctx->returnScope();
 
     if( terminalExpressionsList->empty() )
-        throw SyntaxException("Expected }",tmp->getCodeReference() );
+        throw SyntaxException("Expected }",this->getCodeReference() );
 
-    tmp = terminalExpressionsList->front();
+    aux = terminalExpressionsList->front();
 
-    if( tmp->getType() != cCast(TerminalExpressionType::CloseBrace) )
-        throw SyntaxException("Expected }",tmp->getCodeReference());
+    if( aux->getType() != cCast(TerminalExpressionType::CloseBrace) )
+        throw SyntaxException("Expected }",aux->getCodeReference());
 
     terminalExpressionsList->pop_front();
+    delete aux;
+
     if(
         terminalExpressionsList->empty() ||
         terminalExpressionsList->front()->getType() != cCast(TerminalExpressionType::Else) )
@@ -79,36 +94,40 @@ void IfInstructionExpression::load(list<TerminalExpression*>* terminalExpression
     }
     else
     {
+        delete terminalExpressionsList->front();
         terminalExpressionsList->pop_front();
         if( terminalExpressionsList->empty() )
-            throw SyntaxException("Expected {",tmp->getCodeReference() );
-        tmp = terminalExpressionsList->front();
+            throw SyntaxException("Expected {",aux->getCodeReference() );
 
-        if( tmp->getType() != cCast(TerminalExpressionType::OpenBrace) )
-            throw SyntaxException("Expected {",tmp->getCodeReference());
+        aux = terminalExpressionsList->front();
+
+        if( aux->getType() != cCast(TerminalExpressionType::OpenBrace) )
+            throw SyntaxException("Expected {",aux->getCodeReference());
 
         terminalExpressionsList->pop_front();
         if( terminalExpressionsList->empty())
-            throw SyntaxException("Expected another symbol",tmp->getCodeReference() );
+            throw SyntaxException("Expected another symbol",aux->getCodeReference() );
 
-        tmp = terminalExpressionsList->front();
+        delete aux;
+        aux = terminalExpressionsList->front();
 
         _elseContext = ctx->newScope();
 
-        _elseFunction = new ProgramExpression(tmp->getCodeReference());
+        _elseFunction = new ProgramExpression(aux->getCodeReference());
         _elseFunction->load(terminalExpressionsList);
 
         ctx->returnScope();
 
         if( terminalExpressionsList->empty() )
-            throw SyntaxException("Expected }",tmp->getCodeReference() );
+            throw SyntaxException("Expected }",this->getCodeReference() );
 
-        tmp = terminalExpressionsList->front();
+        aux = terminalExpressionsList->front();
 
-        if( tmp->getType() != cCast(TerminalExpressionType::CloseBrace) )
-            throw SyntaxException("Expected }",tmp->getCodeReference());
+        if( aux->getType() != cCast(TerminalExpressionType::CloseBrace) )
+            throw SyntaxException("Expected }",aux->getCodeReference());
 
         terminalExpressionsList->pop_front();
+        delete aux;
     }
 }
 

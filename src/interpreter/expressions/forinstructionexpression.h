@@ -5,14 +5,28 @@
 
 namespace CS {
 
+// Defined in linkedvalue.h
 class LinkedValue;
+// Defined in assignationexpression.h
 class AssignationExpression;
 
+/**
+ * @brief This class is the representaion of a for statement.
+ * It holds the condition and the body
+ */
 class ForInstructionExpression : public NonTerminalExpression {
 public:
-    ForInstructionExpression(size_t);
+    ForInstructionExpression(size_t codeReference);
     ~ForInstructionExpression();
-    void load(std::list<TerminalExpression*>*) override;
+    /**
+     * @brief It loads the elements of the for: the assignation, condition,
+     * iteration and code to loop. All values are LinkedValues at this moment.
+     * @param terminalExpressionsList A list of tokens
+     */
+    void load(std::list<TerminalExpression*>* terminalExpressionsList) override;
+    /**
+     * @brief It iterates over the loop.
+     */
     void interpret() override;
 private:
     size_t _context;

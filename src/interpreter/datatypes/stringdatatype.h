@@ -5,6 +5,9 @@
 
 namespace CS {
 
+/**
+ * @brief This class represents the string data type.
+ */
 class StringDataType : public DataType
 {
 public:

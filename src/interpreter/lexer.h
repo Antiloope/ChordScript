@@ -10,20 +10,20 @@ namespace CS {
 class TerminalExpression;
 
 /**
- * @brief This has only one static method that returns the tokens
+ * @brief Has only one static method that returns the tokens
  * that are generated based on source code.
  */
 class Lexer
 {
 public:
     /**
-     * @brief tokenize This method generate CS::TerminalExpressions based
+     * @brief Generates a list of CS::TerminalExpression based
      * on source code
      * @param sourceCode Plain text source code
      * @return An std::list of CS::TerminalExpression* that holds
      * all the information about the token (see TerminalExpression)
      */
-    static std::list<TerminalExpression*> tokenize(const std::string);
+    static std::list<TerminalExpression*> tokenize(const std::string sourceCode);
 };
 
 }

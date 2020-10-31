@@ -29,5 +29,9 @@ void NameLinkedValue::load(
 }
 
 LiteralValue* NameLinkedValue::getValue() const {
-    return Context::getInstance()->getVariableValue(_name);
+    LiteralValue* ret = Context::getInstance()->getVariableValue(_name);
+    if( ret )
+        return ret;
+
+    return new NullLiteralValue();
 }

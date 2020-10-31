@@ -6,12 +6,21 @@
 namespace CS {
 
 class LinkedValue;
-
+/**
+ * @brief This class represents a value assignation.
+ */
 class AssignationExpression : public NonTerminalExpression {
 public:
-    AssignationExpression(size_t);
+    AssignationExpression(size_t codeReference);
     ~AssignationExpression();
-    void load(std::list<TerminalExpression*>*) override;
+    /**
+     * @brief It loads an internal LinkedValue with the tokens received
+     * @param terminalExpressionsList A list of tokens
+     */
+    void load(std::list<TerminalExpression*>* terminalExpressionsList) override;
+    /**
+     * @brief It gets the LiteralValue from the stored LinkedValue
+     */
     void interpret() override;
 private:
     std::string _varName;
