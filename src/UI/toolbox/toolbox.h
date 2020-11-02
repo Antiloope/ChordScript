@@ -20,9 +20,8 @@ private slots:
     void openCSPage();
 private:
     DocumentationViewer* _documentation;
-
 signals:
-
+    void demo(QString code);
 };
 
 }

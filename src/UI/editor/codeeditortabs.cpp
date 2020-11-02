@@ -301,6 +301,23 @@ void CodeEditorTabs::comment() {
     editor->comment();
 }
 
+void CodeEditorTabs::openNewFile(QString code) {
+    QString fileName = NEW_FILE_NAME + QString(std::to_string(_newFileIndex++).c_str());
+    CodeEditor* editor = new CodeEditor(this);
+    _openFiles.insert({fileName,std::tuple<std::unique_ptr<CodeEditor>,bool,QString>(std::unique_ptr<CodeEditor>(editor), false, "")});
+    addTab(editor,fileName);
+    std::string sourceCode;
+    editor->clear();
+
+    editor->appendPlainText(code);
+
+    setCurrentIndex(count()-1);
+
+    connect(editor,SIGNAL(textChanged()),this,SLOT(tabModified()));
+
+    tabModified();
+}
+
 void CodeEditorTabs::setError(int charReference) {
     auto editor = std::get<0>(_openFiles.find(tabText(currentIndex()))->second).get();
     QList<QTextEdit::ExtraSelection> selections;

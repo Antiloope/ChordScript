@@ -346,15 +346,16 @@ MainInterface::MainInterface(QWidget *parent)
         "}");
     verticalLayout->addWidget(vSplitter);
 
-    // Adding toolbox in the left side
+    // Adding toolbox in the right side
     ToolBox* toolBox = new ToolBox();
     vSplitter->addWidget(toolBox);
 
     // Insert consoles in the bottom side
     _consoleTabs = new ConsoleTabs(vSplitter);
     vSplitter->addWidget(_consoleTabs);
-    vSplitter->setStretchFactor(0,2);
+    vSplitter->setStretchFactor(1,0);
 
+    connect(toolBox,SIGNAL(demo(QString)),_editorTabs,SLOT(openNewFile(QString)));
     connect(_consoleTabs,SIGNAL(find(bool,bool,bool,QString)),_editorTabs,SLOT(find(bool,bool,bool,QString)));
     connect(actionPlay,SIGNAL(triggered()),this,SLOT(playButton()));
     connect(actionStop,SIGNAL(triggered()),this,SLOT(stopButton()));

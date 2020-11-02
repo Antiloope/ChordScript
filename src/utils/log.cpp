@@ -13,16 +13,7 @@ Log& Log::getInstance() {
     return instance;
 }
 
-Log::Log() {
-    _file = new ofstream(LOG_FILE_NAME, ofstream::app);
-    cout.rdbuf(_file->rdbuf());
-    cerr.rdbuf(_file->rdbuf());
-    clog.rdbuf(_file->rdbuf());
-}
-
-Log::~Log() {
-    delete _file;
-}
+Log::Log() {}
 
 void Log::write(const char * text, logType type) {
     _write(text,type);

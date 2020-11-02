@@ -13,6 +13,8 @@ Finder::Finder(QWidget *parent) : QFrame(parent) {
     UiDefinitions* def = UiDefinitions::getInstance();
 
     QGridLayout *gridLayout = new QGridLayout;
+    setLayout(gridLayout);
+
     QPushButton *findNextButton = new QPushButton("Find Next",this);
     QPushButton *findPreviousButton = new QPushButton("Find Previous",this);
     _textToFind = new QLineEdit(this);
@@ -20,6 +22,7 @@ Finder::Finder(QWidget *parent) : QFrame(parent) {
     _wholeWordsCheck = new QCheckBox("Whole words",this);
     QLabel *searchLabel = new QLabel("Search for:");
 
+    setFixedHeight(100);
     setStyleSheet(
         "QPushButton {"
             "border: 3px solid " + def->getColorRGB(ColorId::Dark) + ";"
@@ -52,7 +55,7 @@ Finder::Finder(QWidget *parent) : QFrame(parent) {
     gridLayout->addWidget(_caseSensitiveCheck,2,0,1,2,Qt::AlignHCenter | Qt::AlignTop);
     gridLayout->addWidget(_wholeWordsCheck,2,2,1,2,Qt::AlignHCenter | Qt::AlignTop);
 
-    setLayout(gridLayout);
+    update();
 
     connect(findNextButton,SIGNAL(clicked()),this,SLOT(findNext()));
     connect(findPreviousButton,SIGNAL(clicked()),this,SLOT(findPrevious()));

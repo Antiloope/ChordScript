@@ -6,6 +6,7 @@ using namespace CS::UI;
 
 OutputLog::OutputLog(QWidget *parent) : QTextBrowser(parent)
 {
+    setFixedHeight(100);
     setSource(QUrl("output.txt"),QTextDocument::MarkdownResource);
     setStyleSheet(
         "QTextBrowser {"

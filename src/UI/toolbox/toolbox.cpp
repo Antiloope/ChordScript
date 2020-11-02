@@ -5,6 +5,7 @@
 #include "UI/tutorial/maintutorial.h"
 #include <QDesktopServices>
 #include <QGridLayout>
+#include <QUrl>
 
 using namespace CS::UI;
 
@@ -25,9 +26,27 @@ ToolBox::ToolBox(QWidget *parent)
             "background: "+ def->getColorRGB(ColorId::Light) + ";"
             "color: " + def->getColorRGB(ColorId::TextPrimary) + ";"
         "}"
+        "QScrollBar:vertical {"
+            "border-left: 1px solid " + def->getColorRGB(ColorId::Dark) + ";"
+            "background: transparent;"
+            "width: 9px;"
+        "}"
+        "QScrollBar::handle {"
+            "background: " + def->getColorRGB(ColorId::Dark) + ";"
+        "}"
+        "QScrollBar::add-line:vertical {"
+            "height: 0px;"
+            "subcontrol-position: bottom;"
+            "subcontrol-origin: margin;"
+        "}"
+        "QScrollBar::sub-line:vertical {"
+            "height: 0 px;"
+            "subcontrol-position: top;"
+            "subcontrol-origin: margin;"
+        "}"
         );
 
-    _documentation = new DocumentationViewer(this);
+    _documentation = new DocumentationViewer(this);    
     this->addItem(_documentation,"Language Documentation");
 
     QFrame* learnButtons = new QFrame(this);
@@ -59,6 +78,7 @@ ToolBox::ToolBox(QWidget *parent)
 
     connect(tutorialButton,SIGNAL(clicked()),this, SLOT(showTutorial()));
     connect(pageButton,SIGNAL(clicked()),this, SLOT(openCSPage()));
+    connect(_documentation,&DocumentationViewer::demo, [=](QString code) {emit this->demo(code);} );
 }
 
 void ToolBox::showTutorial() {

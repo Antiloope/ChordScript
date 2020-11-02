@@ -16,8 +16,10 @@ const QString CLOSE_TAB_ICON_RESOURCE = QString::fromUtf8(":/resources/closeTab.
 
 ConsoleTabs::ConsoleTabs(QWidget *parent)
     : QTabWidget(parent) {
+
     UiDefinitions* def = UiDefinitions::getInstance();
 
+    setFixedHeight(150);
     this->setFont(def->getFont(FontId::Global));
     this->setStyleSheet(
         "QTextBrowser{"
@@ -51,6 +53,7 @@ ConsoleTabs::ConsoleTabs(QWidget *parent)
     _finder = new Finder(this);
     this->addTab(_finder,"Find");
 
+    update();
     connect(_finder,SIGNAL(find(bool,bool,bool,QString)),this,SLOT(findRequested(bool,bool,bool,QString)));
 }
 

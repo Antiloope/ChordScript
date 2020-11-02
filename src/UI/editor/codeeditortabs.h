@@ -38,6 +38,7 @@ public slots:
     void zoomIn();
     void zoomOut();
     void comment();
+    void openNewFile(QString code);
 };
 
 }

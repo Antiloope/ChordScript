@@ -1,6 +1,7 @@
 QT       += core gui
 QT       += charts
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4):QT += widgets
+
 
 # remove possible other optimization flags
 QMAKE_CXXFLAGS_RELEASE -= -O
@@ -33,6 +34,7 @@ SOURCES += \
     UI/editor/linenumberarea.cpp \
     UI/editor/syntaxhighlighter.cpp \
     UI/maininterface.cpp \
+    UI/toolbox/documentationcontent.cpp \
     UI/toolbox/documentationviewer.cpp \
     UI/toolbox/toolbox.cpp \
     UI/tutorial/maintutorial.cpp \
@@ -117,6 +119,7 @@ HEADERS += \
     UI/editor/linenumberarea.h \
     UI/editor/syntaxhighlighter.h \
     UI/maininterface.h \
+    UI/toolbox/documentationcontent.h \
     UI/toolbox/documentationviewer.h \
     UI/toolbox/toolbox.h \
     UI/tutorial/maintutorial.h \
