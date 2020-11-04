@@ -300,10 +300,11 @@ MainInterface::MainInterface(QWidget *parent)
 
     QSplitter* hSplitter = new QSplitter();
     hSplitter->setOrientation(Qt::Horizontal);
-    hSplitter->setChildrenCollapsible(false);
+    hSplitter->setChildrenCollapsible(true);
     hSplitter->setStyleSheet(
-        "QSplitter::handle:horizontal{"
-            "width:10px;"
+        "QSplitter::handle:horizontal {"
+            "width:1px;"
+            "background-color:" + def->getColorRGB(ColorId::TextSecondary) + ";"
         "}");
     horizontalLayout->addWidget(hSplitter);
 
