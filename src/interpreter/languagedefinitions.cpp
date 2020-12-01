@@ -31,12 +31,14 @@ void CS::Functions::sample() {
 
     LiteralValue* argValue = ctx->getArgumentValue("fileName");
     if( argValue->getDataTypeId() != DataTypesId::String )
-        throw new SemanticException("Invalid argument for sample function. Expected a file name");
+        throw SemanticException("Invalid argument for sample function. Expected a file name");
 
     string fileName = *(string*)argValue->getValue();
 
     AudioFile<float> a;
-    a.load(fileName);
+    if( !a.load(fileName) )
+        throw SemanticException("File not found or invalid file format.");
+
     ctx->newAudioFile(fileName,a);
 
     Sample tmp(fileName);

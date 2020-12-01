@@ -94,8 +94,14 @@ LiteralValue* ExecutionLinkedValue::getValue() const {
     unique_ptr<LiteralValue> intermediateValue = nullptr;
     if( _name == get<0>(_methodsList.front()) )
     {
-        if( !Context::getInstance()->executeFunction(_name,get<1>(_methodsList.front())->getValue()) )
-            throw SemanticException("Unknown function name", this->getCodeReference());
+        try {
+            if( !Context::getInstance()->executeFunction(_name,get<1>(_methodsList.front())->getValue()) )
+                throw SemanticException("Unknown function name", this->getCodeReference());
+        }
+        catch(const SemanticException& e)
+        {
+            throw SemanticException(e.what(),this->getCodeReference());
+        }
         intermediateValue = unique_ptr<LiteralValue>(Context::getInstance()->getReturnValue());
     }
     else
@@ -107,8 +113,14 @@ LiteralValue* ExecutionLinkedValue::getValue() const {
 
             if( firstMethod )
             {
-                if( !Context::getInstance()->executeMethod(_name,get<0>(method),args.get()) )
-                    throw SyntaxException("Unknown method name",get<1>(method)->getCodeReference());
+                try {
+                    if( !Context::getInstance()->executeMethod(_name,get<0>(method),args.get()) )
+                        throw SyntaxException("Unknown method name",get<1>(method)->getCodeReference());
+                }
+                catch(const SemanticException& e)
+                {
+                    throw SemanticException(e.what(),get<1>(method)->getCodeReference());
+                }
                 firstMethod = false;
                 intermediateValue = unique_ptr<LiteralValue>(Context::getInstance()->getReturnValue());
             }
