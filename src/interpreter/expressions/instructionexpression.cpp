@@ -76,7 +76,7 @@ void InstructionExpression::load(
             auto it = terminalExpressionsList->begin();
             advance(it,1);
             if(it == terminalExpressionsList->end())
-                throw SyntaxException("Expected an assignation or execution",aux->getCodeReference());
+                throw SyntaxException("Unrecognized variable name or data type",aux->getCodeReference());
 
             aux = *it;
 
@@ -88,7 +88,7 @@ void InstructionExpression::load(
 
                 _instruction = new ExecutionExpression(aux->getCodeReference());
             else
-                throw SyntaxException("Expected an assignation or execution",aux->getCodeReference());
+                throw SyntaxException("Unrecognized variable name or data type",aux->getCodeReference());
         }
         else
             throw SyntaxException("Unrecognized variable name or data type",aux->getCodeReference());
