@@ -24,8 +24,6 @@ public:
     static void closeAll();
     static void startRecording();
     static void stopRecording();
-    static int addObserver(std::function<void(const AudioBuffer&)>);
-    static void removeObserver(int);
     static void startServer();
     static void restartServer();
     static void killServer();

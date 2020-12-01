@@ -33,7 +33,7 @@ const QString SOUND_CONSTANT_FREQ_DEMO2 = "20";
 const QString SOUND_FREQ_FACTOR_DEMO = "21";
 const QString SOUND_FREQ_MODULATION_DEMO = "22";
 const QString SOUND_AMP_FACTOR_DEMO = "23";
-const QString SOUND_AMP_FACTOR_DEMO2 = "24";
+const QString SOUND_AMP_MODULATION_DEMO = "24";
 const QString SAMPLE_PLAY_DEMO = "25";
 const QString SAMPLE_PLAY_DEMO2 = "26";
 const QString SAMPLE_STOP_DEMO = "27";
@@ -1084,8 +1084,9 @@ void DocumentationContent::initSection(unsigned section) {
 
         QLabel* soundContent12Lbl = new QLabel(
             styles +
+                "<h4>ampModulation</h4>"
                 "<ul>"
-                "<li><span class=\"code\">ampFactor( sound )</span></li>"
+                "<li><span class=\"code\">ampModulation( sound )</span></li>"
                 "</ul>"
                 "<p>This method can be called giving a sound as a "
                 "parameter and return a new sound modulated using "
@@ -1104,11 +1105,11 @@ void DocumentationContent::initSection(unsigned section) {
             "QLabel {font-size:15px;margin-top:15px;margin-bottom:15px;}");
         soundGrid->addWidget(soundContent12Lbl,23,0,Qt::AlignTop);
 
-        QPushButton* soundAmpFactorDemo2 = new QPushButton("AmpFactor demo",soundChapter);
-        soundAmpFactorDemo2->setObjectName(SOUND_AMP_FACTOR_DEMO2);
-        soundGrid->addWidget(soundAmpFactorDemo2,24,0,Qt::AlignTop);
+        QPushButton* soundAmpModulationDemo = new QPushButton("AmpModulation demo",soundChapter);
+        soundAmpModulationDemo->setObjectName(SOUND_AMP_MODULATION_DEMO);
+        soundGrid->addWidget(soundAmpModulationDemo,24,0,Qt::AlignTop);
 
-        connect(soundAmpFactorDemo2,SIGNAL(clicked()),this,SLOT(showDemo()));
+        connect(soundAmpModulationDemo,SIGNAL(clicked()),this,SLOT(showDemo()));
 
         QLabel* soundContent13Lbl = new QLabel(
             styles +
@@ -1530,7 +1531,7 @@ void DocumentationContent::initSection(unsigned section) {
         QGridLayout* grid = new QGridLayout(definitionsContent);
         definitionsContent->setLayout(grid);
 
-        QLabel* titleLbl = new QLabel("<h1>Pre-definitions</h1>",definitionsContent);
+        QLabel* titleLbl = new QLabel("<h1>Definitions</h1>",definitionsContent);
         grid->addWidget(titleLbl,0,0,Qt::AlignJustify);
 
         QLabel* spaceLbl = new QLabel("<h6></h6>",definitionsContent);
@@ -1923,7 +1924,7 @@ void DocumentationContent::showDemo() {
             "sound myLFO = S_SIN(5);\n\n"
 
             "# Use this LFO to modulate a \"carrier\" of a higher frequency\n"
-            "sound mySound = S_SIN.ampFactor(myLFO);\n\n"
+            "sound mySound = S_SIN.ampModulation(myLFO);\n\n"
 
             "# This line generates the same result.\n"
             "mySound = S_SIN * myLFO;\n\n"

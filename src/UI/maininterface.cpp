@@ -184,7 +184,7 @@ MainInterface::MainInterface(QWidget *parent)
     QAction* findAction = new QAction(FIND_ACTION_TITLE,this);
     findAction->setShortcut(tr("CTRL+F"));
     QAction* commentAction = new QAction(COMMENT_ACTION_TITLE,this);
-    commentAction->setShortcut(tr("CTRL+/"));
+    commentAction->setShortcut(QString("CTRL+/"));
     QAction* serverConfigAction = new QAction(SERVER_CONFIG_ACTION_TITLE,this);
     QAction* serverKillAction = new QAction(SERVER_KILL_ACTION_TITLE,this);
     QAction* serverStartAction = new QAction(SERVER_START_ACTION_TITLE,this);

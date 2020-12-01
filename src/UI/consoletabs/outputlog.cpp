@@ -11,8 +11,11 @@ OutputLog::OutputLog(QWidget *parent) : QTextBrowser(parent)
     setStyleSheet(
         "QTextBrowser {"
             "selection-background-color:" + UiDefinitions::getInstance()->getColorRGB(ColorId::Primary) + ";"
+            "font-size: xx-large;"
         "}");
-    setFont(UiDefinitions::getInstance()->getFont(FontId::Code));
+    auto font = UiDefinitions::getInstance()->getFont(FontId::Code);
+    font.setPointSize(16);
+    setFont(font);
 
     connect( this, SIGNAL( textChanged() ), this, SLOT( scrollToBottom() ) );
 }

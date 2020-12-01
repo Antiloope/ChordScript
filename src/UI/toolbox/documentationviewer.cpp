@@ -45,7 +45,7 @@ DocumentationViewer::DocumentationViewer(QWidget *parent) :
     grid->addWidget(flowControlButton,1,0,1,1);
     QPushButton* functionsButton = new QPushButton("5. Functions",this);
     grid->addWidget(functionsButton,1,1,1,1);
-    QPushButton* preDefinitionsButton = new QPushButton("6. Pre-definitions",this);
+    QPushButton* preDefinitionsButton = new QPushButton("6. Definitions",this);
     grid->addWidget(preDefinitionsButton,1,2,1,1);
 
     DocumentationContent* content = new DocumentationContent(this);
