@@ -30,7 +30,7 @@ void CS::Functions::sample() {
     Context* ctx = Context::getInstance();
 
     LiteralValue* argValue = ctx->getArgumentValue("fileName");
-    if( argValue->getDataTypeId() != DataTypesId::String )
+    if( argValue == nullptr || argValue->getDataTypeId() != DataTypesId::String )
         throw SemanticException("Invalid argument for sample function. Expected a file name");
 
     string fileName = *(string*)argValue->getValue();
