@@ -93,6 +93,7 @@ list<TerminalExpression*> Lexer::tokenize(const string sourceCode){
                 tokens.push_back(new TerminalExpression(i,cCast(TerminalExpressionType::CloseBrace)));
                 break;
             case END_OF_LINE:
+            case HORIZONTAL_TAB:
             case SPACE:
                 break;
             case START_COMMENT:

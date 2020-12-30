@@ -1,8 +1,3 @@
-QT       += core gui
-QT       += charts
-greaterThan(QT_MAJOR_VERSION, 4):QT += widgets
-
-
 # remove possible other optimization flags
 QMAKE_CXXFLAGS_RELEASE -= -O
 QMAKE_CXXFLAGS_RELEASE -= -O1
@@ -25,20 +20,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    UI/bars/topbar.cpp \
-    UI/consoletabs/consoletabs.cpp \
-    UI/consoletabs/finder.cpp \
-    UI/consoletabs/outputlog.cpp \
-    UI/editor/codeeditor.cpp \
-    UI/editor/codeeditortabs.cpp \
-    UI/editor/linenumberarea.cpp \
-    UI/editor/syntaxhighlighter.cpp \
-    UI/maininterface.cpp \
-    UI/toolbox/documentationcontent.cpp \
-    UI/toolbox/documentationviewer.cpp \
-    UI/toolbox/toolbox.cpp \
-    UI/tutorial/maintutorial.cpp \
-    UI/uidefinitions.cpp \
     executor/buffer/buffer.cpp \
     executor/buffer/outputbuffer.cpp \
     executor/executor.cpp \
@@ -52,6 +33,10 @@ SOURCES += \
     executor/playables/sample.cpp \
     executor/playables/sound.cpp \
     interpreter/datatypes/arraydatatype.cpp \
+    interpreter/interpreters/fileinterpreter.cpp \
+    interpreter/interpreters/interactiveinterpreter.cpp \
+    interpreter/interpreters/interpreter.cpp \
+    interpreter/interpreters/pipeinterpreter.cpp \
     interpreter/players/sampleplayer.cpp \
     interpreter/players/soundgenerator.cpp \
     interpreter/context.cpp \
@@ -77,7 +62,6 @@ SOURCES += \
     interpreter/expressions/programexpression.cpp \
     interpreter/expressions/returninstructionexpression.cpp \
     interpreter/functiondefinition.cpp \
-    interpreter/interpreter.cpp \
     interpreter/languagedefinitions.cpp \
     interpreter/lexer.cpp \
     interpreter/values/argumentliteralvalue.cpp \
@@ -110,20 +94,6 @@ SOURCES += \
     utils/timehandler.cpp
 
 HEADERS += \
-    UI/bars/topbar.h \
-    UI/consoletabs/consoletabs.h \
-    UI/consoletabs/finder.h \
-    UI/consoletabs/outputlog.h \
-    UI/editor/codeeditor.h \
-    UI/editor/codeeditortabs.h \
-    UI/editor/linenumberarea.h \
-    UI/editor/syntaxhighlighter.h \
-    UI/maininterface.h \
-    UI/toolbox/documentationcontent.h \
-    UI/toolbox/documentationviewer.h \
-    UI/toolbox/toolbox.h \
-    UI/tutorial/maintutorial.h \
-    UI/uidefinitions.h \
     executor/AudioFile.h \
     executor/buffer/buffer.h \
     executor/buffer/outputbuffer.h \
@@ -138,6 +108,10 @@ HEADERS += \
     executor/playables/sample.h \
     executor/playables/sound.h \
     interpreter/datatypes/arraydatatype.h \
+    interpreter/interpreters/fileinterpreter.h \
+    interpreter/interpreters/interactiveinterpreter.h \
+    interpreter/interpreters/interpreter.h \
+    interpreter/interpreters/pipeinterpreter.h \
     interpreter/players/sampleplayer.h \
     interpreter/players/soundgenerator.h \
     interpreter/context.h \
@@ -164,7 +138,6 @@ HEADERS += \
     interpreter/expressions/returninstructionexpression.h \
     interpreter/expressions/terminalexpression.h \
     interpreter/functiondefinition.h \
-    interpreter/interpreter.h \
     interpreter/languageConstants.h \
     interpreter/languagedefinitions.h \
     interpreter/lexer.h \
@@ -208,18 +181,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 INCLUDEPATH += /usr/lib/x86_64-linux-gnu
 DEPENDPATH += /usr/lib/x86_64-linux-gnu
 
-# Link version 5.14.2 QtCore lib
-unix: LIBS += -L/home/antiloope/Programs/Qt/5.14.2/gcc_64/lib/ -lQt5Core
-
 # Link jack and jack server libraries
 unix: LIBS += -L/usr/lib/x86_64-linux-gnu/ -ljack -ljackserver
-
-RESOURCES += \
-    resources.qrc
 
 win32: LIBS += -L$$PWD/'../../../../../Program Files (x86)/Jack/lib/' -llibjack64 -llibjackserver64
 
 win32: INCLUDEPATH += $$PWD/'../../../../../Program Files (x86)/Jack/includes'
 win32: DEPENDPATH += $$PWD/'../../../../../Program Files (x86)/Jack/includes'
-
-win32: RC_FILE = chordscript.rc

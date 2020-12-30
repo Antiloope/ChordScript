@@ -1,8 +1,8 @@
 #include "interpreter.h"
-#include "expressions/nonterminalexpression.h"
-#include "expressions/terminalexpression.h"
+#include "interpreter/expressions/nonterminalexpression.h"
+#include "interpreter/expressions/terminalexpression.h"
 #include "utils/Exceptions/exception.h"
-#include "lexer.h"
+#include "interpreter/lexer.h"
 
 using namespace std;
 using namespace CS;
@@ -26,7 +26,7 @@ void Interpreter::interpret(const string sourceCode) {
         {
             tmp = expressionsList.front();
             expressionsList.pop_front();
-             delete tmp;
+            delete tmp;
         }
         throw e;
     }

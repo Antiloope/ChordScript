@@ -2,18 +2,33 @@
 #include <fstream>
 #include <ctime>
 #include <iostream>
+#include <sys/stat.h>
 
 using namespace CS;
 using namespace std;
 
-const char * LOG_FILE_NAME = "cs.log";
+const char* LOG_FILE_NAME = "cs.log";
+const char* LOG_FOLDER_PATH = "/tmp/cs/";
+
+string Log::getLogFilePath()
+{
+    return string(LOG_FOLDER_PATH) + string(LOG_FILE_NAME);
+}
 
 Log& Log::getInstance() {
     static Log instance;
     return instance;
 }
 
-Log::Log() {}
+Log::Log() {
+    struct stat info;
+    stat( LOG_FOLDER_PATH, &info );
+
+    if(info.st_mode & S_IFDIR)
+        return;
+
+    mkdir(LOG_FOLDER_PATH,0777);
+}
 
 void Log::write(const char * text, logType type) {
     _write(text,type);
@@ -28,7 +43,7 @@ void Log::write(exception e, logType type) {
 }
 
 void Log::_write(string text, logType type) {
-    ofstream file(LOG_FILE_NAME, ofstream::app);
+    ofstream file(string(LOG_FOLDER_PATH) + string(LOG_FILE_NAME), ofstream::app);
 
     time_t t = time( nullptr );
 

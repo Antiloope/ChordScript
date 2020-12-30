@@ -1,44 +1,57 @@
-#include <QApplication>
-#include "executor/executor.h"
-#include "executor/executorinterface.h"
-#include "utils/log.h"
-#include "interpreter/context.h"
-#include "UI/maininterface.h"
+#include "interpreter/interpreters/interpreter.h"
+#include "utils/globalconfig.h"
+#include <string.h>
+#include <iostream>
 
 using namespace CS;
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);
-    app.setWindowIcon(UI::UiDefinitions::getInstance()->getIcon(UI::IconId::App));
-
-    Log::getInstance().write("Program started",Log::info_t);
-
-    // Init an interpreter context with start values.
-    Context::getInstance()->load();
-
-    // Init global executor.
-    ExecutorInterface::init();
-
-    // Init main window interface
-    UI::MainInterface* mainWindow = new UI::MainInterface();
-    mainWindow->show();
-
-    int ret;
-    try
+    if( argc == 1 )
     {
-        ret = app.exec();
+        InteractiveInterpreter interpreter;
+        return interpreter.run();
     }
-    catch( const exception& e )
+    if( strcmp(argv[1],"--help") == 0 || strcmp(argv[1],"-h") == 0 )
     {
-        Log::getInstance().write(e.what(),Log::error_t);
+        cout << "Usage: chordscript [option | FILE]" << endl;
+        cout << "With no options: executes the interpreter in the interactive mode" << endl;
+        cout << "Available options:" << endl;
+        cout << " -h --help    : print this help message and exit" << endl;
+        cout << " -v --version : print ChordScript version and exit" << endl;
+        cout << " -p --pipe    : open a named pipe for receiveing code to execute" << endl;
+        cout << " -s --stop    : stop the pipe service" << endl;
+        return ReturnCodes::SUCCESS;
+    }
+    if( strcmp(argv[1],"--version") == 0 || strcmp(argv[1],"-v") == 0 )
+    {
+        const char* version;
+        try
+        {
+            version = GlobalConfig::getInstance()->getParameter(ConfigDefinitions::Section::StartupSettings,ConfigDefinitions::Parameter::Version);
+        }
+        catch( ... )
+        {
+            cout << "Configuration file is corrupted. Please reinstall ChordScript." << endl;
+            return ReturnCodes::CONFIG_ERROR;
+        }
+
+        cout << "ChordScript version: " << version << endl;
+        return ReturnCodes::SUCCESS;
+    }
+    if( strcmp(argv[1],"--stop") == 0 || strcmp(argv[1],"-s") == 0 )
+    {
+        return PipeInterpreter::stopServer();
+    }
+    if( strcmp(argv[1],"--pipe") == 0 || strcmp(argv[1],"-p") == 0 )
+    {
+        PipeInterpreter interpreter;
+        return interpreter.run();
     }
 
-    ExecutorInterface::closeAll();
+    const char* fileName = argv[1];
 
-    Log::getInstance().write("Program closed",Log::info_t);
-
-    delete mainWindow;
-    return ret;
+    FileInterpreter interpreter(fileName);
+    return interpreter.run();
 }

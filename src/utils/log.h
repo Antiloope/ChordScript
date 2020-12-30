@@ -19,6 +19,7 @@ public:
     void write(const char *, logType);
     void write(std::string, logType);
     void write(std::exception, logType);
+    std::string getLogFilePath();
 private:
     inline void _write(std::string, logType);
     Log();

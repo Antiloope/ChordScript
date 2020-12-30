@@ -35,6 +35,7 @@ namespace Constants {
     const char STIRNG_DELIMITATOR       = '"';
     const char START_COMMENT            = '#';
     const char END_OF_LINE              = 0x0A;
+    const char HORIZONTAL_TAB           = 0x09;
     const char SPACE                    = ' ';
     const std::string S_NULL            = "null";
     const std::string SAMPLE            = "sample";
