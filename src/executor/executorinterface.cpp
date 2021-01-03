@@ -53,7 +53,7 @@ void ExecutorInterface::startServer() {
     if( !Executor::getInstance()->isServerRunning() )
         Executor::getInstance()->startServer();
 
-    Log::getInstance().write("Server was running",Log::logType::info_t);
+    Log::getInstance().write("Server was running",Log::LogType::info_t);
 }
 
 void ExecutorInterface::restartServer() {

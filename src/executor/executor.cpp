@@ -282,7 +282,7 @@ void Executor::stopRecording() {
     }
     catch (exception &e)
     {
-        Log::getInstance().write(e.what(),Log::logType::error_t);
+        Log::getInstance().write(e.what(),Log::LogType::error_t);
     }
 
     Log::getInstance().write("Stop recording. File " + fileName,Log::info_t);
@@ -517,7 +517,7 @@ void Executor::killServer() {
 
     _isServerRunning = false;
 
-    Log::getInstance().write("Server killed",Log::logType::info_t);
+    Log::getInstance().write("Server killed",Log::LogType::info_t);
 }
 
 void Executor::init() {

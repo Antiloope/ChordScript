@@ -6,14 +6,20 @@
 using namespace CS;
 using namespace std;
 
+const int NO_ADDITIONAL_ARGUMENTS = 1;
+
 int main(int argc, char *argv[])
 {
-    if( argc == 1 )
+    if( argc == NO_ADDITIONAL_ARGUMENTS )
     {
         InteractiveInterpreter interpreter;
         return interpreter.run();
     }
-    if( strcmp(argv[1],"--help") == 0 || strcmp(argv[1],"-h") == 0 )
+
+    const char* firstArgument = argv[1];
+
+    if( strcmp(firstArgument,"--help") == 0 ||
+        strcmp(firstArgument,"-h") == 0 )
     {
         cout << "Usage: chordscript [option | FILE]" << endl;
         cout << "With no options: executes the interpreter in the interactive mode" << endl;
@@ -22,14 +28,16 @@ int main(int argc, char *argv[])
         cout << " -v --version : print ChordScript version and exit" << endl;
         cout << " -p --pipe    : open a named pipe for receiveing code to execute" << endl;
         cout << " -s --stop    : stop the pipe service" << endl;
+        cout << " FILE         : path to a .csf file" << endl;
         return ReturnCodes::SUCCESS;
     }
-    if( strcmp(argv[1],"--version") == 0 || strcmp(argv[1],"-v") == 0 )
+    if( strcmp(firstArgument,"--version") == 0 ||
+        strcmp(firstArgument,"-v") == 0 )
     {
         const char* version;
         try
         {
-            version = GlobalConfig::getInstance()->getParameter(ConfigDefinitions::Section::StartupSettings,ConfigDefinitions::Parameter::Version);
+            version = GlobalConfig::getInstance()->getParameter(ConfigDefinitions::Version);
         }
         catch( ... )
         {
@@ -37,21 +45,25 @@ int main(int argc, char *argv[])
             return ReturnCodes::CONFIG_ERROR;
         }
 
-        cout << "ChordScript version: " << version << endl;
+        if( version )
+            cout << "ChordScript version: " << version << endl;
+        else
+            cout << "Config file is not found. Please reinstall ChordScript." << endl;
+
         return ReturnCodes::SUCCESS;
     }
-    if( strcmp(argv[1],"--stop") == 0 || strcmp(argv[1],"-s") == 0 )
-    {
+
+    if( strcmp(firstArgument,"--stop") == 0 ||
+        strcmp(firstArgument,"-s") == 0 )
         return PipeInterpreter::stopServer();
-    }
-    if( strcmp(argv[1],"--pipe") == 0 || strcmp(argv[1],"-p") == 0 )
+
+    if( strcmp(firstArgument,"--pipe") == 0 ||
+        strcmp(firstArgument,"-p") == 0 )
     {
         PipeInterpreter interpreter;
         return interpreter.run();
     }
 
-    const char* fileName = argv[1];
-
-    FileInterpreter interpreter(fileName);
+    FileInterpreter interpreter(firstArgument);
     return interpreter.run();
 }

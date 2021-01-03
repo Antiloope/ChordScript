@@ -10,18 +10,18 @@ class Log
 public:
     static Log& getInstance();
 
-    enum logType {
+    enum LogType {
         error_t = 0,
         warning_t,
         info_t
     };
 
-    void write(const char *, logType);
-    void write(std::string, logType);
-    void write(std::exception, logType);
+    void write(const char *, LogType);
+    void write(std::string, LogType);
+    void write(std::exception, LogType);
     std::string getLogFilePath();
 private:
-    inline void _write(std::string, logType);
+    inline void _write(std::string, LogType);
     Log();
     std::ofstream* _file;
 };

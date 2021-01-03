@@ -30,19 +30,19 @@ Log::Log() {
     mkdir(LOG_FOLDER_PATH,0777);
 }
 
-void Log::write(const char * text, logType type) {
+void Log::write(const char * text, LogType type) {
     _write(text,type);
 }
 
-void Log::write(string text, logType type) {
+void Log::write(string text, LogType type) {
     _write(text,type);
 }
 
-void Log::write(exception e, logType type) {
+void Log::write(exception e, LogType type) {
     _write(e.what(),type);
 }
 
-void Log::_write(string text, logType type) {
+void Log::_write(string text, LogType type) {
     ofstream file(string(LOG_FOLDER_PATH) + string(LOG_FILE_NAME), ofstream::app);
 
     time_t t = time( nullptr );

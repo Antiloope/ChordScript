@@ -4,23 +4,8 @@
 namespace CS {
 namespace ConfigDefinitions {
 
-enum Language
+enum Parameter : char
 {
-    English,
-    Spanish,
-};
-
-enum Section
-{
-    StartupSettings,
-    TopBar,
-};
-
-enum Parameter
-{
-    IsFirstTimeOpened,
-    CurrentLanguage,
-    FileTitle,
     Version,
 };
 
