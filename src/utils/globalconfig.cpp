@@ -7,7 +7,7 @@ using namespace std;
 using namespace mINI;
 using namespace ConfigDefinitions;
 
-const char* GLOBAL_CONFIG_INI_FILE = "~/.config/ChordScript/config.ini";
+const char* GLOBAL_CONFIG_INI_FILE;
 
 const char* GLOBAL_SECTION = "global";
 const char* VERSION_KEY = "version";
@@ -25,6 +25,9 @@ GlobalConfig::~GlobalConfig() {
 }
 
 GlobalConfig::GlobalConfig() {
+    string auxPath = string(getenv("HOME")) + "/.config/ChordScript/config.ini";
+    GLOBAL_CONFIG_INI_FILE = auxPath.c_str();
+
     _fileData = new INIStructure;
 
     INIFile fileGlobalConfig(GLOBAL_CONFIG_INI_FILE);
