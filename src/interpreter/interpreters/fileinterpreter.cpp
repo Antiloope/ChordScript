@@ -43,17 +43,11 @@ int FileInterpreter::run()
 
     PipeInterpreter interpreter;
 
-    int savedOut = dup(1);
-    int savedEOut = dup(2);
-    dup2(open("/dev/null",O_WRONLY), 1);
-    dup2(open("/dev/null",O_WRONLY), 2);
+    redirectOutput(SetNull);
 
     int status = interpreter.run();
 
-    dup2(savedOut, 1);
-    dup2(savedEOut, 2);
-    close(savedOut);
-    close(savedEOut);
+    redirectOutput(Reset);
 
     if( status != ReturnCodes::SUCCESS &&
         status != ReturnCodes::ANOTHER_INSTANCE_RUNNING &&

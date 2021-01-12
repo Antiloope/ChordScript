@@ -3,6 +3,20 @@
 
 #include <string>
 
+namespace CS {
+
+enum RedirectOutput {
+    SetNull,
+    Reset,
+    Clean,
+};
+
+/**
+ * @brief Change stdOut and stdErr to another stream or set default values again.
+ * @param option A valid option
+ */
+void redirectOutput(RedirectOutput option);
+
 enum ReturnCodes : int
 {
     SUCCESS = 0,
@@ -15,8 +29,6 @@ enum ReturnCodes : int
     CHILD_PROCESS_RETURN
 };
 
-namespace CS {
-
 class Interpreter
 {
 public:
@@ -28,7 +40,7 @@ protected:
      * error in the code.
      * @param sourceCode Plain text with the code to interpret.
      */
-    static void interpret(const std::string sourceCode);
+    static bool interpret(const std::string sourceCode);
 };
 
 }
