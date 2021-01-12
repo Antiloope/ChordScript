@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <vector>
+#include <stack>
 
 using namespace std;
 using namespace CS;
@@ -15,7 +16,8 @@ const char* CONSOLE_CONFIG_COMMAND = "stty cooked brkint -ignbrk tostop -inlcr -
 const char* CONSOLE_RESET_COMMAND = "stty cooked";
 
 const char COMMAND_CHARACTER = '\033';
-const char INTRO_CHARACTER = '\r';
+const char CARRIAGE_RETURN_CHARACTER = '\r';
+const char NEW_LINE_CHARACTER = '\n';
 const char OPEN_BRACKET_CHARACTER = '[';
 const char UP_ARROW_CHARACTER = 'A';
 const char DOWN_ARROW_CHARACTER = 'B';
@@ -23,9 +25,15 @@ const char RIGHT_ARROW_CHARACTER = 'C';
 const char LEFT_ARROW_CHARACTER = 'D';
 const char BACKSPACE_CHARACTER = 8;
 const char DELETE_CHARACTER = 127;
-const char NULL_CHARACTER = '\0';
 const char SUPR_CHARACTER = '3';
+const char HOME_CHARACTER = '7';
+const char END_CHARACTER = '8';
 const char END_COMMAND_CHARACTER = '~';
+
+const char CURSOR_DOWN_COMMAND = '\v';
+const char* CURSOR_UP_COMMAND = "\033[A";
+const char* CURSOR_RIGHT_COMMAND = "\033[C";
+const char* CURSOR_LEFT_COMMAND = "\033[D";
 
 enum struct Key {
     None,
@@ -37,6 +45,8 @@ enum struct Key {
     Backspace,
     Any,
     Supr,
+    Home,
+    End,
 };
 
 void Console::init() {
@@ -80,7 +90,6 @@ string Console::getSourceCode() {
             cout << ".. " << flush; // Continue line
 
         Key pressedKey = Key::None;
-        bool isCommand = false;
 
         string line = "";
         auto cursor = line.end();
@@ -89,85 +98,80 @@ string Console::getSourceCode() {
         char currentChar = getchar();
         while( pressedKey != Key::Intro )
         {
+            // This switch detect witch key is pressed
             switch( currentChar )
             {
             case COMMAND_CHARACTER:
-                isCommand = true;
+                currentChar = getchar();
+                switch( currentChar )
+                {
+                case OPEN_BRACKET_CHARACTER:
+                    currentChar = getchar();
+                    switch( currentChar )
+                    {
+                    case UP_ARROW_CHARACTER:
+                        pressedKey = Key::ArrowUp;
+                        break;
+                    case DOWN_ARROW_CHARACTER:
+                        pressedKey = Key::ArrowDown;
+                        break;
+                    case RIGHT_ARROW_CHARACTER:
+                        pressedKey = Key::ArrowRight;
+                        break;
+                    case LEFT_ARROW_CHARACTER:
+                        pressedKey = Key::ArrowLeft;
+                        break;
+                    case SUPR_CHARACTER:
+                        currentChar = getchar();
+                        if( currentChar == END_COMMAND_CHARACTER )
+                            pressedKey = Key::Supr;
+                        break;
+                    case HOME_CHARACTER:
+                        currentChar = getchar();
+                        if( currentChar == END_COMMAND_CHARACTER )
+                            pressedKey = Key::Home;
+                        break;
+                    case END_CHARACTER:
+                        currentChar = getchar();
+                        if( currentChar == END_COMMAND_CHARACTER )
+                            pressedKey = Key::End;
+                        break;
+                    default:
+                        pressedKey = Key::Any;
+                        break;
+                    }
+                    break;
+                default:
+                    pressedKey = Key::Any;
+                    break;
+                }
                 break;
-            case INTRO_CHARACTER:
+            case NEW_LINE_CHARACTER:
+            case CARRIAGE_RETURN_CHARACTER:
                 pressedKey = Key::Intro;
-                break;
-            case OPEN_BRACKET_CHARACTER:
-                if( !isCommand )
-                    cursor = line.insert(cursor,currentChar)+1;
-                break;
-            case END_COMMAND_CHARACTER:
-                if( !isCommand )
-                    cursor = line.insert(cursor,currentChar)+1;
-                else
-                    pressedKey = Key::Supr;
-                isCommand = false;
-                break;
-            case UP_ARROW_CHARACTER:
-                if( !isCommand )
-                    cursor = line.insert(cursor,currentChar)+1;
-                else
-                    pressedKey = Key::ArrowUp;
-                isCommand = false;
-                break;
-            case DOWN_ARROW_CHARACTER:
-                if( !isCommand )
-                    cursor = line.insert(cursor,currentChar)+1;
-                else
-                    pressedKey = Key::ArrowDown;
-                isCommand = false;
-                break;
-            case RIGHT_ARROW_CHARACTER:
-                if( !isCommand )
-                    cursor = line.insert(cursor,currentChar)+1;
-                else
-                    pressedKey = Key::ArrowRight;
-                isCommand = false;
-                break;
-            case LEFT_ARROW_CHARACTER:
-                if( !isCommand )
-                    cursor = line.insert(cursor,currentChar)+1;
-                else
-                    pressedKey = Key::ArrowLeft;
-                isCommand = false;
                 break;
             case DELETE_CHARACTER:
             case BACKSPACE_CHARACTER:
                 pressedKey = Key::Backspace;
-                isCommand = false;
-                break;
-            case SUPR_CHARACTER:
-                if( !isCommand )
-                    cursor = line.insert(cursor,currentChar);
-                break;
-            case NULL_CHARACTER:
-                isCommand = false;
-                if( cursor != line.end() )
-                    cursor++;
                 break;
             default:
                 pressedKey = Key::Any;
-                isCommand = false;
-                cursor = line.insert(cursor,currentChar)+1;
                 break;
             }
+            // This switch process the pressed key
             switch( pressedKey )
             {
             case Key::ArrowUp:
-                pressedKey = Key::None;
-
+                // Undo up event
                 system(CONSOLE_RESET_COMMAND);
-                cout << "\v" << flush;
+                cout << CURSOR_DOWN_COMMAND << flush;
                 system(CONSOLE_CONFIG_COMMAND);
 
+                // If there are not old lines, do nothing
                 if( oldLines.size() == 0 )
                     break;
 
+                // Clean line
                 system(CONSOLE_RESET_COMMAND);
                 for( size_t i = 0; i < line.size(); i++)
                     cout << "\b \b";
@@ -175,6 +179,7 @@ string Console::getSourceCode() {
                 system(CONSOLE_CONFIG_COMMAND);
                 line = "";
 
+                // Set current line using previous old line stored
                 if( currentLineIndex > 0 )
                     currentLineIndex--;
 
@@ -184,10 +189,11 @@ string Console::getSourceCode() {
 
                 break;
             case Key::ArrowDown:
-                pressedKey = Key::None;
-
+                // Undo down event
                 system(CONSOLE_RESET_COMMAND);
-                cout << "\033[A";
+                cout << CURSOR_UP_COMMAND;
+
+                // Clean line
                 for( size_t i = 0; i < line.size(); i++)
                     cout << "\b \b";
                 fflush(stdout);
@@ -195,6 +201,7 @@ string Console::getSourceCode() {
                 line = "";
                 cursor = line.end();
 
+                // Change current line index if there are another old line
                 if( oldLines.size() && currentLineIndex < oldLines.size() - 1 )
                 {
                     currentLineIndex++;
@@ -204,18 +211,20 @@ string Console::getSourceCode() {
                 }
                 break;
             case Key::ArrowLeft:
-                pressedKey = Key::None;
-
                 system(CONSOLE_RESET_COMMAND);
                 if( cursor != line.begin() )
-                    cursor--;
+                    cursor--; // Move cursor to the left
                 else
-                    cout << "\033[C";
+                    cout << CURSOR_RIGHT_COMMAND; // Undo left move
 
+                // Go to line start
                 for( auto tmpCursor = cursor; tmpCursor != line.begin(); tmpCursor--)
                     cout << "\b";
 
+                // Overwrite line
                 cout << line;
+
+                // Go again to cursor position
                 for( auto tmpCursor = line.end(); tmpCursor != cursor; tmpCursor--)
                     cout << "\b";
                 fflush(stdout);
@@ -223,17 +232,20 @@ string Console::getSourceCode() {
 
                 break;
             case Key::ArrowRight:
-                pressedKey = Key::None;
                 system(CONSOLE_RESET_COMMAND);
                 if( cursor != line.end() )
-                    cursor++;
+                    cursor++; // Move cursor to the right
                 else
-                    cout << "\033[D";
+                    cout << CURSOR_LEFT_COMMAND; // Undo right move
 
+                // Go to line start
                 for( auto tmpCursor = cursor; tmpCursor != line.begin(); tmpCursor--)
                     cout << "\b";
 
+                // Overwrite line
                 cout << line;
+
+                // Go again to cursor position
                 for( auto tmpCursor = line.end(); tmpCursor != cursor; tmpCursor--)
                     cout << "\b";
                 fflush(stdout);
@@ -241,18 +253,23 @@ string Console::getSourceCode() {
                 break;
             case Key::Intro:
                 system(CONSOLE_RESET_COMMAND);
+                // Go to end of the line
                 for( auto tmpCursor = cursor; tmpCursor != line.end(); tmpCursor++)
                     cout << "\0";
+
+                // Print an end line
                 cout << endl;
                 system(CONSOLE_CONFIG_COMMAND);
                 continue;
             case Key::Backspace:
-                pressedKey = Key::None;
                 system(CONSOLE_RESET_COMMAND);
                 if( cursor != line.begin() )
                 {
+                    // Erase character
                     cursor = line.erase(--cursor);
-                    cout << "\b \033[D\033[D";
+                    cout << "\b \b\b";
+
+                    // Overwrite line
                     for( auto tmpCursor = cursor; tmpCursor != line.begin(); tmpCursor--)
                         cout << "\b";
 
@@ -261,23 +278,24 @@ string Console::getSourceCode() {
                         cout << "\b";
                     fflush(stdout);
                 }
-                else
+                else // If cursor is in the first character
                 {
-                    cout << "\b \033[D" << line << "\0";
+                    // Clean backspace character and overwrite line
+                    cout << "\b \b" << line << "\0";
                     for( auto tmpCursor = line.end(); tmpCursor != cursor; tmpCursor--)
                         cout << "\b";
                     fflush(stdout);
                 }
-
                 system(CONSOLE_CONFIG_COMMAND);
-
                 break;
             case Key::Supr:
-                pressedKey = Key::None;
                 system(CONSOLE_RESET_COMMAND);
                 if( cursor != line.end() )
                 {
+                    // Erase character
                     cursor = line.erase(cursor);
+
+                    // Overwrite line
                     for( auto tmpCursor = cursor; tmpCursor != line.begin(); tmpCursor--)
                         cout << "\b";
 
@@ -288,15 +306,70 @@ string Console::getSourceCode() {
                     fflush(stdout);
                 }
                 system(CONSOLE_CONFIG_COMMAND);
+                break;
+            case Key::Home:
+                system(CONSOLE_RESET_COMMAND);
+                while( true )
+                {
+                    cout << CURSOR_LEFT_COMMAND;
+                    if( cursor != line.begin() )
+                        cursor--; // Move cursor to the left
+                    else
+                        break;
+
+                    // Go to line start
+                    for( auto tmpCursor = cursor; tmpCursor != line.begin(); tmpCursor--)
+                        cout << "\b";
+
+                    // Overwrite line
+                    cout << line;
+
+                    // Go again to cursor position
+                    for( auto tmpCursor = line.end(); tmpCursor != cursor; tmpCursor--)
+                        cout << "\b";
+                }
+                cout << CURSOR_RIGHT_COMMAND; // Undo left move
+                fflush(stdout);
+                system(CONSOLE_CONFIG_COMMAND);
 
                 break;
-            case Key::Any:
-                pressedKey = Key::None;
+            case Key::End:
                 system(CONSOLE_RESET_COMMAND);
+                while( true )
+                {
+                    cout << CURSOR_RIGHT_COMMAND;
+                    if( cursor != line.end() )
+                        cursor++; // Move cursor to the right
+                    else
+                        break;
+
+                    // Go to line start
+                    for( auto tmpCursor = cursor; tmpCursor != line.begin(); tmpCursor--)
+                        cout << "\b";
+
+                    // Overwrite line
+                    cout << line;
+
+                    // Go again to cursor position
+                    for( auto tmpCursor = line.end(); tmpCursor != cursor; tmpCursor--)
+                        cout << "\b";
+                }
+
+                cout << CURSOR_LEFT_COMMAND; // Undo right move
+                fflush(stdout);
+                system(CONSOLE_CONFIG_COMMAND);
+                break;
+            case Key::Any:
+                system(CONSOLE_RESET_COMMAND);
+                // Insert new character
+                cursor = line.insert(cursor,currentChar) + 1;
+
+                // Overwrite line
                 for( auto tmpCursor = cursor; tmpCursor != line.begin(); tmpCursor--)
                     cout << "\b";
 
                 cout << line;
+
                 for( auto tmpCursor = line.end(); tmpCursor != cursor; tmpCursor--)
                     cout << "\b";
                 fflush(stdout);
@@ -305,11 +378,11 @@ string Console::getSourceCode() {
             case Key::None:
                 break;
             }
+            pressedKey = Key::None;
             currentChar = getchar();
         }
 
-        system(CONSOLE_RESET_COMMAND);
-
+        // Insert line into oldLines
         if( line.size() )
             oldLines.push_back(line);
 
@@ -318,12 +391,72 @@ string Console::getSourceCode() {
         if( !validSource(sourceCode) )
             continue;
 
+        system(CONSOLE_RESET_COMMAND);
+
         return sourceCode;
     }
 }
 
 bool Console::validSource(string sourceCode) {
-    return true;
+    stack<char> detector;
+    bool insideText = false;
+    // Detect braces, brackets and pharentesis
+    for( char c : sourceCode )
+        switch( c )
+        {
+        case '(':
+            if( !insideText )
+                detector.push('(');
+            break;
+        case '[':
+            if( !insideText )
+                detector.push('[');
+            break;
+        case '{':
+            if( !insideText )
+                detector.push('{');
+            break;
+        case ')':
+            if( insideText )
+                break;
+
+            if( !detector.empty() && detector.top() == '(' )
+                detector.pop();
+            else
+                return false;
+            break;
+        case ']':
+            if( insideText )
+                break;
+
+            if( !detector.empty() && detector.top() == '[' )
+                detector.pop();
+            else
+                return false;
+            break;
+        case '}':
+            if( insideText )
+                break;
+
+            if( !detector.empty() && detector.top() == '{' )
+                detector.pop();
+            else
+                return false;
+            break;
+        case '"':
+            insideText = !insideText;
+            break;
+        default:
+            break;
+        }
+
+    if( !detector.empty() || insideText )
+        return false;
+
+    if( sourceCode.back() == '}' || sourceCode.back() == ';' )
+        return true;
+
+    return false;
 }
 
 void Console::showError(std::string sourceCode,int charReference, string description) {
@@ -338,8 +471,12 @@ void Console::showError(std::string sourceCode,int charReference, string descrip
         }
 
     cout << "Error in line: " << endl << '\t' << linesCounter << endl;
-    tmp = sourceCode.substr(lastJump + 1, charReference - lastJump - 1);
-    cout << "Close to: " << endl << '\t' << tmp << endl;
+
+    if( lastJump != 0 )
+        lastJump++;
+
+    tmp = sourceCode.substr(lastJump, charReference - lastJump + 1);
+    cout << "Next to: " << endl << '\t' << tmp << endl;
     cout << "Description: " << endl << '\t' << description << endl;
 }
 
