@@ -1,5 +1,4 @@
 #include "fileinterpreter.h"
-
 #include "utils/Exceptions/exception.h"
 #include "executor/executorinterface.h"
 #include "interpreter/context.h"
@@ -16,6 +15,7 @@ FileInterpreter::FileInterpreter(const char* fileName) : _fileName(fileName) {}
 
 int FileInterpreter::run()
 {
+    // Open file
     ifstream sourceFile;
     try
     {
@@ -36,18 +36,18 @@ int FileInterpreter::run()
 
     string aux, sourceCode = "";
 
+    // Read file
     while( getline(sourceFile,aux) )
         sourceCode += aux + '\n';
 
     sourceFile.close();
 
+    // Create a pipe interpreter and run it
     PipeInterpreter interpreter;
 
     redirectOutput(SetNull);
 
     int status = interpreter.run();
-
-    redirectOutput(Reset);
 
     if( status != ReturnCodes::SUCCESS &&
         status != ReturnCodes::ANOTHER_INSTANCE_RUNNING &&
@@ -59,9 +59,14 @@ int FileInterpreter::run()
     if( status == ReturnCodes::CHILD_PROCESS_RETURN || status == ReturnCodes::ANOTHER_INSTANCE_RUNNING )
         return ReturnCodes::SUCCESS;
 
+    redirectOutput(Reset);
+
+    // Interpret file
     string response = PipeInterpreter::interpret(sourceCode);
 
     if( response[0] == 'O' && response[1] == 'K' )
+        return ReturnCodes::SUCCESS;
+    if( response[0] == 'E' && response[1] == 'X' && response[2] == 'I' && response[3] == 'T' )
         return ReturnCodes::SUCCESS;
 
     int charReference = stoi(response.substr(0,response.find_first_of(" "))) - 1;
@@ -76,8 +81,12 @@ int FileInterpreter::run()
         }
 
     cout << "Error in line: " << endl << '\t' << linesCounter << endl;
-    tmp = sourceCode.substr(lastJump + 1, charReference - lastJump - 1);
-    cout << "Close to: " << endl << '\t' << tmp << endl;
+
+    if( lastJump != 0 )
+        lastJump++;
+
+    tmp = sourceCode.substr(lastJump, charReference - lastJump + 1);
+    cout << "Next to: " << endl << '\t' << tmp << endl;
     cout << "Description: " << endl << '\t' << response.substr(response.find_first_of(" ") + 1) << endl;
 
     return ReturnCodes::CODE_ERROR;

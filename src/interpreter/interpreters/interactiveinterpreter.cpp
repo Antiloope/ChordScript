@@ -12,10 +12,10 @@
 using namespace std;
 using namespace CS;
 
-const char* CONSOLE_CONFIG_COMMAND = "stty cooked brkint -ignbrk tostop -inlcr -igncr -icrnl -icanon -ctlecho";
+const char* CONSOLE_CONFIG_COMMAND = "stty cooked brkint -ignbrk tostop -icrnl -inlcr -igncr -imaxbel -icanon -ctlecho -isig erase ^?";
 const char* CONSOLE_RESET_COMMAND = "stty cooked";
 
-const char COMMAND_CHARACTER = '\033';
+const char ESCAPE_CHARACTER = '\033';
 const char CARRIAGE_RETURN_CHARACTER = '\r';
 const char NEW_LINE_CHARACTER = '\n';
 const char OPEN_BRACKET_CHARACTER = '[';
@@ -23,12 +23,18 @@ const char UP_ARROW_CHARACTER = 'A';
 const char DOWN_ARROW_CHARACTER = 'B';
 const char RIGHT_ARROW_CHARACTER = 'C';
 const char LEFT_ARROW_CHARACTER = 'D';
-const char BACKSPACE_CHARACTER = 8;
-const char DELETE_CHARACTER = 127;
+const char END_COMMAND_CHARACTER = '~';
 const char SUPR_CHARACTER = '3';
 const char HOME_CHARACTER = '7';
 const char END_CHARACTER = '8';
-const char END_COMMAND_CHARACTER = '~';
+const char CTRL_C_CHARACTER = 3;
+const char CTRL_V_CHARACTER = 22;
+const char CTRL_X_CHARACTER = 24;
+const char CTRL_Z_CHARACTER = 26;
+const char CTRL_L_CHARACTER = 12;
+const char CTRL_P_CHARACTER = 16;
+const char BACKSPACE_CHARACTER = 8;
+const char DELETE_CHARACTER = 127;
 
 const char CURSOR_DOWN_COMMAND = '\v';
 const char* CURSOR_UP_COMMAND = "\033[A";
@@ -47,6 +53,13 @@ enum struct Key {
     Supr,
     Home,
     End,
+    Ctrl_C,
+    Ctrl_V,
+    Ctrl_X,
+    Ctrl_Z,
+    Ctrl_L,
+    Ctrl_P,
+    Escape,
 };
 
 void Console::init() {
@@ -101,7 +114,7 @@ string Console::getSourceCode() {
             // This switch detect witch key is pressed
             switch( currentChar )
             {
-            case COMMAND_CHARACTER:
+            case ESCAPE_CHARACTER:
                 currentChar = getchar();
                 switch( currentChar )
                 {
@@ -141,6 +154,9 @@ string Console::getSourceCode() {
                         break;
                     }
                     break;
+                case ESCAPE_CHARACTER:
+                    pressedKey = Key::Escape;
+                    break;
                 default:
                     pressedKey = Key::Any;
                     break;
@@ -153,6 +169,24 @@ string Console::getSourceCode() {
             case DELETE_CHARACTER:
             case BACKSPACE_CHARACTER:
                 pressedKey = Key::Backspace;
+                break;
+            case CTRL_C_CHARACTER:
+                pressedKey = Key::Ctrl_C;
+                break;
+            case CTRL_V_CHARACTER:
+                pressedKey = Key::Ctrl_V;
+                break;
+            case CTRL_X_CHARACTER:
+                pressedKey = Key::Ctrl_X;
+                break;
+            case CTRL_Z_CHARACTER:
+                pressedKey = Key::Ctrl_Z;
+                break;
+            case CTRL_L_CHARACTER:
+                pressedKey = Key::Ctrl_L;
+                break;
+            case CTRL_P_CHARACTER:
+                pressedKey = Key::Ctrl_P;
                 break;
             default:
                 pressedKey = Key::Any;
@@ -358,6 +392,14 @@ string Console::getSourceCode() {
                 cout << CURSOR_LEFT_COMMAND; // Undo right move
                 fflush(stdout);
                 system(CONSOLE_CONFIG_COMMAND);
+                break;
+            case Key::Ctrl_C:
+            case Key::Ctrl_V:
+            case Key::Ctrl_X:
+            case Key::Ctrl_Z:
+            case Key::Ctrl_L:
+            case Key::Ctrl_P:
+            case Key::Escape:
                 break;
             case Key::Any:
                 system(CONSOLE_RESET_COMMAND);

@@ -17,9 +17,9 @@ using namespace CS;
 
 const char* PIPE_FILE_SOURCE = "/tmp/cssource";
 const char* PIPE_FILE_RESPONSE = "/tmp/csresponse";
-const string STOP_SERVER_COMMAND = "STOP_SERVER();";
+const char* STOP_SERVER_COMMAND = "STOP_SERVER();";
 const int IS_RUNNING_CODE = 0;
-const string SUCCESS_RESPONSE = "OK";
+const char* SUCCESS_RESPONSE = "OK";
 const char* CHILD_PROCESS_NAME = "ChordScriptPipe";
 
 const pid_t FORK_ERROR_ID = -1;
@@ -71,18 +71,12 @@ int PipeInterpreter::startServer()
     // Init an interpreter context with start values.
     Context::getInstance()->load();
 
-    int savedOut = dup(1);
-    int savedEOut = dup(2);
-    dup2(open("/dev/null",O_WRONLY), 1);
-    dup2(open("/dev/null",O_WRONLY), 2);
+    redirectOutput(SetNull);
 
     // Init global executor.
     ExecutorInterface::init();
 
-    dup2(savedOut, 1);
-    dup2(savedEOut, 2);
-    close(savedOut);
-    close(savedEOut);
+    redirectOutput(Reset);
 
     // Create pipe
     mkfifo(PIPE_FILE_SOURCE, 0666);
@@ -103,7 +97,7 @@ int PipeInterpreter::startServer()
 
         ofstream responseFile(PIPE_FILE_RESPONSE);
 
-        if( sourceCode.substr(0,STOP_SERVER_COMMAND.size()) == STOP_SERVER_COMMAND )
+        if( sourceCode.substr(0,string(STOP_SERVER_COMMAND).size()) == STOP_SERVER_COMMAND )
         {
             running = false;
             continue;
