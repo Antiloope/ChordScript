@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['chordscript_300',['ChordScript',['../md_README.html',1,'']]]
+  ['licenses_300',['Licenses',['../md_LICENSE.html',1,'']]]
 ];

@@ -75,7 +75,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Base clas for non terminal expressions. Define two pure virtual methods (load and interpret)  
+<p>Base class for non terminal expressions. Define two pure virtual methods (load and interpret)  
  <a href="classCS_1_1NonTerminalExpression.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="nonterminalexpression_8h_source.html">nonterminalexpression.h</a>&gt;</code></p>
@@ -85,42 +85,42 @@ Inheritance diagram for CS::NonTerminalExpression:</div>
  <div class="center">
   <img src="classCS_1_1NonTerminalExpression.png" usemap="#CS::NonTerminalExpression_map" alt=""/>
   <map id="CS::NonTerminalExpression_map" name="CS::NonTerminalExpression_map">
-<area href="classCS_1_1Expression.html" title="Base class for expressions. Implement a common codeReference storage See NonTerminalExpression and Te..." alt="CS::Expression" shape="rect" coords="0,0,192,24"/>
-<area href="classCS_1_1AssignationExpression.html" alt="CS::AssignationExpression" shape="rect" coords="202,112,394,136"/>
-<area href="classCS_1_1BreakInstructionExpression.html" alt="CS::BreakInstructionExpression" shape="rect" coords="202,168,394,192"/>
-<area href="classCS_1_1DefinitionExpression.html" alt="CS::DefinitionExpression" shape="rect" coords="202,224,394,248"/>
-<area href="classCS_1_1EOEInstructionExpression.html" alt="CS::EOEInstructionExpression" shape="rect" coords="202,280,394,304"/>
-<area href="classCS_1_1ExecutionExpression.html" alt="CS::ExecutionExpression" shape="rect" coords="202,336,394,360"/>
-<area href="classCS_1_1ForInstructionExpression.html" alt="CS::ForInstructionExpression" shape="rect" coords="202,392,394,416"/>
-<area href="classCS_1_1IfInstructionExpression.html" alt="CS::IfInstructionExpression" shape="rect" coords="202,448,394,472"/>
-<area href="classCS_1_1InstructionExpression.html" alt="CS::InstructionExpression" shape="rect" coords="202,504,394,528"/>
-<area href="classCS_1_1ProgramExpression.html" alt="CS::ProgramExpression" shape="rect" coords="202,560,394,584"/>
-<area href="classCS_1_1ReturnInstructionExpression.html" alt="CS::ReturnInstructionExpression" shape="rect" coords="202,616,394,640"/>
+<area href="classCS_1_1Expression.html" title="Base class for expressions. It implements a common codeReference storage See NonTerminalExpression an..." alt="CS::Expression" shape="rect" coords="0,0,192,24"/>
+<area href="classCS_1_1AssignationExpression.html" title="This class represents a value assignation." alt="CS::AssignationExpression" shape="rect" coords="202,112,394,136"/>
+<area href="classCS_1_1BreakInstructionExpression.html" title="This class represents the break inside a for loop." alt="CS::BreakInstructionExpression" shape="rect" coords="202,168,394,192"/>
+<area href="classCS_1_1DefinitionExpression.html" title="This class interpret functions and variables definitions." alt="CS::DefinitionExpression" shape="rect" coords="202,224,394,248"/>
+<area href="classCS_1_1EOEInstructionExpression.html" title="This class only remove the EOE semicolon." alt="CS::EOEInstructionExpression" shape="rect" coords="202,280,394,304"/>
+<area href="classCS_1_1ExecutionExpression.html" title="It represents an execution expression. A funcion call or methods calls." alt="CS::ExecutionExpression" shape="rect" coords="202,336,394,360"/>
+<area href="classCS_1_1ForInstructionExpression.html" title="This class is the representaion of a for statement. It holds the condition and the body." alt="CS::ForInstructionExpression" shape="rect" coords="202,392,394,416"/>
+<area href="classCS_1_1IfInstructionExpression.html" title="This class represents an if statement." alt="CS::IfInstructionExpression" shape="rect" coords="202,448,394,472"/>
+<area href="classCS_1_1InstructionExpression.html" title="It is the most abstract NonTerminalExpression after a ProgramExpression. Each instance of this class ..." alt="CS::InstructionExpression" shape="rect" coords="202,504,394,528"/>
+<area href="classCS_1_1ProgramExpression.html" title="It holds a list of instructions to be interpreted." alt="CS::ProgramExpression" shape="rect" coords="202,560,394,584"/>
+<area href="classCS_1_1ReturnInstructionExpression.html" title="This class store the return value of a function." alt="CS::ReturnInstructionExpression" shape="rect" coords="202,616,394,640"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a210063623969bda65671da9dbbc4fb2a"><td class="memItemLeft" align="right" valign="top"><a id="a210063623969bda65671da9dbbc4fb2a"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>NonTerminalExpression</b> (size_t)</td></tr>
-<tr class="separator:a210063623969bda65671da9dbbc4fb2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74b52478bc49e434807fad43709e90cf"><td class="memItemLeft" align="right" valign="top"><a id="a74b52478bc49e434807fad43709e90cf"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>NonTerminalExpression</b> (size_t codeReference)</td></tr>
+<tr class="separator:a74b52478bc49e434807fad43709e90cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6c24f120c91d4299c869ab29733e24c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1NonTerminalExpression.html#ab6c24f120c91d4299c869ab29733e24c">load</a> (std::list&lt; <a class="el" href="classCS_1_1TerminalExpression.html">TerminalExpression</a> * &gt; *)=0</td></tr>
-<tr class="memdesc:ab6c24f120c91d4299c869ab29733e24c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This method load internal state based on list of expressions recived by argument.  <a href="classCS_1_1NonTerminalExpression.html#ab6c24f120c91d4299c869ab29733e24c">More...</a><br /></td></tr>
+<tr class="memdesc:ab6c24f120c91d4299c869ab29733e24c"><td class="mdescLeft">&#160;</td><td class="mdescRight">It loads an internal state based on list of expressions recived by argument.  <a href="classCS_1_1NonTerminalExpression.html#ab6c24f120c91d4299c869ab29733e24c">More...</a><br /></td></tr>
 <tr class="separator:ab6c24f120c91d4299c869ab29733e24c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a472771d57163fa53aed92556cea4af81"><td class="memItemLeft" align="right" valign="top"><a id="a472771d57163fa53aed92556cea4af81"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1NonTerminalExpression.html#a472771d57163fa53aed92556cea4af81">interpret</a> ()=0</td></tr>
-<tr class="memdesc:a472771d57163fa53aed92556cea4af81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute the expression based on internal stored data. <br /></td></tr>
+<tr class="memdesc:a472771d57163fa53aed92556cea4af81"><td class="mdescLeft">&#160;</td><td class="mdescRight">It executes the expression based on internal stored data. <br /></td></tr>
 <tr class="separator:a472771d57163fa53aed92556cea4af81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classCS_1_1Expression"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classCS_1_1Expression')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classCS_1_1Expression.html">CS::Expression</a></td></tr>
-<tr class="memitem:a819e22086d464a98b026c1767cc59fb4 inherit pub_methods_classCS_1_1Expression"><td class="memItemLeft" align="right" valign="top"><a id="a819e22086d464a98b026c1767cc59fb4"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Expression</b> (size_t)</td></tr>
-<tr class="separator:a819e22086d464a98b026c1767cc59fb4 inherit pub_methods_classCS_1_1Expression"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa02904e88bf066326576a04fba858aee inherit pub_methods_classCS_1_1Expression"><td class="memItemLeft" align="right" valign="top"><a id="aa02904e88bf066326576a04fba858aee"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Expression</b> (size_t codeReference)</td></tr>
+<tr class="separator:aa02904e88bf066326576a04fba858aee inherit pub_methods_classCS_1_1Expression"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25f124728a449082960a65eb703ad656 inherit pub_methods_classCS_1_1Expression"><td class="memItemLeft" align="right" valign="top"><a id="a25f124728a449082960a65eb703ad656"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getCodeReference</b> () const</td></tr>
 <tr class="separator:a25f124728a449082960a65eb703ad656 inherit pub_methods_classCS_1_1Expression"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Base clas for non terminal expressions. Define two pure virtual methods (load and interpret) </p>
+<div class="textblock"><p>Base class for non terminal expressions. Define two pure virtual methods (load and interpret) </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="ab6c24f120c91d4299c869ab29733e24c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab6c24f120c91d4299c869ab29733e24c">&#9670;&nbsp;</a></span>load()</h2>
@@ -146,15 +146,15 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getCodeReference</b
 </table>
 </div><div class="memdoc">
 
-<p>This method load internal state based on list of expressions recived by argument. </p>
+<p>It loads an internal state based on list of expressions recived by argument. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">terminalExpressionsList</td><td></td></tr>
+    <tr><td class="paramname">terminalExpressionsList</td><td>A list of tokens </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classCS_1_1ReturnInstructionExpression.html#a1a3c66d8fb67bad332f0aa057a01eb60">CS::ReturnInstructionExpression</a>, <a class="el" href="classCS_1_1ProgramExpression.html#a798331878670ffb1874fe2c915dde3ae">CS::ProgramExpression</a>, <a class="el" href="classCS_1_1InstructionExpression.html#a36b1746c710800369b0a423357b80e04">CS::InstructionExpression</a>, <a class="el" href="classCS_1_1IfInstructionExpression.html#ac9012b3095e143d7a8d7feb3a3b9f944">CS::IfInstructionExpression</a>, <a class="el" href="classCS_1_1ForInstructionExpression.html#a5727b4cd81cf19cfa93d89141bfca60c">CS::ForInstructionExpression</a>, <a class="el" href="classCS_1_1ExecutionExpression.html#a6f5cf967ea3e6ed325b5923b6d10d9a7">CS::ExecutionExpression</a>, <a class="el" href="classCS_1_1EOEInstructionExpression.html#adc294f7a83eed47a4bf9644f66028e1f">CS::EOEInstructionExpression</a>, <a class="el" href="classCS_1_1DefinitionExpression.html#acacae78889ff8131c541a704cdd60d63">CS::DefinitionExpression</a>, <a class="el" href="classCS_1_1BreakInstructionExpression.html#a85cdba9ceadaa1be39ac69fb9a751ef2">CS::BreakInstructionExpression</a>, and <a class="el" href="classCS_1_1AssignationExpression.html#a1da83509705883622984132dd098347f">CS::AssignationExpression</a>.</p>
+<p>Implemented in <a class="el" href="classCS_1_1ReturnInstructionExpression.html#aa10f894c26145d6539c425e5c204d44a">CS::ReturnInstructionExpression</a>, <a class="el" href="classCS_1_1ProgramExpression.html#ad79e65a4934402c0a4779ae4b1634d76">CS::ProgramExpression</a>, <a class="el" href="classCS_1_1InstructionExpression.html#a407cce82ea867b7e4f813917aba388a5">CS::InstructionExpression</a>, <a class="el" href="classCS_1_1IfInstructionExpression.html#a2b20f73eb89418faaa9ee8bfc8a7af97">CS::IfInstructionExpression</a>, <a class="el" href="classCS_1_1ForInstructionExpression.html#a1e9e817bcc88a32cf7ce64e3fd64e27c">CS::ForInstructionExpression</a>, <a class="el" href="classCS_1_1ExecutionExpression.html#a8ce7b72434c5ca2b87aed0795184cb2b">CS::ExecutionExpression</a>, <a class="el" href="classCS_1_1EOEInstructionExpression.html#a002cd343dc5bd20174ddddf243b3d4ad">CS::EOEInstructionExpression</a>, <a class="el" href="classCS_1_1DefinitionExpression.html#ac4de09234315637b53d8416a09331597">CS::DefinitionExpression</a>, <a class="el" href="classCS_1_1BreakInstructionExpression.html#a4cff386a122df603ef23a578b83bff1d">CS::BreakInstructionExpression</a>, and <a class="el" href="classCS_1_1AssignationExpression.html#a4ed3b94410b320ef06299641ecc5c436">CS::AssignationExpression</a>.</p>
 
 </div>
 </div>

@@ -79,27 +79,26 @@ $(function() {
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="keyword">namespace </span>CS {</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">class </span>LinkedValue;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="classCS_1_1AssignationExpression.html">   10</a></span>&#160;<span class="keyword">class </span><a class="code" href="classCS_1_1AssignationExpression.html">AssignationExpression</a> : <span class="keyword">public</span> <a class="code" href="classCS_1_1NonTerminalExpression.html">NonTerminalExpression</a> {</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <a class="code" href="classCS_1_1AssignationExpression.html">AssignationExpression</a>(<span class="keywordtype">size_t</span>);</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    ~<a class="code" href="classCS_1_1AssignationExpression.html">AssignationExpression</a>();</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCS_1_1AssignationExpression.html#a1da83509705883622984132dd098347f">load</a>(std::list&lt;TerminalExpression*&gt;*) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCS_1_1AssignationExpression.html#a509638dc7d1d2982c98e61a03ede77ef">interpret</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    std::string _varName;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <a class="code" href="classCS_1_1LinkedValue.html">LinkedValue</a>* _value = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;};</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;}</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#endif // ASSIGNATIONEXPRESSION_H</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="classCS_1_1AssignationExpression.html">   12</a></span>&#160;<span class="keyword">class </span><a class="code" href="classCS_1_1AssignationExpression.html">AssignationExpression</a> : <span class="keyword">public</span> <a class="code" href="classCS_1_1NonTerminalExpression.html">NonTerminalExpression</a> {</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <a class="code" href="classCS_1_1AssignationExpression.html">AssignationExpression</a>(<span class="keywordtype">size_t</span> codeReference);</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    ~<a class="code" href="classCS_1_1AssignationExpression.html">AssignationExpression</a>();</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCS_1_1AssignationExpression.html#a4ed3b94410b320ef06299641ecc5c436">load</a>(std::list&lt;TerminalExpression*&gt;* terminalExpressionsList) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCS_1_1AssignationExpression.html#a509638dc7d1d2982c98e61a03ede77ef">interpret</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    std::string _varName;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <a class="code" href="classCS_1_1LinkedValue.html">LinkedValue</a>* _value = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;};</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;}</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#endif // ASSIGNATIONEXPRESSION_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclassCS_1_1AssignationExpression_html"><div class="ttname"><a href="classCS_1_1AssignationExpression.html">CS::AssignationExpression</a></div><div class="ttdef"><b>Definition:</b> assignationexpression.h:10</div></div>
+<div class="ttc" id="aclassCS_1_1AssignationExpression_html_a4ed3b94410b320ef06299641ecc5c436"><div class="ttname"><a href="classCS_1_1AssignationExpression.html#a4ed3b94410b320ef06299641ecc5c436">CS::AssignationExpression::load</a></div><div class="ttdeci">void load(std::list&lt; TerminalExpression * &gt; *terminalExpressionsList) override</div><div class="ttdoc">It loads an internal LinkedValue with the tokens received.</div><div class="ttdef"><b>Definition:</b> assignationexpression.cpp:13</div></div>
+<div class="ttc" id="aclassCS_1_1AssignationExpression_html"><div class="ttname"><a href="classCS_1_1AssignationExpression.html">CS::AssignationExpression</a></div><div class="ttdoc">This class represents a value assignation.</div><div class="ttdef"><b>Definition:</b> assignationexpression.h:12</div></div>
 <div class="ttc" id="aclassCS_1_1LinkedValue_html"><div class="ttname"><a href="classCS_1_1LinkedValue.html">CS::LinkedValue</a></div><div class="ttdef"><b>Definition:</b> linkedvalue.h:11</div></div>
-<div class="ttc" id="aclassCS_1_1AssignationExpression_html_a1da83509705883622984132dd098347f"><div class="ttname"><a href="classCS_1_1AssignationExpression.html#a1da83509705883622984132dd098347f">CS::AssignationExpression::load</a></div><div class="ttdeci">void load(std::list&lt; TerminalExpression * &gt; *) override</div><div class="ttdoc">This method load internal state based on list of expressions recived by argument.</div><div class="ttdef"><b>Definition:</b> assignationexpression.cpp:13</div></div>
-<div class="ttc" id="aclassCS_1_1AssignationExpression_html_a509638dc7d1d2982c98e61a03ede77ef"><div class="ttname"><a href="classCS_1_1AssignationExpression.html#a509638dc7d1d2982c98e61a03ede77ef">CS::AssignationExpression::interpret</a></div><div class="ttdeci">void interpret() override</div><div class="ttdoc">Execute the expression based on internal stored data.</div><div class="ttdef"><b>Definition:</b> assignationexpression.cpp:72</div></div>
-<div class="ttc" id="aclassCS_1_1NonTerminalExpression_html"><div class="ttname"><a href="classCS_1_1NonTerminalExpression.html">CS::NonTerminalExpression</a></div><div class="ttdoc">Base clas for non terminal expressions. Define two pure virtual methods (load and interpret)</div><div class="ttdef"><b>Definition:</b> nonterminalexpression.h:14</div></div>
+<div class="ttc" id="aclassCS_1_1AssignationExpression_html_a509638dc7d1d2982c98e61a03ede77ef"><div class="ttname"><a href="classCS_1_1AssignationExpression.html#a509638dc7d1d2982c98e61a03ede77ef">CS::AssignationExpression::interpret</a></div><div class="ttdeci">void interpret() override</div><div class="ttdoc">It gets the LiteralValue from the stored LinkedValue.</div><div class="ttdef"><b>Definition:</b> assignationexpression.cpp:137</div></div>
+<div class="ttc" id="aclassCS_1_1NonTerminalExpression_html"><div class="ttname"><a href="classCS_1_1NonTerminalExpression.html">CS::NonTerminalExpression</a></div><div class="ttdoc">Base class for non terminal expressions. Define two pure virtual methods (load and interpret)</div><div class="ttdef"><b>Definition:</b> nonterminalexpression.h:16</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

@@ -74,44 +74,51 @@ $(function() {
 <div class="title">CS::EOEInstructionExpression Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>This class only remove the EOE semicolon.  
+ <a href="classCS_1_1EOEInstructionExpression.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="eoeinstructionexpression_8h_source.html">eoeinstructionexpression.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for CS::EOEInstructionExpression:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="classCS_1_1EOEInstructionExpression.png" usemap="#CS::EOEInstructionExpression_map" alt=""/>
   <map id="CS::EOEInstructionExpression_map" name="CS::EOEInstructionExpression_map">
-<area href="classCS_1_1NonTerminalExpression.html" title="Base clas for non terminal expressions. Define two pure virtual methods (load and interpret)" alt="CS::NonTerminalExpression" shape="rect" coords="0,56,181,80"/>
-<area href="classCS_1_1Expression.html" title="Base class for expressions. Implement a common codeReference storage See NonTerminalExpression and Te..." alt="CS::Expression" shape="rect" coords="0,0,181,24"/>
+<area href="classCS_1_1NonTerminalExpression.html" title="Base class for non terminal expressions. Define two pure virtual methods (load and interpret)" alt="CS::NonTerminalExpression" shape="rect" coords="0,56,181,80"/>
+<area href="classCS_1_1Expression.html" title="Base class for expressions. It implements a common codeReference storage See NonTerminalExpression an..." alt="CS::Expression" shape="rect" coords="0,0,181,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a692797292b7806ebaa28472a2afa5d96"><td class="memItemLeft" align="right" valign="top"><a id="a692797292b7806ebaa28472a2afa5d96"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>EOEInstructionExpression</b> (size_t)</td></tr>
-<tr class="separator:a692797292b7806ebaa28472a2afa5d96"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc294f7a83eed47a4bf9644f66028e1f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1EOEInstructionExpression.html#adc294f7a83eed47a4bf9644f66028e1f">load</a> (std::list&lt; <a class="el" href="classCS_1_1TerminalExpression.html">TerminalExpression</a> * &gt; *) override</td></tr>
-<tr class="memdesc:adc294f7a83eed47a4bf9644f66028e1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This method load internal state based on list of expressions recived by argument.  <a href="classCS_1_1EOEInstructionExpression.html#adc294f7a83eed47a4bf9644f66028e1f">More...</a><br /></td></tr>
-<tr class="separator:adc294f7a83eed47a4bf9644f66028e1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66cf0021123c58aec7477d5483a1218a"><td class="memItemLeft" align="right" valign="top"><a id="a66cf0021123c58aec7477d5483a1218a"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>EOEInstructionExpression</b> (size_t codeReference)</td></tr>
+<tr class="separator:a66cf0021123c58aec7477d5483a1218a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a002cd343dc5bd20174ddddf243b3d4ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1EOEInstructionExpression.html#a002cd343dc5bd20174ddddf243b3d4ad">load</a> (std::list&lt; <a class="el" href="classCS_1_1TerminalExpression.html">TerminalExpression</a> * &gt; *terminalExpressionsList) override</td></tr>
+<tr class="memdesc:a002cd343dc5bd20174ddddf243b3d4ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">It loads an internal state based on list of expressions recived by argument.  <a href="classCS_1_1EOEInstructionExpression.html#a002cd343dc5bd20174ddddf243b3d4ad">More...</a><br /></td></tr>
+<tr class="separator:a002cd343dc5bd20174ddddf243b3d4ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49250a1da01881edd648a402c63f1712"><td class="memItemLeft" align="right" valign="top"><a id="a49250a1da01881edd648a402c63f1712"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1EOEInstructionExpression.html#a49250a1da01881edd648a402c63f1712">interpret</a> () override</td></tr>
-<tr class="memdesc:a49250a1da01881edd648a402c63f1712"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute the expression based on internal stored data. <br /></td></tr>
+<tr class="memdesc:a49250a1da01881edd648a402c63f1712"><td class="mdescLeft">&#160;</td><td class="mdescRight">It executes the expression based on internal stored data. <br /></td></tr>
 <tr class="separator:a49250a1da01881edd648a402c63f1712"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classCS_1_1NonTerminalExpression"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classCS_1_1NonTerminalExpression')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classCS_1_1NonTerminalExpression.html">CS::NonTerminalExpression</a></td></tr>
-<tr class="memitem:a210063623969bda65671da9dbbc4fb2a inherit pub_methods_classCS_1_1NonTerminalExpression"><td class="memItemLeft" align="right" valign="top"><a id="a210063623969bda65671da9dbbc4fb2a"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>NonTerminalExpression</b> (size_t)</td></tr>
-<tr class="separator:a210063623969bda65671da9dbbc4fb2a inherit pub_methods_classCS_1_1NonTerminalExpression"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74b52478bc49e434807fad43709e90cf inherit pub_methods_classCS_1_1NonTerminalExpression"><td class="memItemLeft" align="right" valign="top"><a id="a74b52478bc49e434807fad43709e90cf"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>NonTerminalExpression</b> (size_t codeReference)</td></tr>
+<tr class="separator:a74b52478bc49e434807fad43709e90cf inherit pub_methods_classCS_1_1NonTerminalExpression"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classCS_1_1Expression"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classCS_1_1Expression')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classCS_1_1Expression.html">CS::Expression</a></td></tr>
-<tr class="memitem:a819e22086d464a98b026c1767cc59fb4 inherit pub_methods_classCS_1_1Expression"><td class="memItemLeft" align="right" valign="top"><a id="a819e22086d464a98b026c1767cc59fb4"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Expression</b> (size_t)</td></tr>
-<tr class="separator:a819e22086d464a98b026c1767cc59fb4 inherit pub_methods_classCS_1_1Expression"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa02904e88bf066326576a04fba858aee inherit pub_methods_classCS_1_1Expression"><td class="memItemLeft" align="right" valign="top"><a id="aa02904e88bf066326576a04fba858aee"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Expression</b> (size_t codeReference)</td></tr>
+<tr class="separator:aa02904e88bf066326576a04fba858aee inherit pub_methods_classCS_1_1Expression"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25f124728a449082960a65eb703ad656 inherit pub_methods_classCS_1_1Expression"><td class="memItemLeft" align="right" valign="top"><a id="a25f124728a449082960a65eb703ad656"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getCodeReference</b> () const</td></tr>
 <tr class="separator:a25f124728a449082960a65eb703ad656 inherit pub_methods_classCS_1_1Expression"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a id="adc294f7a83eed47a4bf9644f66028e1f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adc294f7a83eed47a4bf9644f66028e1f">&#9670;&nbsp;</a></span>load()</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>This class only remove the EOE semicolon. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a002cd343dc5bd20174ddddf243b3d4ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a002cd343dc5bd20174ddddf243b3d4ad">&#9670;&nbsp;</a></span>load()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -134,10 +141,10 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getCodeReference</b
 </table>
 </div><div class="memdoc">
 
-<p>This method load internal state based on list of expressions recived by argument. </p>
+<p>It loads an internal state based on list of expressions recived by argument. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">terminalExpressionsList</td><td></td></tr>
+    <tr><td class="paramname">terminalExpressionsList</td><td>A list of tokens </td></tr>
   </table>
   </dd>
 </dl>

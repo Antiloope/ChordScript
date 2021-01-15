@@ -76,56 +76,56 @@ $(function() {
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;list&gt;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;stack&gt;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;buffer.h&quot;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">namespace </span>CS {</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="classCS_1_1Executor.html">   15</a></span>&#160;<span class="keyword">class </span><a class="code" href="classCS_1_1Executor.html">Executor</a></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;{</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keyword">static</span> <a class="code" href="classCS_1_1Executor.html">Executor</a>* getInstance();</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    ~<a class="code" href="classCS_1_1Executor.html">Executor</a>();</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCS_1_1Executor.html#a91473201c4334e5ffb50cac3b0c01d35">addSound</a>(<a class="code" href="classCS_1_1Playable.html">Playable</a>*,std::string) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCS_1_1Executor.html#ab4f19cebb2e9ffa04ef22aec42d402b7">init</a>();</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordtype">void</span> removeSound(<a class="code" href="classCS_1_1Playable.html">Playable</a>*,std::string) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordtype">void</span> removeAllSounds() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getSampleRate() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordtype">char</span> getSoundId();</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;executor/buffer/buffer.h&quot;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>CS {</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">class </span>Playable;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
+<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="classCS_1_1Executor.html">   18</a></span>&#160;<span class="keyword">class </span><a class="code" href="classCS_1_1Executor.html">Executor</a></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;{</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keyword">static</span> <a class="code" href="classCS_1_1Executor.html">Executor</a>* getInstance();</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    ~<a class="code" href="classCS_1_1Executor.html">Executor</a>();</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCS_1_1Executor.html#a91473201c4334e5ffb50cac3b0c01d35">addSound</a>(<a class="code" href="classCS_1_1Playable.html">Playable</a>*,std::string) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCS_1_1Executor.html#ab4f19cebb2e9ffa04ef22aec42d402b7">init</a>();</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordtype">void</span> removeSound(<a class="code" href="classCS_1_1Playable.html">Playable</a>*,std::string) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordtype">void</span> removeAllSounds() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordtype">void</span> closeAll();</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordtype">void</span> startRecording();</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordtype">void</span> stopRecording();</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getSampleRate() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordtype">char</span> getSoundId();</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordtype">void</span> closeAll();</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordtype">bool</span> isServerRunning();</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">void</span> startServer();</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordtype">void</span> restartServer();</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordtype">void</span> killServer();</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordtype">int</span> addObserver(std::function&lt;<span class="keywordtype">void</span>(<span class="keyword">const</span> AudioBuffer&amp;)&gt;);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordtype">void</span> removeObserver(<span class="keywordtype">int</span>);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> loadBuffer(std::list&lt;std::tuple&lt;Playable*,std::string&gt;&gt;* soundsList);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordtype">void</span> notify();</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordtype">void</span> clientInit();</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordtype">bool</span> serverInit();</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keywordtype">void</span> addToRecord();</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <a class="code" href="classCS_1_1Executor.html">Executor</a>();</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keyword">static</span> <a class="code" href="classCS_1_1Executor.html">Executor</a>* _instance;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    std::list&lt;std::tuple&lt;Playable*,std::string&gt;&gt; _soundsList;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    std::stack&lt;char&gt; _availableSounds;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    std::list&lt;std::tuple&lt;int,std::function&lt;void(<span class="keyword">const</span> AudioBuffer&amp;)&gt;&gt;&gt; _observerList;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordtype">void</span> startRecording();</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">void</span> stopRecording();</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordtype">bool</span> isServerRunning();</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">void</span> startServer();</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordtype">void</span> restartServer();</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordtype">void</span> killServer();</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> loadBuffer(std::list&lt;std::tuple&lt;Playable*,std::string&gt;&gt;* soundsList);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordtype">void</span> notify();</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordtype">void</span> clientInit();</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keywordtype">bool</span> serverInit();</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keywordtype">void</span> addToRecord();</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <a class="code" href="classCS_1_1Executor.html">Executor</a>();</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keyword">static</span> <a class="code" href="classCS_1_1Executor.html">Executor</a>* _instance;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    std::list&lt;std::tuple&lt;Playable*,std::string&gt;&gt; _soundsList;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    std::stack&lt;char&gt; _availableSounds;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <a class="code" href="classAudioFile.html">AudioFile&lt;float&gt;</a> _record;</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordtype">bool</span> _isServerRunning = <span class="keyword">false</span>;</div>
@@ -134,11 +134,11 @@ $(function() {
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;}</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">#endif // EXECUTOR_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclassCS_1_1Executor_html"><div class="ttname"><a href="classCS_1_1Executor.html">CS::Executor</a></div><div class="ttdoc">This class manages the interface with jack library. It has methods to manage what sounds are played.</div><div class="ttdef"><b>Definition:</b> executor.h:16</div></div>
-<div class="ttc" id="aclassCS_1_1Executor_html_ab4f19cebb2e9ffa04ef22aec42d402b7"><div class="ttname"><a href="classCS_1_1Executor.html#ab4f19cebb2e9ffa04ef22aec42d402b7">CS::Executor::init</a></div><div class="ttdeci">void init()</div><div class="ttdoc">This method must be called first of all. It start jack client and connect porst to the jack server an...</div><div class="ttdef"><b>Definition:</b> executor.cpp:543</div></div>
-<div class="ttc" id="aclassCS_1_1Executor_html_a91473201c4334e5ffb50cac3b0c01d35"><div class="ttname"><a href="classCS_1_1Executor.html#a91473201c4334e5ffb50cac3b0c01d35">CS::Executor::addSound</a></div><div class="ttdeci">void addSound(Playable *, std::string) const</div><div class="ttdoc">Add the sound passed as parameter into a queue, waiting to be added later into the reproduction list.</div><div class="ttdef"><b>Definition:</b> executor.cpp:311</div></div>
+<div class="ttc" id="aclassCS_1_1Executor_html"><div class="ttname"><a href="classCS_1_1Executor.html">CS::Executor</a></div><div class="ttdoc">This class manages the interface with jack library. It has methods to manage what sounds are played.</div><div class="ttdef"><b>Definition:</b> executor.h:19</div></div>
+<div class="ttc" id="aclassCS_1_1Executor_html_ab4f19cebb2e9ffa04ef22aec42d402b7"><div class="ttname"><a href="classCS_1_1Executor.html#ab4f19cebb2e9ffa04ef22aec42d402b7">CS::Executor::init</a></div><div class="ttdeci">void init()</div><div class="ttdoc">This method must be called first of all. It start jack client and connect porst to the jack server an...</div><div class="ttdef"><b>Definition:</b> executor.cpp:523</div></div>
+<div class="ttc" id="aclassCS_1_1Executor_html_a91473201c4334e5ffb50cac3b0c01d35"><div class="ttname"><a href="classCS_1_1Executor.html#a91473201c4334e5ffb50cac3b0c01d35">CS::Executor::addSound</a></div><div class="ttdeci">void addSound(Playable *, std::string) const</div><div class="ttdoc">Add the sound passed as parameter into a queue, waiting to be added later into the reproduction list.</div><div class="ttdef"><b>Definition:</b> executor.cpp:291</div></div>
 <div class="ttc" id="aclassAudioFile_html"><div class="ttname"><a href="classAudioFile.html">AudioFile&lt; float &gt;</a></div></div>
-<div class="ttc" id="aclassCS_1_1Playable_html"><div class="ttname"><a href="classCS_1_1Playable.html">CS::Playable</a></div><div class="ttdef"><b>Definition:</b> buffer.h:33</div></div>
+<div class="ttc" id="aclassCS_1_1Playable_html"><div class="ttname"><a href="classCS_1_1Playable.html">CS::Playable</a></div><div class="ttdef"><b>Definition:</b> playable.h:11</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

@@ -75,7 +75,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Base class for expressions. Implement a common codeReference storage See <a class="el" href="classCS_1_1NonTerminalExpression.html" title="Base clas for non terminal expressions. Define two pure virtual methods (load and interpret)">NonTerminalExpression</a> and <a class="el" href="classCS_1_1TerminalExpression.html">TerminalExpression</a>.  
+<p>Base class for expressions. It implements a common codeReference storage See <a class="el" href="classCS_1_1NonTerminalExpression.html" title="Base class for non terminal expressions. Define two pure virtual methods (load and interpret)">NonTerminalExpression</a> and <a class="el" href="classCS_1_1TerminalExpression.html" title="This class creates a common interface for terminal expressions and implements the storage of the type...">TerminalExpression</a>.  
  <a href="classCS_1_1Expression.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="expression_8h_source.html">expression.h</a>&gt;</code></p>
@@ -85,18 +85,18 @@ Inheritance diagram for CS::Expression:</div>
  <div class="center">
   <img src="classCS_1_1Expression.png" usemap="#CS::Expression_map" alt=""/>
   <map id="CS::Expression_map" name="CS::Expression_map">
-<area href="classCS_1_1NonTerminalExpression.html" title="Base clas for non terminal expressions. Define two pure virtual methods (load and interpret)" alt="CS::NonTerminalExpression" shape="rect" coords="0,56,192,80"/>
-<area href="classCS_1_1TerminalExpression.html" alt="CS::TerminalExpression" shape="rect" coords="404,56,596,80"/>
-<area href="classCS_1_1AssignationExpression.html" alt="CS::AssignationExpression" shape="rect" coords="202,112,394,136"/>
-<area href="classCS_1_1BreakInstructionExpression.html" alt="CS::BreakInstructionExpression" shape="rect" coords="202,168,394,192"/>
-<area href="classCS_1_1DefinitionExpression.html" alt="CS::DefinitionExpression" shape="rect" coords="202,224,394,248"/>
-<area href="classCS_1_1EOEInstructionExpression.html" alt="CS::EOEInstructionExpression" shape="rect" coords="202,280,394,304"/>
-<area href="classCS_1_1ExecutionExpression.html" alt="CS::ExecutionExpression" shape="rect" coords="202,336,394,360"/>
-<area href="classCS_1_1ForInstructionExpression.html" alt="CS::ForInstructionExpression" shape="rect" coords="202,392,394,416"/>
-<area href="classCS_1_1IfInstructionExpression.html" alt="CS::IfInstructionExpression" shape="rect" coords="202,448,394,472"/>
-<area href="classCS_1_1InstructionExpression.html" alt="CS::InstructionExpression" shape="rect" coords="202,504,394,528"/>
-<area href="classCS_1_1ProgramExpression.html" alt="CS::ProgramExpression" shape="rect" coords="202,560,394,584"/>
-<area href="classCS_1_1ReturnInstructionExpression.html" alt="CS::ReturnInstructionExpression" shape="rect" coords="202,616,394,640"/>
+<area href="classCS_1_1NonTerminalExpression.html" title="Base class for non terminal expressions. Define two pure virtual methods (load and interpret)" alt="CS::NonTerminalExpression" shape="rect" coords="0,56,192,80"/>
+<area href="classCS_1_1TerminalExpression.html" title="This class creates a common interface for terminal expressions and implements the storage of the type..." alt="CS::TerminalExpression" shape="rect" coords="404,56,596,80"/>
+<area href="classCS_1_1AssignationExpression.html" title="This class represents a value assignation." alt="CS::AssignationExpression" shape="rect" coords="202,112,394,136"/>
+<area href="classCS_1_1BreakInstructionExpression.html" title="This class represents the break inside a for loop." alt="CS::BreakInstructionExpression" shape="rect" coords="202,168,394,192"/>
+<area href="classCS_1_1DefinitionExpression.html" title="This class interpret functions and variables definitions." alt="CS::DefinitionExpression" shape="rect" coords="202,224,394,248"/>
+<area href="classCS_1_1EOEInstructionExpression.html" title="This class only remove the EOE semicolon." alt="CS::EOEInstructionExpression" shape="rect" coords="202,280,394,304"/>
+<area href="classCS_1_1ExecutionExpression.html" title="It represents an execution expression. A funcion call or methods calls." alt="CS::ExecutionExpression" shape="rect" coords="202,336,394,360"/>
+<area href="classCS_1_1ForInstructionExpression.html" title="This class is the representaion of a for statement. It holds the condition and the body." alt="CS::ForInstructionExpression" shape="rect" coords="202,392,394,416"/>
+<area href="classCS_1_1IfInstructionExpression.html" title="This class represents an if statement." alt="CS::IfInstructionExpression" shape="rect" coords="202,448,394,472"/>
+<area href="classCS_1_1InstructionExpression.html" title="It is the most abstract NonTerminalExpression after a ProgramExpression. Each instance of this class ..." alt="CS::InstructionExpression" shape="rect" coords="202,504,394,528"/>
+<area href="classCS_1_1ProgramExpression.html" title="It holds a list of instructions to be interpreted." alt="CS::ProgramExpression" shape="rect" coords="202,560,394,584"/>
+<area href="classCS_1_1ReturnInstructionExpression.html" title="This class store the return value of a function." alt="CS::ReturnInstructionExpression" shape="rect" coords="202,616,394,640"/>
 <area href="classCS_1_1BooleanExpression.html" alt="CS::BooleanExpression" shape="rect" coords="606,112,798,136"/>
 <area href="classCS_1_1NameExpression.html" alt="CS::NameExpression" shape="rect" coords="606,168,798,192"/>
 <area href="classCS_1_1NumericExpression.html" alt="CS::NumericExpression" shape="rect" coords="606,224,798,248"/>
@@ -106,15 +106,15 @@ Inheritance diagram for CS::Expression:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a819e22086d464a98b026c1767cc59fb4"><td class="memItemLeft" align="right" valign="top"><a id="a819e22086d464a98b026c1767cc59fb4"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Expression</b> (size_t)</td></tr>
-<tr class="separator:a819e22086d464a98b026c1767cc59fb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa02904e88bf066326576a04fba858aee"><td class="memItemLeft" align="right" valign="top"><a id="aa02904e88bf066326576a04fba858aee"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Expression</b> (size_t codeReference)</td></tr>
+<tr class="separator:aa02904e88bf066326576a04fba858aee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25f124728a449082960a65eb703ad656"><td class="memItemLeft" align="right" valign="top"><a id="a25f124728a449082960a65eb703ad656"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getCodeReference</b> () const</td></tr>
 <tr class="separator:a25f124728a449082960a65eb703ad656"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Base class for expressions. Implement a common codeReference storage See <a class="el" href="classCS_1_1NonTerminalExpression.html" title="Base clas for non terminal expressions. Define two pure virtual methods (load and interpret)">NonTerminalExpression</a> and <a class="el" href="classCS_1_1TerminalExpression.html">TerminalExpression</a>. </p>
+<div class="textblock"><p>Base class for expressions. It implements a common codeReference storage See <a class="el" href="classCS_1_1NonTerminalExpression.html" title="Base class for non terminal expressions. Define two pure virtual methods (load and interpret)">NonTerminalExpression</a> and <a class="el" href="classCS_1_1TerminalExpression.html" title="This class creates a common interface for terminal expressions and implements the storage of the type...">TerminalExpression</a>. </p>
 </div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/interpreter/expressions/<a class="el" href="expression_8h_source.html">expression.h</a></li>
 <li>src/interpreter/expressions/expression.cpp</li>

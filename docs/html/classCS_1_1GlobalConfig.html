@@ -75,24 +75,20 @@ $(function() {
 <div class="title">CS::GlobalConfig Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Singleton class to manage config file, giving access to different config parameters.  
+ <a href="classCS_1_1GlobalConfig.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="globalconfig_8h_source.html">globalconfig.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa70a51f2e81d8c7d3a3962cea9a2c665"><td class="memItemLeft" align="right" valign="top"><a id="aa70a51f2e81d8c7d3a3962cea9a2c665"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isFirstTimeOpened</b> ()</td></tr>
-<tr class="separator:aa70a51f2e81d8c7d3a3962cea9a2c665"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acfdf57e01038fe2906da55aee389611c"><td class="memItemLeft" align="right" valign="top"><a id="acfdf57e01038fe2906da55aee389611c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>setParameter</b> (ConfigDefinitions::Section, ConfigDefinitions::Parameter, std::string)</td></tr>
-<tr class="separator:acfdf57e01038fe2906da55aee389611c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ace04563108d1779010916bb483ec42"><td class="memItemLeft" align="right" valign="top"><a id="a4ace04563108d1779010916bb483ec42"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getParameter</b> (ConfigDefinitions::Section, ConfigDefinitions::Parameter)</td></tr>
-<tr class="separator:a4ace04563108d1779010916bb483ec42"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a09cfcde6fa8699f5faff68c1f81e0fc8"><td class="memItemLeft" align="right" valign="top"><a id="a09cfcde6fa8699f5faff68c1f81e0fc8"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setLanguage</b> (ConfigDefinitions::Language)</td></tr>
-<tr class="separator:a09cfcde6fa8699f5faff68c1f81e0fc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a105860db07a0c4246e7ea116b37915cb"><td class="memItemLeft" align="right" valign="top"><a id="a105860db07a0c4246e7ea116b37915cb"></a>
-ConfigDefinitions::Language&#160;</td><td class="memItemRight" valign="bottom"><b>getLanguage</b> ()</td></tr>
-<tr class="separator:a105860db07a0c4246e7ea116b37915cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c22ab32f41666635081bb641396c8aa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1GlobalConfig.html#a0c22ab32f41666635081bb641396c8aa">setParameter</a> (ConfigDefinitions::Parameter parameter, const char *value)</td></tr>
+<tr class="memdesc:a0c22ab32f41666635081bb641396c8aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the value of a parameter on INI file.  <a href="classCS_1_1GlobalConfig.html#a0c22ab32f41666635081bb641396c8aa">More...</a><br /></td></tr>
+<tr class="separator:a0c22ab32f41666635081bb641396c8aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa6e5bba9eff4fe56ac7bba46b4736c8"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1GlobalConfig.html#afa6e5bba9eff4fe56ac7bba46b4736c8">getParameter</a> (ConfigDefinitions::Parameter parameter)</td></tr>
+<tr class="memdesc:afa6e5bba9eff4fe56ac7bba46b4736c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the value of a particular parameter on INI file.  <a href="classCS_1_1GlobalConfig.html#afa6e5bba9eff4fe56ac7bba46b4736c8">More...</a><br /></td></tr>
+<tr class="separator:afa6e5bba9eff4fe56ac7bba46b4736c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -100,6 +96,74 @@ Static Public Member Functions</h2></td></tr>
 static <a class="el" href="classCS_1_1GlobalConfig.html">GlobalConfig</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getInstance</b> ()</td></tr>
 <tr class="separator:a49f1a6b1656a38d385ba9191e53ae97a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Singleton class to manage config file, giving access to different config parameters. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="afa6e5bba9eff4fe56ac7bba46b4736c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa6e5bba9eff4fe56ac7bba46b4736c8">&#9670;&nbsp;</a></span>getParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * GlobalConfig::getParameter </td>
+          <td>(</td>
+          <td class="paramtype">ConfigDefinitions::Parameter&#160;</td>
+          <td class="paramname"><em>parameter</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the value of a particular parameter on INI file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parameter</td><td>Parameter ID. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classCS_1_1Value.html">Value</a> of the stored parameter. </dd></dl>
+
+</div>
+</div>
+<a id="a0c22ab32f41666635081bb641396c8aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c22ab32f41666635081bb641396c8aa">&#9670;&nbsp;</a></span>setParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool GlobalConfig::setParameter </td>
+          <td>(</td>
+          <td class="paramtype">ConfigDefinitions::Parameter&#160;</td>
+          <td class="paramname"><em>parameter</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the value of a parameter on INI file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parameter</td><td>Parameter ID. </td></tr>
+    <tr><td class="paramname">value</td><td><a class="el" href="classCS_1_1Value.html">Value</a> to assign on this parameter. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if value could be set correctly. </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/utils/<a class="el" href="globalconfig_8h_source.html">globalconfig.h</a></li>
 <li>src/utils/globalconfig.cpp</li>

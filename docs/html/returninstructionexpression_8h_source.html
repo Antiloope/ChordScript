@@ -78,27 +78,28 @@ $(function() {
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="keyword">namespace </span>CS {</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">class </span>LinkedValue;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="classCS_1_1ReturnInstructionExpression.html">   10</a></span>&#160;<span class="keyword">class </span><a class="code" href="classCS_1_1ReturnInstructionExpression.html">ReturnInstructionExpression</a> : <span class="keyword">public</span> <a class="code" href="classCS_1_1NonTerminalExpression.html">NonTerminalExpression</a> {</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <a class="code" href="classCS_1_1ReturnInstructionExpression.html">ReturnInstructionExpression</a>(<span class="keywordtype">size_t</span>);</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    ~<a class="code" href="classCS_1_1ReturnInstructionExpression.html">ReturnInstructionExpression</a>();</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCS_1_1ReturnInstructionExpression.html#a1a3c66d8fb67bad332f0aa057a01eb60">load</a>(std::list&lt;TerminalExpression*&gt;*) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCS_1_1ReturnInstructionExpression.html#a80a0a56f835e9db3342f3dc4a1ad444d">interpret</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <a class="code" href="classCS_1_1LinkedValue.html">LinkedValue</a>* _returnValue = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;};</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;}</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#endif // RETURNINSTRUCTIONEXPRESSION_H</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">// Defined in linkedvalue.h</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">class </span>LinkedValue;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="classCS_1_1ReturnInstructionExpression.html">   14</a></span>&#160;<span class="keyword">class </span><a class="code" href="classCS_1_1ReturnInstructionExpression.html">ReturnInstructionExpression</a> : <span class="keyword">public</span> <a class="code" href="classCS_1_1NonTerminalExpression.html">NonTerminalExpression</a> {</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <a class="code" href="classCS_1_1ReturnInstructionExpression.html">ReturnInstructionExpression</a>(<span class="keywordtype">size_t</span> codeReference);</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    ~<a class="code" href="classCS_1_1ReturnInstructionExpression.html">ReturnInstructionExpression</a>();</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCS_1_1ReturnInstructionExpression.html#aa10f894c26145d6539c425e5c204d44a">load</a>(std::list&lt;TerminalExpression*&gt;* terminalExpressionsList) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCS_1_1ReturnInstructionExpression.html#a80a0a56f835e9db3342f3dc4a1ad444d">interpret</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <a class="code" href="classCS_1_1LinkedValue.html">LinkedValue</a>* _returnValue = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;};</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;}</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#endif // RETURNINSTRUCTIONEXPRESSION_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclassCS_1_1ReturnInstructionExpression_html_a80a0a56f835e9db3342f3dc4a1ad444d"><div class="ttname"><a href="classCS_1_1ReturnInstructionExpression.html#a80a0a56f835e9db3342f3dc4a1ad444d">CS::ReturnInstructionExpression::interpret</a></div><div class="ttdeci">void interpret() override</div><div class="ttdoc">Execute the expression based on internal stored data.</div><div class="ttdef"><b>Definition:</b> returninstructionexpression.cpp:47</div></div>
+<div class="ttc" id="aclassCS_1_1ReturnInstructionExpression_html_aa10f894c26145d6539c425e5c204d44a"><div class="ttname"><a href="classCS_1_1ReturnInstructionExpression.html#aa10f894c26145d6539c425e5c204d44a">CS::ReturnInstructionExpression::load</a></div><div class="ttdeci">void load(std::list&lt; TerminalExpression * &gt; *terminalExpressionsList) override</div><div class="ttdoc">It loads the return value as a LinkedValue.</div><div class="ttdef"><b>Definition:</b> returninstructionexpression.cpp:14</div></div>
+<div class="ttc" id="aclassCS_1_1ReturnInstructionExpression_html_a80a0a56f835e9db3342f3dc4a1ad444d"><div class="ttname"><a href="classCS_1_1ReturnInstructionExpression.html#a80a0a56f835e9db3342f3dc4a1ad444d">CS::ReturnInstructionExpression::interpret</a></div><div class="ttdeci">void interpret() override</div><div class="ttdoc">It gets the LiteralValue and set the return value in Context.</div><div class="ttdef"><b>Definition:</b> returninstructionexpression.cpp:50</div></div>
 <div class="ttc" id="aclassCS_1_1LinkedValue_html"><div class="ttname"><a href="classCS_1_1LinkedValue.html">CS::LinkedValue</a></div><div class="ttdef"><b>Definition:</b> linkedvalue.h:11</div></div>
-<div class="ttc" id="aclassCS_1_1ReturnInstructionExpression_html"><div class="ttname"><a href="classCS_1_1ReturnInstructionExpression.html">CS::ReturnInstructionExpression</a></div><div class="ttdef"><b>Definition:</b> returninstructionexpression.h:10</div></div>
-<div class="ttc" id="aclassCS_1_1ReturnInstructionExpression_html_a1a3c66d8fb67bad332f0aa057a01eb60"><div class="ttname"><a href="classCS_1_1ReturnInstructionExpression.html#a1a3c66d8fb67bad332f0aa057a01eb60">CS::ReturnInstructionExpression::load</a></div><div class="ttdeci">void load(std::list&lt; TerminalExpression * &gt; *) override</div><div class="ttdoc">This method load internal state based on list of expressions recived by argument.</div><div class="ttdef"><b>Definition:</b> returninstructionexpression.cpp:14</div></div>
-<div class="ttc" id="aclassCS_1_1NonTerminalExpression_html"><div class="ttname"><a href="classCS_1_1NonTerminalExpression.html">CS::NonTerminalExpression</a></div><div class="ttdoc">Base clas for non terminal expressions. Define two pure virtual methods (load and interpret)</div><div class="ttdef"><b>Definition:</b> nonterminalexpression.h:14</div></div>
+<div class="ttc" id="aclassCS_1_1ReturnInstructionExpression_html"><div class="ttname"><a href="classCS_1_1ReturnInstructionExpression.html">CS::ReturnInstructionExpression</a></div><div class="ttdoc">This class store the return value of a function.</div><div class="ttdef"><b>Definition:</b> returninstructionexpression.h:14</div></div>
+<div class="ttc" id="aclassCS_1_1NonTerminalExpression_html"><div class="ttname"><a href="classCS_1_1NonTerminalExpression.html">CS::NonTerminalExpression</a></div><div class="ttdoc">Base class for non terminal expressions. Define two pure virtual methods (load and interpret)</div><div class="ttdef"><b>Definition:</b> nonterminalexpression.h:16</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

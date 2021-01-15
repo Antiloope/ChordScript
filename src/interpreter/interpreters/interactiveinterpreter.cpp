@@ -538,89 +538,91 @@ void Console::close() {
 
 InteractiveInterpreter::InteractiveInterpreter() {}
 
-int InteractiveInterpreter::run()
-{
-    PipeInterpreter interpreter;
-
-    // Change output to avoid messages in console.
-    redirectOutput(SetNull);
-
-    // Start an instance of a pipe interpreter in background
-    int status = interpreter.run();
-
-    if( status == ReturnCodes::FORK_ERROR )
-    {
-        cout << "Can not start ChordScript. Error trying to fork the process." << endl;
-        return ReturnCodes::FORK_ERROR;
-    }
-    if( status == ReturnCodes::CHILD_PROCESS_RETURN ||
-        status == ReturnCodes::ANOTHER_INSTANCE_RUNNING ) // True for child process
-        return ReturnCodes::SUCCESS;
-
-    // Only parent process executes following lines
-
-    // Reset output.
-    redirectOutput(Reset);
-
-    // Init console and show startup messages
-    _console.init();
-
-    try
-    {
-        // Start processing input
-        while( true )
-        {
-            // Get source code
-            string sourceCode = _console.getSourceCode();
-
-            if( sourceCode == EXIT_LINE )
-                break;
-
-            // Interpret source code
-            string response = PipeInterpreter::interpret(sourceCode);
-
-            // Identify response
-            if( response[0] == 'O' && response[1] == 'K' )
-                continue;
-
-            // If an error exist in source code, the response has the format:
-            //  [CharacterReference] [ErrorDescription]
-            // So, following lines separate both parts
-            int charReference = stoi(response.substr(0,response.find_first_of(" "))) - 1;
-
-            string description = response.substr(response.find_first_of(" ") + 1);
-
-            // Print formated error message
-            _console.showError(sourceCode,charReference,description);
-        }
-    }
-    catch( const exception& e )
-    {
-        Log::getInstance().write(e.what(),Log::LogType::error_t);
-    }
-
-    // Return console to standard mode
-    _console.close();
-
-    // Stop server in background
-    interpreter.stopServer();
-
-    return ReturnCodes::SUCCESS;
-}
-
-
 //int InteractiveInterpreter::run()
 //{
-//    // Init an interpreter context with start values.
-//    Context::getInstance()->load();
+//    PipeInterpreter interpreter;
 
+//    // Change output to avoid messages in console.
 //    redirectOutput(SetNull);
 
-//    // Init global executor.
-//    //ExecutorInterface::init();
+//    // Start an instance of a pipe interpreter in background
+//    int status = interpreter.run();
 
+//    if( status == ReturnCodes::FORK_ERROR )
+//    {
+//        cout << "Can not start ChordScript. Error trying to fork the process." << endl;
+//        return ReturnCodes::FORK_ERROR;
+//    }
+//    if( status == ReturnCodes::CHILD_PROCESS_RETURN ||
+//        status == ReturnCodes::ANOTHER_INSTANCE_RUNNING ) // True for child process
+//        return ReturnCodes::SUCCESS;
+
+//    // Only parent process executes following lines
+
+//    // Reset output.
 //    redirectOutput(Reset);
-//    interpret("sample a; a.play();");
+
+//    // Init console and show startup messages
+//    _console.init();
+
+//    try
+//    {
+//        // Start processing input
+//        while( true )
+//        {
+//            // Get source code
+//            string sourceCode = _console.getSourceCode();
+
+//            if( sourceCode == EXIT_LINE )
+//                break;
+
+//            // Interpret source code
+//            string response = PipeInterpreter::interpret(sourceCode);
+
+//            // Identify response
+//            if( response[0] == 'O' && response[1] == 'K' )
+//                continue;
+
+//            // If an error exist in source code, the response has the format:
+//            //  [CharacterReference] [ErrorDescription]
+//            // So, following lines separate both parts
+//            int charReference = stoi(response.substr(0,response.find_first_of(" "))) - 1;
+
+//            string description = response.substr(response.find_first_of(" ") + 1);
+
+//            // Print formated error message
+//            _console.showError(sourceCode,charReference,description);
+//        }
+//    }
+//    catch( const exception& e )
+//    {
+//        Log::getInstance().write(e.what(),Log::LogType::error_t);
+//    }
+
+//    // Return console to standard mode
+//    _console.close();
+
+//    // Stop server in background
+//    interpreter.stopServer();
 
 //    return ReturnCodes::SUCCESS;
 //}
+
+#include "interpreter/context.h"
+#include "executor/executorinterface.h"
+
+int InteractiveInterpreter::run()
+{
+    // Init an interpreter context with start values.
+    Context::getInstance()->load();
+
+    redirectOutput(SetNull);
+
+    // Init global executor.
+    //ExecutorInterface::init();
+
+    redirectOutput(Reset);
+    interpret("array a = [1]; a.at(1);");
+
+    return ReturnCodes::SUCCESS;
+}

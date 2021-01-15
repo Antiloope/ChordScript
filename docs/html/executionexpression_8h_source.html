@@ -78,27 +78,30 @@ $(function() {
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="keyword">namespace </span>CS {</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">class </span>ArrayLinkedValue;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="classCS_1_1ExecutionExpression.html">   10</a></span>&#160;<span class="keyword">class </span><a class="code" href="classCS_1_1ExecutionExpression.html">ExecutionExpression</a> : <span class="keyword">public</span> <a class="code" href="classCS_1_1NonTerminalExpression.html">NonTerminalExpression</a> {</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <a class="code" href="classCS_1_1ExecutionExpression.html">ExecutionExpression</a>(<span class="keywordtype">size_t</span>);</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    ~<a class="code" href="classCS_1_1ExecutionExpression.html">ExecutionExpression</a>();</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCS_1_1ExecutionExpression.html#a6f5cf967ea3e6ed325b5923b6d10d9a7">load</a>(std::list&lt;TerminalExpression*&gt;*) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCS_1_1ExecutionExpression.html#a2e43de66702372478c6305a1badf1ebb">interpret</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    std::string _name;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    std::list&lt;std::tuple&lt;std::string,ArrayLinkedValue*&gt;&gt; _methodsList;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;};</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;}</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#endif // EXECUTIONEXPRESSION_H</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">// Defined in arraylinkedvalue.h</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">class </span>ArrayLinkedValue;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">typedef</span> std::tuple&lt;std::string,ArrayLinkedValue*&gt; method_def;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="classCS_1_1ExecutionExpression.html">   17</a></span>&#160;<span class="keyword">class </span><a class="code" href="classCS_1_1ExecutionExpression.html">ExecutionExpression</a> : <span class="keyword">public</span> <a class="code" href="classCS_1_1NonTerminalExpression.html">NonTerminalExpression</a> {</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <a class="code" href="classCS_1_1ExecutionExpression.html">ExecutionExpression</a>(<span class="keywordtype">size_t</span> codeReference);</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    ~<a class="code" href="classCS_1_1ExecutionExpression.html">ExecutionExpression</a>();</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCS_1_1ExecutionExpression.html#a8ce7b72434c5ca2b87aed0795184cb2b">load</a>(std::list&lt;TerminalExpression*&gt;* terminalExpressionsList) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCS_1_1ExecutionExpression.html#a2e43de66702372478c6305a1badf1ebb">interpret</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    std::string _name;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    std::list&lt;method_def&gt; _methodsList;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;};</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;}</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#endif // EXECUTIONEXPRESSION_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclassCS_1_1ExecutionExpression_html_a2e43de66702372478c6305a1badf1ebb"><div class="ttname"><a href="classCS_1_1ExecutionExpression.html#a2e43de66702372478c6305a1badf1ebb">CS::ExecutionExpression::interpret</a></div><div class="ttdeci">void interpret() override</div><div class="ttdoc">Execute the expression based on internal stored data.</div><div class="ttdef"><b>Definition:</b> executionexpression.cpp:91</div></div>
-<div class="ttc" id="aclassCS_1_1ExecutionExpression_html_a6f5cf967ea3e6ed325b5923b6d10d9a7"><div class="ttname"><a href="classCS_1_1ExecutionExpression.html#a6f5cf967ea3e6ed325b5923b6d10d9a7">CS::ExecutionExpression::load</a></div><div class="ttdeci">void load(std::list&lt; TerminalExpression * &gt; *) override</div><div class="ttdoc">This method load internal state based on list of expressions recived by argument.</div><div class="ttdef"><b>Definition:</b> executionexpression.cpp:15</div></div>
-<div class="ttc" id="aclassCS_1_1ExecutionExpression_html"><div class="ttname"><a href="classCS_1_1ExecutionExpression.html">CS::ExecutionExpression</a></div><div class="ttdef"><b>Definition:</b> executionexpression.h:10</div></div>
-<div class="ttc" id="aclassCS_1_1NonTerminalExpression_html"><div class="ttname"><a href="classCS_1_1NonTerminalExpression.html">CS::NonTerminalExpression</a></div><div class="ttdoc">Base clas for non terminal expressions. Define two pure virtual methods (load and interpret)</div><div class="ttdef"><b>Definition:</b> nonterminalexpression.h:14</div></div>
+<div class="ttc" id="aclassCS_1_1ExecutionExpression_html_a2e43de66702372478c6305a1badf1ebb"><div class="ttname"><a href="classCS_1_1ExecutionExpression.html#a2e43de66702372478c6305a1badf1ebb">CS::ExecutionExpression::interpret</a></div><div class="ttdeci">void interpret() override</div><div class="ttdoc">It executes the expression based on internal stored data.</div><div class="ttdef"><b>Definition:</b> executionexpression.cpp:98</div></div>
+<div class="ttc" id="aclassCS_1_1ExecutionExpression_html"><div class="ttname"><a href="classCS_1_1ExecutionExpression.html">CS::ExecutionExpression</a></div><div class="ttdoc">It represents an execution expression. A funcion call or methods calls.</div><div class="ttdef"><b>Definition:</b> executionexpression.h:17</div></div>
+<div class="ttc" id="aclassCS_1_1NonTerminalExpression_html"><div class="ttname"><a href="classCS_1_1NonTerminalExpression.html">CS::NonTerminalExpression</a></div><div class="ttdoc">Base class for non terminal expressions. Define two pure virtual methods (load and interpret)</div><div class="ttdef"><b>Definition:</b> nonterminalexpression.h:16</div></div>
+<div class="ttc" id="aclassCS_1_1ExecutionExpression_html_a8ce7b72434c5ca2b87aed0795184cb2b"><div class="ttname"><a href="classCS_1_1ExecutionExpression.html#a8ce7b72434c5ca2b87aed0795184cb2b">CS::ExecutionExpression::load</a></div><div class="ttdeci">void load(std::list&lt; TerminalExpression * &gt; *terminalExpressionsList) override</div><div class="ttdoc">It detects if there are a function call or methods calls. Store the function/variable name and a list...</div><div class="ttdef"><b>Definition:</b> executionexpression.cpp:15</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

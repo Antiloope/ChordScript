@@ -82,14 +82,15 @@ Inheritance diagram for CS::DataType:</div>
  <div class="center">
   <img src="classCS_1_1DataType.png" usemap="#CS::DataType_map" alt=""/>
   <map id="CS::DataType_map" name="CS::DataType_map">
-<area href="classCS_1_1ArgumentDataType.html" alt="CS::ArgumentDataType" shape="rect" coords="153,56,296,80"/>
-<area href="classCS_1_1BooleanDataType.html" alt="CS::BooleanDataType" shape="rect" coords="153,112,296,136"/>
-<area href="classCS_1_1GroupDataType.html" alt="CS::GroupDataType" shape="rect" coords="153,168,296,192"/>
-<area href="classCS_1_1NullDataType.html" alt="CS::NullDataType" shape="rect" coords="153,224,296,248"/>
-<area href="classCS_1_1NumberDataType.html" alt="CS::NumberDataType" shape="rect" coords="153,280,296,304"/>
-<area href="classCS_1_1SampleDataType.html" alt="CS::SampleDataType" shape="rect" coords="153,336,296,360"/>
-<area href="classCS_1_1SoundDataType.html" alt="CS::SoundDataType" shape="rect" coords="153,392,296,416"/>
-<area href="classCS_1_1StringDataType.html" alt="CS::StringDataType" shape="rect" coords="153,448,296,472"/>
+<area href="classCS_1_1ArgumentDataType.html" title="This class represents the argument data type. It has not available casts and has two methods: push an..." alt="CS::ArgumentDataType" shape="rect" coords="153,56,296,80"/>
+<area href="classCS_1_1ArrayDataType.html" title="This class represents the array data type." alt="CS::ArrayDataType" shape="rect" coords="153,112,296,136"/>
+<area href="classCS_1_1BooleanDataType.html" title="This class represents the boolean data type." alt="CS::BooleanDataType" shape="rect" coords="153,168,296,192"/>
+<area href="classCS_1_1GroupDataType.html" title="This class represents the group data type." alt="CS::GroupDataType" shape="rect" coords="153,224,296,248"/>
+<area href="classCS_1_1NullDataType.html" title="This class represents the null data type. It can&#39;t be instanciated in the code but is the value retur..." alt="CS::NullDataType" shape="rect" coords="153,280,296,304"/>
+<area href="classCS_1_1NumberDataType.html" title="This class represents the number data type." alt="CS::NumberDataType" shape="rect" coords="153,336,296,360"/>
+<area href="classCS_1_1SampleDataType.html" alt="CS::SampleDataType" shape="rect" coords="153,392,296,416"/>
+<area href="classCS_1_1SoundDataType.html" title="This class represents the sound data type." alt="CS::SoundDataType" shape="rect" coords="153,448,296,472"/>
+<area href="classCS_1_1StringDataType.html" title="This class represents the string data type." alt="CS::StringDataType" shape="rect" coords="153,504,296,528"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -99,7 +100,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a54ea8b1bc3ac1937621e3fff5c05e47e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This method execute a method of the current (derived) data type.  <a href="classCS_1_1DataType.html#a54ea8b1bc3ac1937621e3fff5c05e47e">More...</a><br /></td></tr>
 <tr class="separator:a54ea8b1bc3ac1937621e3fff5c05e47e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49af085d725da8a8d367437aa6c79739"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classCS_1_1LiteralValue.html">LiteralValue</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCS_1_1DataType.html#a49af085d725da8a8d367437aa6c79739">cast</a> (<a class="el" href="classCS_1_1LiteralValue.html">LiteralValue</a> *) const =0</td></tr>
-<tr class="memdesc:a49af085d725da8a8d367437aa6c79739"><td class="mdescLeft">&#160;</td><td class="mdescRight">This method return a literal value casted to this (derived) data type This method is overriden in derived classes in order to implement casting.  <a href="classCS_1_1DataType.html#a49af085d725da8a8d367437aa6c79739">More...</a><br /></td></tr>
+<tr class="memdesc:a49af085d725da8a8d367437aa6c79739"><td class="mdescLeft">&#160;</td><td class="mdescRight">This method return a literal value casted to this (derived) data type. This method is overriden in derived classes in order to implement casting.  <a href="classCS_1_1DataType.html#a49af085d725da8a8d367437aa6c79739">More...</a><br /></td></tr>
 <tr class="separator:a49af085d725da8a8d367437aa6c79739"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
@@ -142,10 +143,10 @@ std::unordered_map&lt; std::string, method_function_t &gt;&#160;</td><td class="
 </table>
 </div><div class="memdoc">
 
-<p>This method return a literal value casted to this (derived) data type This method is overriden in derived classes in order to implement casting. </p>
-<dl class="section return"><dt>Returns</dt><dd>A new literal value if variable must be casted. Or the same literal value if cast is not necesary </dd></dl>
+<p>This method return a literal value casted to this (derived) data type. This method is overriden in derived classes in order to implement casting. </p>
+<dl class="section return"><dt>Returns</dt><dd>A new literal value if variable must be casted. Or the same LiteralValue* if cast is not necesary </dd></dl>
 
-<p>Implemented in <a class="el" href="classCS_1_1StringDataType.html#afef35b637bf7fc4ca2ab412c7a51b5d6">CS::StringDataType</a>, <a class="el" href="classCS_1_1SoundDataType.html#adb4ea0fa7e075b4c679df86c5656e048">CS::SoundDataType</a>, <a class="el" href="classCS_1_1SampleDataType.html#abc27bee733b900e6b3c53d0f2bf8a39b">CS::SampleDataType</a>, <a class="el" href="classCS_1_1NumberDataType.html#a16cc8e9f770f0d1f6567581a28f929b3">CS::NumberDataType</a>, <a class="el" href="classCS_1_1NullDataType.html#aaa4d46eedd305d399cd750a078ec3193">CS::NullDataType</a>, <a class="el" href="classCS_1_1GroupDataType.html#a8e23756fde0b2b346a992ee5b2fc58f2">CS::GroupDataType</a>, <a class="el" href="classCS_1_1BooleanDataType.html#a71aff64da10d95dfe9281348c593b6a8">CS::BooleanDataType</a>, and <a class="el" href="classCS_1_1ArgumentDataType.html#a0e1d84a4d9849890b402b345ff296532">CS::ArgumentDataType</a>.</p>
+<p>Implemented in <a class="el" href="classCS_1_1StringDataType.html#afef35b637bf7fc4ca2ab412c7a51b5d6">CS::StringDataType</a>, <a class="el" href="classCS_1_1SoundDataType.html#adb4ea0fa7e075b4c679df86c5656e048">CS::SoundDataType</a>, <a class="el" href="classCS_1_1SampleDataType.html#abc27bee733b900e6b3c53d0f2bf8a39b">CS::SampleDataType</a>, <a class="el" href="classCS_1_1NumberDataType.html#a16cc8e9f770f0d1f6567581a28f929b3">CS::NumberDataType</a>, <a class="el" href="classCS_1_1NullDataType.html#aaa4d46eedd305d399cd750a078ec3193">CS::NullDataType</a>, <a class="el" href="classCS_1_1GroupDataType.html#a8e23756fde0b2b346a992ee5b2fc58f2">CS::GroupDataType</a>, <a class="el" href="classCS_1_1BooleanDataType.html#a71aff64da10d95dfe9281348c593b6a8">CS::BooleanDataType</a>, <a class="el" href="classCS_1_1ArrayDataType.html#a924965f32f74953ca04b6fff0add7d6d">CS::ArrayDataType</a>, and <a class="el" href="classCS_1_1ArgumentDataType.html#a0e1d84a4d9849890b402b345ff296532">CS::ArgumentDataType</a>.</p>
 
 </div>
 </div>
@@ -197,7 +198,7 @@ std::unordered_map&lt; std::string, method_function_t &gt;&#160;</td><td class="
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if method was found and was executed </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>True if method was found and was executed. False ohterwise. </dd></dl>
 
 </div>
 </div>
@@ -226,7 +227,7 @@ std::unordered_map&lt; std::string, method_function_t &gt;&#160;</td><td class="
 </div><div class="memdoc">
 
 <p>Utility method to get DataTypeId of a name. </p>
-<dl class="section return"><dt>Returns</dt><dd>Return the DataTypeId of the data type name passed as string </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Return the DataTypeId of the data type name passed as string. DataTypeId::Null if unknown </dd></dl>
 
 </div>
 </div>
@@ -255,7 +256,7 @@ std::unordered_map&lt; std::string, method_function_t &gt;&#160;</td><td class="
 </div><div class="memdoc">
 
 <p>Utility method to get the name of a data type. </p>
-<dl class="section return"><dt>Returns</dt><dd>Return the name of the data type in the language </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Return the name of the data type as a string </dd></dl>
 
 </div>
 </div>

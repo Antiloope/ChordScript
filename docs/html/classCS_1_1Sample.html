@@ -69,6 +69,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classCS_1_1Sample-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">CS::Sample Class Reference</div>  </div>
@@ -80,7 +81,8 @@ Inheritance diagram for CS::Sample:</div>
  <div class="center">
   <img src="classCS_1_1Sample.png" usemap="#CS::Sample_map" alt=""/>
   <map id="CS::Sample_map" name="CS::Sample_map">
-<area href="classCS_1_1Playable.html" alt="CS::Playable" shape="rect" coords="0,0,84,24"/>
+<area href="classCS_1_1Playable.html" alt="CS::Playable" shape="rect" coords="0,0,123,24"/>
+<area href="classCS_1_1PeriodicSample.html" alt="CS::PeriodicSample" shape="rect" coords="0,112,123,136"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -122,6 +124,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setPanning</b> (<a cl
 <tr class="memitem:a090bfa08572622eadde26be90fd5f17e"><td class="memItemLeft" align="right" valign="top"><a id="a090bfa08572622eadde26be90fd5f17e"></a>
 <a class="el" href="classCS_1_1Sample.html">Sample</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (double, tick_t)</td></tr>
 <tr class="separator:a090bfa08572622eadde26be90fd5f17e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0d16640a8be8645d6e1429e4ed51f8e"><td class="memItemLeft" align="right" valign="top"><a id="ae0d16640a8be8645d6e1429e4ed51f8e"></a>
+<a class="el" href="classCS_1_1PeriodicSample.html">PeriodicSample</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (double, tick_t, tick_t)</td></tr>
+<tr class="separator:ae0d16640a8be8645d6e1429e4ed51f8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac53cc68471c404f4dd932b07d8728b20"><td class="memItemLeft" align="right" valign="top"><a id="ac53cc68471c404f4dd932b07d8728b20"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>getDurationInSeconds</b> ()</td></tr>
 <tr class="separator:ac53cc68471c404f4dd932b07d8728b20"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -130,8 +135,23 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>getDurationInSecond
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isPlayed</b> () const</td></tr>
 <tr class="separator:a3a45c64f49e72e59bb3eaa35d85c2a16 inherit pub_methods_classCS_1_1Playable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
-Additional Inherited Members</h2></td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:ab98a983b0d6fde9a6a9fcb28d7d06fff"><td class="memItemLeft" align="right" valign="top"><a id="ab98a983b0d6fde9a6a9fcb28d7d06fff"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>_fileName</b></td></tr>
+<tr class="separator:ab98a983b0d6fde9a6a9fcb28d7d06fff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05fd64e8f8db1e1ac7b296e6307e17f3"><td class="memItemLeft" align="right" valign="top"><a id="a05fd64e8f8db1e1ac7b296e6307e17f3"></a>
+<a class="el" href="classCS_1_1Modifier.html">Modifier</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>_panning</b></td></tr>
+<tr class="separator:a05fd64e8f8db1e1ac7b296e6307e17f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17f7afc0689675bb435b6d8810d21697"><td class="memItemLeft" align="right" valign="top"><a id="a17f7afc0689675bb435b6d8810d21697"></a>
+<a class="el" href="classCS_1_1Modifier.html">Modifier</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>_amplitudeFactor</b></td></tr>
+<tr class="separator:a17f7afc0689675bb435b6d8810d21697"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a178380512488a5c931ea3861891d8282"><td class="memItemLeft" align="right" valign="top"><a id="a178380512488a5c931ea3861891d8282"></a>
+<a class="el" href="classCS_1_1Modifier.html">Modifier</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>_amplitudeOffset</b></td></tr>
+<tr class="separator:a178380512488a5c931ea3861891d8282"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60448b5d4ecd5d8198fa551fd8a12db2"><td class="memItemLeft" align="right" valign="top"><a id="a60448b5d4ecd5d8198fa551fd8a12db2"></a>
+<a class="el" href="classCS_1_1Modifier.html">Modifier</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>_timeFactor</b></td></tr>
+<tr class="separator:a60448b5d4ecd5d8198fa551fd8a12db2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classCS_1_1Playable"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classCS_1_1Playable')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classCS_1_1Playable.html">CS::Playable</a></td></tr>
 <tr class="memitem:ae35758f261b5e4fda2a50138f70d3659 inherit pro_attribs_classCS_1_1Playable"><td class="memItemLeft" align="right" valign="top"><a id="ae35758f261b5e4fda2a50138f70d3659"></a>
 tick_t&#160;</td><td class="memItemRight" valign="bottom"><b>_progress</b> = 0</td></tr>
@@ -144,8 +164,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>_isPlayed</b> = false
 <tr class="separator:a98fb6ee55b3d8314835a42bd9d57d4b5 inherit pro_attribs_classCS_1_1Playable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>src/executor/<a class="el" href="buffer_8h_source.html">buffer.h</a></li>
-<li>src/executor/buffer.cpp</li>
+<li>src/executor/playables/<a class="el" href="sample_8h_source.html">sample.h</a></li>
+<li>src/executor/playables/sample.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

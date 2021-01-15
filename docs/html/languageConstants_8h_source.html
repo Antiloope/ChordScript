@@ -108,52 +108,55 @@ $(function() {
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span> STIRNG_DELIMITATOR       = <span class="charliteral">&#39;&quot;&#39;</span>;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span> START_COMMENT            = <span class="charliteral">&#39;#&#39;</span>;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span> END_OF_LINE              = 0x0A;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span> SPACE                    = <span class="charliteral">&#39; &#39;</span>;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keyword">const</span> std::string S_NULL            = <span class="stringliteral">&quot;null&quot;</span>;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keyword">const</span> std::string SAMPLE            = <span class="stringliteral">&quot;sample&quot;</span>;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keyword">const</span> std::string SOUND             = <span class="stringliteral">&quot;sound&quot;</span>;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keyword">const</span> std::string NUMBER            = <span class="stringliteral">&quot;number&quot;</span>;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">const</span> std::string ARGUMENT          = <span class="stringliteral">&quot;argument&quot;</span>;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keyword">const</span> std::string GROUP             = <span class="stringliteral">&quot;group&quot;</span>;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keyword">const</span> std::string BOOLEAN           = <span class="stringliteral">&quot;boolean&quot;</span>;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">const</span> std::string STRING            = <span class="stringliteral">&quot;string&quot;</span>;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keyword">const</span> std::string FOR               = <span class="stringliteral">&quot;for&quot;</span>;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keyword">const</span> std::string IF                = <span class="stringliteral">&quot;if&quot;</span>;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keyword">const</span> std::string BREAK             = <span class="stringliteral">&quot;break&quot;</span>;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keyword">const</span> std::string RETURN            = <span class="stringliteral">&quot;return&quot;</span>;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keyword">const</span> std::string ELSE              = <span class="stringliteral">&quot;else&quot;</span>;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">const</span> std::string TRUE              = <span class="stringliteral">&quot;true&quot;</span>;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">const</span> std::string FALSE             = <span class="stringliteral">&quot;false&quot;</span>;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">bool</span> isValidName(<span class="keyword">const</span> std::string str)</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <span class="keywordflow">switch</span> (getHash(str.c_str())) {</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        <span class="keywordflow">case</span> getHash(<span class="stringliteral">&quot;null&quot;</span>):</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        case getHash(<span class="stringliteral">&quot;sample&quot;</span>):</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        case getHash(<span class="stringliteral">&quot;sound&quot;</span>):</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        case getHash(<span class="stringliteral">&quot;number&quot;</span>):</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        case getHash(<span class="stringliteral">&quot;argument&quot;</span>):</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        case getHash(<span class="stringliteral">&quot;group&quot;</span>):</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        case getHash(<span class="stringliteral">&quot;boolean&quot;</span>):</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        case getHash(<span class="stringliteral">&quot;string&quot;</span>):</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        case getHash(<span class="stringliteral">&quot;for&quot;</span>):</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        case getHash(<span class="stringliteral">&quot;if&quot;</span>):</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        case getHash(<span class="stringliteral">&quot;break&quot;</span>):</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        case getHash(<span class="stringliteral">&quot;return&quot;</span>):</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        case getHash(<span class="stringliteral">&quot;else&quot;</span>):</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        case getHash(<span class="stringliteral">&quot;true&quot;</span>):</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        case getHash(<span class="stringliteral">&quot;false&quot;</span>):</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;            return false;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;            <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        }</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    }</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;}</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span> HORIZONTAL_TAB           = 0x09;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span> SPACE                    = <span class="charliteral">&#39; &#39;</span>;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keyword">const</span> std::string S_NULL            = <span class="stringliteral">&quot;null&quot;</span>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keyword">const</span> std::string SAMPLE            = <span class="stringliteral">&quot;sample&quot;</span>;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keyword">const</span> std::string SOUND             = <span class="stringliteral">&quot;sound&quot;</span>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">const</span> std::string NUMBER            = <span class="stringliteral">&quot;number&quot;</span>;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keyword">const</span> std::string ARGUMENT          = <span class="stringliteral">&quot;argument&quot;</span>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keyword">const</span> std::string ARRAY             = <span class="stringliteral">&quot;array&quot;</span>;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">const</span> std::string GROUP             = <span class="stringliteral">&quot;group&quot;</span>;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keyword">const</span> std::string BOOLEAN           = <span class="stringliteral">&quot;boolean&quot;</span>;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keyword">const</span> std::string STRING            = <span class="stringliteral">&quot;string&quot;</span>;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keyword">const</span> std::string FOR               = <span class="stringliteral">&quot;for&quot;</span>;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keyword">const</span> std::string IF                = <span class="stringliteral">&quot;if&quot;</span>;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keyword">const</span> std::string BREAK             = <span class="stringliteral">&quot;break&quot;</span>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">const</span> std::string RETURN            = <span class="stringliteral">&quot;return&quot;</span>;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">const</span> std::string ELSE              = <span class="stringliteral">&quot;else&quot;</span>;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keyword">const</span> std::string TRUE              = <span class="stringliteral">&quot;true&quot;</span>;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keyword">const</span> std::string FALSE             = <span class="stringliteral">&quot;false&quot;</span>;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">bool</span> isValidName(<span class="keyword">const</span> std::string str)</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    {</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        <span class="keywordflow">switch</span> (getHash(str.c_str())) {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keywordflow">case</span> getHash(<span class="stringliteral">&quot;null&quot;</span>):</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        case getHash(<span class="stringliteral">&quot;sample&quot;</span>):</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        case getHash(<span class="stringliteral">&quot;sound&quot;</span>):</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        case getHash(<span class="stringliteral">&quot;number&quot;</span>):</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        case getHash(<span class="stringliteral">&quot;argument&quot;</span>):</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        case getHash(<span class="stringliteral">&quot;array&quot;</span>):</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        case getHash(<span class="stringliteral">&quot;group&quot;</span>):</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        case getHash(<span class="stringliteral">&quot;boolean&quot;</span>):</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        case getHash(<span class="stringliteral">&quot;string&quot;</span>):</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        case getHash(<span class="stringliteral">&quot;for&quot;</span>):</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        case getHash(<span class="stringliteral">&quot;if&quot;</span>):</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        case getHash(<span class="stringliteral">&quot;break&quot;</span>):</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        case getHash(<span class="stringliteral">&quot;return&quot;</span>):</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        case getHash(<span class="stringliteral">&quot;else&quot;</span>):</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        case getHash(<span class="stringliteral">&quot;true&quot;</span>):</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        case getHash(<span class="stringliteral">&quot;false&quot;</span>):</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;            return false;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        }</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    }</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;}</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="preprocessor">#endif // LANGUAGECONSTANTS_H</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">#endif // LANGUAGECONSTANTS_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -86,7 +86,6 @@ SOURCES += \
     utils/Exceptions/exception.cpp \
     utils/globalconfig.cpp \
     utils/log.cpp \
-    utils/output.cpp \
     utils/timehandler.cpp
 
 HEADERS += \
@@ -164,7 +163,6 @@ HEADERS += \
     utils/globalconfigdefinitions.h \
     utils/log.h \
     utils/mINI.h \
-    utils/output.h \
     utils/timehandler.h
 
 

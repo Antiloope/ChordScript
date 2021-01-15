@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.19"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ChordScript: src/interpreter/interpreter.h Source File</title>
+<title>ChordScript: src/interpreter/interpreters/interpreter.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -63,7 +63,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_4904b5727094acb85f1fb3ce4b540d24.html">interpreter</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_4904b5727094acb85f1fb3ce4b540d24.html">interpreter</a></li><li class="navelem"><a class="el" href="dir_7349a0715e3c750ec93187d71ce8b9d5.html">interpreters</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -77,18 +77,46 @@ $(function() {
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="keyword">namespace </span>CS {</div>
-<div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="classCS_1_1Interpreter.html">   10</a></span>&#160;<span class="keyword">class </span><a class="code" href="classCS_1_1Interpreter.html">Interpreter</a></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;{</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classCS_1_1Interpreter.html#a7bc2d7f8446dc22bda0ab3963c2eb685">interpret</a>(<span class="keyword">const</span> std::string);</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;};</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;}</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#endif // INTERPRETER_H</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">enum</span> RedirectOutput {</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    SetNull,</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    Reset,</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    Clean,</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;};</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keywordtype">void</span> redirectOutput(RedirectOutput option);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">enum</span> ReturnCodes : <span class="keywordtype">int</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;{</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    SUCCESS = 0,</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    NOTHING_TO_DO,</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    FORK_ERROR,</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    ANOTHER_INSTANCE_RUNNING,</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    INVALID_FILE_NAME,</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    CONFIG_ERROR,</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    CODE_ERROR,</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    CHILD_PROCESS_RETURN</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;};</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="classCS_1_1Interpreter.html">   32</a></span>&#160;<span class="keyword">class </span><a class="code" href="classCS_1_1Interpreter.html">Interpreter</a></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;{</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">int</span> run() = 0;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code" href="classCS_1_1Interpreter.html#a4dd21b34114817c4f22e4ceb05575dad">interpret</a>(<span class="keyword">const</span> std::string sourceCode);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;};</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;}</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor">#include &quot;fileinterpreter.h&quot;</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#include &quot;interactiveinterpreter.h&quot;</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="preprocessor">#include &quot;pipeinterpreter.h&quot;</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="preprocessor">#endif // INTERPRETER_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclassCS_1_1Interpreter_html_a7bc2d7f8446dc22bda0ab3963c2eb685"><div class="ttname"><a href="classCS_1_1Interpreter.html#a7bc2d7f8446dc22bda0ab3963c2eb685">CS::Interpreter::interpret</a></div><div class="ttdeci">static void interpret(const std::string)</div><div class="ttdoc">interpret This method thow a CS::Exception if there are any error in the code.</div><div class="ttdef"><b>Definition:</b> interpreter.cpp:10</div></div>
-<div class="ttc" id="aclassCS_1_1Interpreter_html"><div class="ttname"><a href="classCS_1_1Interpreter.html">CS::Interpreter</a></div><div class="ttdoc">This class holds a sigle static method that interpret the code.</div><div class="ttdef"><b>Definition:</b> interpreter.h:11</div></div>
+<div class="ttc" id="aclassCS_1_1Interpreter_html_a4dd21b34114817c4f22e4ceb05575dad"><div class="ttname"><a href="classCS_1_1Interpreter.html#a4dd21b34114817c4f22e4ceb05575dad">CS::Interpreter::interpret</a></div><div class="ttdeci">static bool interpret(const std::string sourceCode)</div><div class="ttdoc">Interpret the source code and thow a CS::Exception if there are any error in the code.</div><div class="ttdef"><b>Definition:</b> interpreter.cpp:66</div></div>
+<div class="ttc" id="aclassCS_1_1Interpreter_html"><div class="ttname"><a href="classCS_1_1Interpreter.html">CS::Interpreter</a></div><div class="ttdef"><b>Definition:</b> interpreter.h:33</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
