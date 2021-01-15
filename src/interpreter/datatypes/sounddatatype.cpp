@@ -99,8 +99,8 @@ LiteralValue* SoundDataType::stop(
     if( !argumentValues->empty() )
         throw SyntaxException("Stop method must receive no parameters");
 
-    if( !value )
-        throw SemanticException("Variable " + variableName + "has not a value");
+    if( !value || value->getDataTypeId() != DataTypesId::Sound )
+        throw SemanticException("Variable " + variableName + " has not a value");
 
     SoundGenerator* generator = (SoundGenerator*)value->getValue();
 
@@ -120,8 +120,8 @@ LiteralValue* SoundDataType::play(
 
     auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
-    if( !value )
-        throw SemanticException("Variable " + variableName + "has not a value");
+    if( !value || value->getDataTypeId() != DataTypesId::Sound )
+        throw SemanticException("Variable " + variableName + " has not a value");
 
     SoundGenerator* generator = (SoundGenerator*)value->getValue();
 
@@ -234,8 +234,8 @@ LiteralValue* SoundDataType::loop(
 
     auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
-    if( !value )
-        throw SemanticException("Variable " + variableName + "has not a value");
+    if( !value || value->getDataTypeId() != DataTypesId::Sound )
+        throw SemanticException("Variable " + variableName + " has not a value");
 
     SoundGenerator* generator = (SoundGenerator*)value->getValue();
 
@@ -361,8 +361,8 @@ LiteralValue* SoundDataType::setPanning(
 
     const auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
-    if( !value )
-        throw SemanticException("Variable " + variableName + "has not a value");
+    if( !value || value->getDataTypeId() != DataTypesId::Sound )
+        throw SemanticException("Variable " + variableName + " has not a value");
 
     unique_ptr<SoundGenerator> generator = unique_ptr<SoundGenerator>(((SoundGenerator*)value->getValue())->clone());
 
@@ -405,8 +405,8 @@ LiteralValue* SoundDataType::constantFreq(
 
     const auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
-    if( !value )
-        throw SemanticException("Variable " + variableName + "has not a value");
+    if( !value || value->getDataTypeId() != DataTypesId::Sound )
+        throw SemanticException("Variable " + variableName + " has not a value");
 
     unique_ptr<SoundGenerator> generator = unique_ptr<SoundGenerator>(((SoundGenerator*)value->getValue())->clone());
 
@@ -446,8 +446,8 @@ LiteralValue* SoundDataType::freqFactor(
 
     const auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
-    if( !value )
-        throw SemanticException("Variable " + variableName + "has not a value");
+    if( !value || value->getDataTypeId() != DataTypesId::Sound )
+        throw SemanticException("Variable " + variableName + " has not a value");
 
     if( argumentValues->empty() )
         throw SemanticException("Invalid call of method freqFactor without arguments.");
@@ -484,8 +484,8 @@ LiteralValue* SoundDataType::freqModulation(
 
     const auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
-    if( !value )
-        throw SemanticException("Variable " + variableName + "has not a value");
+    if( !value || value->getDataTypeId() != DataTypesId::Sound )
+        throw SemanticException("Variable " + variableName + " has not a value");
 
     if( argumentValues->empty() )
         throw SemanticException("Invalid call of method freqOffset without arguments.");
@@ -522,8 +522,8 @@ LiteralValue* SoundDataType::ampFactor(
 
     const auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
-    if( !value )
-        throw SemanticException("Variable " + variableName + "has not a value");
+    if( !value || value->getDataTypeId() != DataTypesId::Sound )
+        throw SemanticException("Variable " + variableName + " has not a value");
 
     if( argumentValues->empty() )
         throw SemanticException("Invalid call of method ampFactor without arguments.");
@@ -560,8 +560,8 @@ LiteralValue* SoundDataType::ampModulation(
 
     const auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
-    if( !value )
-        throw SemanticException("Variable " + variableName + "has not a value");
+    if( !value || value->getDataTypeId() != DataTypesId::Sound )
+        throw SemanticException("Variable " + variableName + " has not a value");
 
     if( argumentValues->empty() )
         throw SemanticException("Invalid call of method ampModulation without arguments.");

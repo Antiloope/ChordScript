@@ -52,7 +52,7 @@ LiteralValue* ArgumentDataType::pop(
     if( argumentValues->size() != 0 )
         throw SyntaxException("Pop method must receive no parameters");
 
-    if( !value )
+    if( !value || value->getDataTypeId() != DataTypesId::Argument )
         throw SemanticException("Variable " + variableName + "has not a value");
 
     auto array = (list<LiteralValue*>*)value->getValue();
@@ -84,7 +84,7 @@ LiteralValue* ArgumentDataType::push(
     if( argumentValues->size() != 1 )
         throw SyntaxException("Push method must receive one parameter");
 
-    if( !value )
+    if( !value || value->getDataTypeId() != DataTypesId::Argument )
         throw SemanticException("Variable " + variableName + "has not a value");
 
     auto array = (list<LiteralValue*>*)value->getValue();

@@ -83,6 +83,7 @@ void IfInstructionExpression::load(
         throw SyntaxException("Expected }",aux->getCodeReference());
 
     terminalExpressionsList->pop_front();
+    int codeRefference = aux->getCodeReference();
     delete aux;
 
     if(
@@ -97,7 +98,7 @@ void IfInstructionExpression::load(
         delete terminalExpressionsList->front();
         terminalExpressionsList->pop_front();
         if( terminalExpressionsList->empty() )
-            throw SyntaxException("Expected {",aux->getCodeReference() );
+            throw SyntaxException("Expected {",codeRefference );
 
         aux = terminalExpressionsList->front();
 

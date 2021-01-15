@@ -89,7 +89,7 @@ queue<tuple<Playable*,string>> soundsToAdd;
 // Queue to manage removes in soundsList
 queue<tuple<Playable*,string>> soundsToRemove;
 // Thread to manage soundsList insertions from queue soundsToAdd and to play soundson outputBuffer
-thread bufferHandlerThread;
+thread bufferHandlerThread = thread();
 atomic_flag lockBuffer = ATOMIC_FLAG_INIT;
 mutex mutexQueues;
 

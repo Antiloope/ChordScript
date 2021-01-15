@@ -41,15 +41,15 @@ LiteralValue* SampleDataType::stop(
     ) {
 
     if( args->getDataTypeId() != DataTypesId::Argument )
-        return nullptr;
+        throw SyntaxException("Invalid argument in stop method");
 
     auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
     if( !argumentValues->empty() )
-        return nullptr;
+        throw SyntaxException("Stop method must receive no parameters");
 
-    if( !value )
-        return nullptr;
+    if( !value || value->getDataTypeId() != DataTypesId::Sample)
+        throw SemanticException("Variable " + variableName + " has not a value");
 
     SamplePlayer* player = (SamplePlayer*)value->getValue();
 
@@ -65,12 +65,12 @@ LiteralValue* SampleDataType::play(
     ) {
 
     if( args->getDataTypeId() != DataTypesId::Argument )
-        return nullptr;
+        throw SyntaxException("Invalid argument in play method");
 
     auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
-    if( !value )
-        return nullptr;
+    if( !value || value->getDataTypeId() != DataTypesId::Sample )
+        throw SemanticException("Variable " + variableName + " has not a value");
 
     SamplePlayer* player = (SamplePlayer*)value->getValue();
 
@@ -115,7 +115,7 @@ LiteralValue* SampleDataType::play(
             auto argIt = argumentList->begin();
 
             if( (*argIt) == nullptr || (*argIt)->getDataTypeId() != DataTypesId::Numeric )
-                return nullptr;
+                throw SyntaxException("Invalid argument contents to play");
 
             double timeFactor = *(double*)(*argIt)->getValue();
 
@@ -128,12 +128,12 @@ LiteralValue* SampleDataType::play(
             }
 
             if( (*argIt) == nullptr || (*argIt)->getDataTypeId() != DataTypesId::Numeric )
-                return nullptr;
+                throw SyntaxException("Invalid argument contents to play");
 
             double virtualDuration = *(double*)(*argIt)->getValue();
             argIt++;
             if( argIt != argumentList->end() )
-                return nullptr;
+                throw SyntaxException("Invalid number of arguments in play method");
             if( virtualDuration == 0 )
             {
                 startTick += TimeHandler::getInstance()->segToTicks(duration * timeFactor);
@@ -159,12 +159,12 @@ LiteralValue* SampleDataType::loop(
     ) {
 
     if( args->getDataTypeId() != DataTypesId::Argument )
-        return nullptr;
+        throw SyntaxException("Invalid argument in loop method");
 
     auto argumentValues = (list<LiteralValue*>*)args->getValue();
 
-    if( !value )
-        return nullptr;
+    if( !value || value->getDataTypeId() != DataTypesId::Sample )
+        throw SemanticException("Variable " + variableName + " has not a value");
 
     SamplePlayer* player = (SamplePlayer*)value->getValue();
 
@@ -184,7 +184,7 @@ LiteralValue* SampleDataType::loop(
     {
         double timeFactor = *(double*)((NumberLiteralValue*)(*it))->getValue();
         if( timeFactor <= 0 )
-            return nullptr;
+            throw SemanticException("Invalid time factor value. It must be possitive");
 
         it++;
         if( it == argumentValues->end() )
@@ -192,7 +192,7 @@ LiteralValue* SampleDataType::loop(
             player->loop(timeFactor,startTick,variableName);
             return new NullLiteralValue();
         }
-        return nullptr;
+        throw SemanticException("Invalid number of arguments in loop method");
         break;
     }
     case DataTypesId::Argument:
@@ -212,7 +212,7 @@ LiteralValue* SampleDataType::loop(
             auto argIt = argumentList->begin();
 
             if( (*argIt) == nullptr || (*argIt)->getDataTypeId() != DataTypesId::Numeric )
-                return nullptr;
+                throw SyntaxException("Invalid argument contents to play");
 
             argIt++;
             if( argIt == argumentList->end() )
@@ -222,12 +222,12 @@ LiteralValue* SampleDataType::loop(
             }
 
             if( (*argIt) == nullptr || (*argIt)->getDataTypeId() != DataTypesId::Numeric )
-                return nullptr;
+                throw SyntaxException("Invalid argument contents to play");
 
             double virtualDuration = *(double*)(*argIt)->getValue();
             argIt++;
             if( argIt != argumentList->end() )
-                return nullptr;
+                throw SemanticException("Invalid number of arguments in loop method");
 
             if( virtualDuration == 0 )
                 totalLoopDuration += duration;
@@ -271,15 +271,18 @@ LiteralValue* SampleDataType::loop(
 }
 
 LiteralValue* SampleDataType::setPanning(
-    string,
+    string variableName,
     const LiteralValue* value,
     const LiteralValue* args
     ) {
 
     if( args->getDataTypeId() != DataTypesId::Argument )
-        return nullptr;
+        throw SyntaxException("Invalid argument in setPanning method");
 
     const auto argumentValues = (list<LiteralValue*>*)args->getValue();
+
+    if( !value || value->getDataTypeId() != DataTypesId::Sample )
+        throw SemanticException("Variable " + variableName + " has not a value");
 
     SamplePlayer* player = (SamplePlayer*)value->getValue();
 

@@ -607,3 +607,20 @@ int InteractiveInterpreter::run()
 
     return ReturnCodes::SUCCESS;
 }
+
+
+//int InteractiveInterpreter::run()
+//{
+//    // Init an interpreter context with start values.
+//    Context::getInstance()->load();
+
+//    redirectOutput(SetNull);
+
+//    // Init global executor.
+//    //ExecutorInterface::init();
+
+//    redirectOutput(Reset);
+//    interpret("sample a; a.play();");
+
+//    return ReturnCodes::SUCCESS;
+//}

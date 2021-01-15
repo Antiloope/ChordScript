@@ -79,7 +79,7 @@ LiteralValue* ArrayDataType::size(
     if( argumentValues->size() != 0 )
         throw SyntaxException("Size method must receive no parameters");
 
-    if( !value )
+    if( !value || value->getDataTypeId() != DataTypesId::Array )
         throw SemanticException("Variable " + variableName + "has not a value");
 
     auto array = (list<LiteralValue*>*)value->getValue();
@@ -106,7 +106,7 @@ LiteralValue* ArrayDataType::at(
 
     unsigned index = *(double*)argumentValues->front()->getValue();
 
-    if( !value )
+    if( !value || value->getDataTypeId() != DataTypesId::Array )
         throw SemanticException("Variable " + variableName + "has not a value");
 
     auto array = (list<LiteralValue*>*)value->getValue();
@@ -135,7 +135,7 @@ LiteralValue* ArrayDataType::push(
     if( argumentValues->size() != 1 )
         throw SyntaxException("Push method must receive one parameter");
 
-    if( !value )
+    if( !value || value->getDataTypeId() != DataTypesId::Array )
         throw SemanticException("Variable " + variableName + "has not a value");
 
     auto array = (list<LiteralValue*>*)value->getValue();
@@ -170,7 +170,7 @@ LiteralValue* ArrayDataType::insert(
     argumentValues->pop_front();
     LiteralValue* newValue = argumentValues->front();
 
-    if( !value )
+    if( !value || value->getDataTypeId() != DataTypesId::Array )
         throw SemanticException("Variable " + variableName + "has not a value");
 
     auto array = (list<LiteralValue*>*)value->getValue();
@@ -207,7 +207,7 @@ LiteralValue* ArrayDataType::remove(
 
     unsigned index = *(double*)argumentValues->front()->getValue();
 
-    if( !value )
+    if( !value || value->getDataTypeId() != DataTypesId::Array )
         throw SemanticException("Variable " + variableName + "has not a value");
 
     auto array = (list<LiteralValue*>*)value->getValue();
@@ -240,7 +240,7 @@ LiteralValue* ArrayDataType::pop(
     if( argumentValues->size() != 0 )
         throw SyntaxException("Pop method must receive no parameters");
 
-    if( !value )
+    if( !value || value->getDataTypeId() != DataTypesId::Array )
         throw SemanticException("Variable " + variableName + "has not a value");
 
     auto array = (list<LiteralValue*>*)value->getValue();

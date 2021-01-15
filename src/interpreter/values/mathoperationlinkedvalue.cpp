@@ -199,6 +199,7 @@ LiteralValue* MathOperationLinkedValue::getValue() const {
         case DataTypesId::Sound:
         case DataTypesId::Sample:
         case DataTypesId::String:
+        case DataTypesId::Boolean:
             RPNStack.push(literalValue->clone());
             break;
         case DataTypesId::Operator:
