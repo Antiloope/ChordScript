@@ -66,8 +66,6 @@ int FileInterpreter::run()
 
     if( response[0] == 'O' && response[1] == 'K' )
         return ReturnCodes::SUCCESS;
-    if( response[0] == 'E' && response[1] == 'X' && response[2] == 'I' && response[3] == 'T' )
-        return ReturnCodes::SUCCESS;
 
     int charReference = stoi(response.substr(0,response.find_first_of(" "))) - 1;
     string tmp = sourceCode.substr(0, charReference);

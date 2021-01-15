@@ -41,6 +41,8 @@ const char* CURSOR_UP_COMMAND = "\033[A";
 const char* CURSOR_RIGHT_COMMAND = "\033[C";
 const char* CURSOR_LEFT_COMMAND = "\033[D";
 
+const char* EXIT_LINE = "EXIT();";
+
 enum struct Key {
     None,
     ArrowUp,
@@ -428,6 +430,13 @@ string Console::getSourceCode() {
         if( line.size() )
             oldLines.push_back(line);
 
+        if( line == EXIT_LINE)
+        {
+            system(CONSOLE_RESET_COMMAND);
+
+            return EXIT_LINE;
+        }
+
         sourceCode += line;
 
         if( !validSource(sourceCode) )
@@ -564,15 +573,15 @@ int InteractiveInterpreter::run()
             // Get source code
             string sourceCode = _console.getSourceCode();
 
+            if( sourceCode == EXIT_LINE )
+                break;
+
             // Interpret source code
             string response = PipeInterpreter::interpret(sourceCode);
 
             // Identify response
             if( response[0] == 'O' && response[1] == 'K' )
                 continue;
-
-            if( response[0] == 'E' && response[1] == 'X' && response[2] == 'I' && response[3] == 'T' )
-                break;
 
             // If an error exist in source code, the response has the format:
             //  [CharacterReference] [ErrorDescription]
