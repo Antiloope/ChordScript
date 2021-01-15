@@ -111,8 +111,8 @@ LiteralValue* ArrayDataType::at(
 
     auto array = (list<LiteralValue*>*)value->getValue();
 
-    if( array->size() < index )
-        throw SemanticException("Index out of range");;
+    if( array->size() <= index )
+        throw SemanticException("Index out of range");
 
     auto it = array->begin();
     for(unsigned i = 0; i < index; i++)
@@ -175,6 +175,9 @@ LiteralValue* ArrayDataType::insert(
 
     auto array = (list<LiteralValue*>*)value->getValue();
 
+    if( array->size() < index )
+        throw SemanticException("Index out of range");
+
     auto it = array->begin();
     for(unsigned i = 0; i < index; i++)
         it++;
@@ -211,6 +214,9 @@ LiteralValue* ArrayDataType::remove(
         throw SemanticException("Variable " + variableName + "has not a value");
 
     auto array = (list<LiteralValue*>*)value->getValue();
+
+    if( array->size() <= index )
+        throw SemanticException("Index out of range");
 
     auto it = array->begin();
     for(unsigned i = 0; i < index; i++)
